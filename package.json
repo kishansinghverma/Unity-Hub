@@ -1,0 +1,37 @@
+{
+  "name": "unity-hub",
+  "version": "1.0.0",
+  "description": "A unified API/Frontend interface",
+  "main": "index.ts",
+  "scripts": {
+    "start": "node dist/index.js",
+    "start-dev-backend": "nodemon src/index.ts --ignore src/frontends",
+    "start-dev-emandi": "concurrently \"npm run start-dev-backend\" \"npm start --prefix src/frontends/emandi\"",
+    "prepare": "npm run install-emandi",
+    "install-emandi": "npm install --prefix src/frontends/emandi",
+    "build": "npm run build-all && npm run copy-all",
+    "build-all": "tsc && npm run build-emandi",
+    "build-emandi": "npm run build --prefix src/frontends/emandi",
+    "copy-all": "mkdir -p dist/frontends && npm run copy-emandi",
+    "copy-emandi": "ncp src/frontends/emandi/build dist/frontends/emandi",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Kishan Singh",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/dotenv": "^8.2.0",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.12.2",
+    "nodemon": "^2.0.22",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.4.3",
+    "concurrently": "^7.6.0",
+    "ncp": "^2.0.0"
+  },
+  "dependencies": {
+    "chalk": "4.1.2",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "mongodb": "^6.5.0"
+  }
+}
