@@ -130,7 +130,7 @@ table.fixed {
 .scrollable {
   overflow: scroll;
   width: 100%;
-  margin: 0 auto;
+  text-align: -webkit-center;
   -ms-overflow-style: none;
   scrollbar-width: none;
   font-size: 15px;

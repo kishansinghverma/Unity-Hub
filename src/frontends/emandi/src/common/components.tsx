@@ -40,10 +40,8 @@ export const CustomTable: React.FC<React.PropsWithChildren & IHeader> = ({ child
                 <i className="fa fa-retweet refresh-btn" onClick={() => refresh()} />
             </div>
         </div>
-        <div className="scrollable" style={{display: "flex", justifyContent:'center'}}>
-        <Segment basic loading={isFetching} className="table-segment">
-            <div className="scrollable">{children}</div>
-        </Segment>
+        <div className="scrollable">
+            <Segment basic loading={isFetching} className="table-segment">{children}</Segment>
         </div>
     </>
 );
