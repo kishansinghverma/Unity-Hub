@@ -4,6 +4,8 @@ export type CollectionOperation = (collection: Collection) => Promise<ExecutionR
 
 export type DatabaseOperation = (database: Db) => Promise<ExecutionResponse>;
 
+export type OperationResponse = Promise<ExecutionResponse>;
+
 export type ExecutionResponse = {
     content: any,
     statusCode: number

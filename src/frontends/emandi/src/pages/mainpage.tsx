@@ -25,7 +25,7 @@ export const MainPage = () => {
     return (
         <>
             <Segment inverted attached>
-                <Menu inverted pointing secondary size='small'>
+                <Menu inverted pointing secondary size='small' attached>
                     <Menu.Item icon='add' name={PageTitle.NewEntry} active={selectedItem === PageTitle.NewEntry} onClick={handleClick} />
                     <Menu.Item icon='wait' name={PageTitle.Queued} active={selectedItem === PageTitle.Queued} onClick={handleClick} />
                     <Menu.Item icon='tasks' name={PageTitle.Processed} active={selectedItem === PageTitle.Processed} onClick={handleClick} />

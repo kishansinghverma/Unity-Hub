@@ -3,6 +3,7 @@ import { constants, style } from "./constants";
 
 export class String {
     public static empty = '';
+    public static isNullOrEmpty = (chars: string) => (chars === null || chars.trim() === '');
 }
 
 export class Logger {
@@ -45,5 +46,14 @@ export class CustomError {
     public static handleErrorAndGetResponse = (error: any) => {
         this.printException(error);
         return this.getErrorResponse(error);
+    }
+}
+
+export class Throwable extends Error {
+    public statusCode: number;
+    constructor(message: string, statusCode: number) {
+        super();
+        this.statusCode = statusCode;
+        this.message = message;
     }
 }

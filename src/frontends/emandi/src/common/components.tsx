@@ -37,7 +37,7 @@ export const CustomTable: React.FC<React.PropsWithChildren & IHeader> = ({ child
         <div className="header-container">
             <div className="table-header"> {title} </div>
             <div className="header-btn-container">
-                <i className="fa fa-retweet refresh-btn" onClick={() => refresh()} />
+                <Icon name="retweet" className="refresh-btn" size="large" onClick={refresh}></Icon>
             </div>
         </div>
         <div className="scrollable">
@@ -56,7 +56,7 @@ export const EmptyTable: React.FC<ITable> = ({ message, headerColumns }) => (
 
 export const TablePagination: React.FC<Pagination> = ({ currentPage, pageCount, colSpan }) => (
     <Table.Row>
-        <Table.HeaderCell colSpan={colSpan} textAlign="center">
+        <Table.HeaderCell colSpan={colSpan}>
             <Menu pagination>
                 <Menu.Item icon onClick={() => { currentPage.set(currentPage.get() - 1) }} disabled={currentPage.get() <= 1}>
                     <Icon name='chevron left' />
