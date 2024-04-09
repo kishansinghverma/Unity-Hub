@@ -117,7 +117,7 @@ export const NewEntry: React.FC = () => {
                 </Form.Field>
                 <Divider hidden />
                 <div className="flex-full">
-                    <Button type='submit' className="btn-submit"> गेटपास जारी करें </Button>
+                    <Button color="red" type='submit' className="btn-submit"> गेटपास जारी करें </Button>
                 </div>
                 <Divider hidden />
             </Form>

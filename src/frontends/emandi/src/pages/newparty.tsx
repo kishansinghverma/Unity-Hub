@@ -1,4 +1,4 @@
-import { useState, BaseSyntheticEvent, useRef } from "react";
+import { BaseSyntheticEvent, useRef } from "react";
 import { toast } from "react-toastify";
 import { InputOnChangeData, Form, Input, Divider, Button, DropdownProps, Checkbox, CheckboxProps } from "semantic-ui-react";
 import { CustomForm, CustomSelect } from "../common/components";
@@ -132,7 +132,7 @@ export const NewParty: React.FC = () => {
                 </Form.Field>
                 <Divider hidden />
                 <div className="flex-full">
-                    <Button type='submit' className="btn-submit"> पार्टी जोड़ें </Button>
+                    <Button color="red" type='submit' className="btn-submit"> पार्टी जोड़ें </Button>
                 </div>
                 <Divider hidden />
             </Form>

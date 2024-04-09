@@ -1,8 +1,9 @@
-import express, { response } from 'express';
+import express from 'express';
 import { constants, source, style } from '../common/constants';
 import * as emandiOperation from '../operations/emandi';
 import path from 'path';
 import { Logger } from '../common/models';
+import { whatsApp } from '../operations/whatsapp';
 
 const router = express.Router();
 const logger = new Logger(source.route);
@@ -61,6 +62,11 @@ router.get("/api/requeue/:id", (req, res) => {
 router.post("/api/push", (req, res) => {
     if (Object.keys(req.body).length > 0) {
         emandiOperation.queueRecord(req.body)
+            .then(async response => {
+                const { name, mandi, state } = req.body.party;
+                await whatsApp.sendMessageToUnityHub(`New Gatepass Requested For ${name}, ${mandi}, ${state}. Click To Proceed : https://emandi.up.gov.in/Traders/Dashboard`);
+                return response;
+            })
             .then(response => res.status(response.statusCode).send(response.content))
             .catch(err => res.status(500).send(err.message));
     }

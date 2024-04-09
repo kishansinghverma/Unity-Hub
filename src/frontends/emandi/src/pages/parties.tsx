@@ -1,14 +1,13 @@
-import { Button, Modal, ModalActions, ModalContent, ModalHeader, Table } from "semantic-ui-react"
+import { Button, ButtonGroup, Icon, Modal, ModalActions, ModalContent, ModalHeader, Table } from "semantic-ui-react"
 import { CustomTable, EmptyTable, TablePagination } from "../common/components"
 import { ReactState, TableRenderer, handleError, handleJsonResponse } from "../operations/utils"
 import { Party, Record } from "../common/types"
 import { useEffect } from "react"
 import { DeleteParams, Url } from "../common/constants"
-import { Migrator } from "../components/migrator"
 import { EditPartyForm } from "./editparty"
 
 export const Parties: React.FC = () => {
-    const { records, render, pageCount, currentPage, isFetching } = new TableRenderer<Party>(Url.Parties);
+    const { records, render, getPaginated, pageCount, currentPage, isFetching } = new TableRenderer<Party>(Url.Parties, 8);
     const isModalOpen = ReactState(false);
     const recordToEdit = ReactState<Record<Party>>(records.get()[0]);
 
@@ -42,43 +41,43 @@ export const Parties: React.FC = () => {
     return (
         <>
             <CustomTable title="पार्टियों की सूची" refresh={render} isFetching={isFetching.get()}>
-                <Table celled fixed singleLine striped unstackable>
-                    <Table.Header>
-                        <Table.Row>
-                            <Table.HeaderCell width={5}>Name</Table.HeaderCell>
-                            <Table.HeaderCell width={3}>Mandi</Table.HeaderCell>
-                            <Table.HeaderCell width={2}>State</Table.HeaderCell>
-                            <Table.HeaderCell width={2}>Distance (K.M.)</Table.HeaderCell>
-                            <Table.HeaderCell width={3}>Licence</Table.HeaderCell>
-                            <Table.HeaderCell width={2} textAlign="center">Actions</Table.HeaderCell>
-                        </Table.Row>
-                    </Table.Header>
-                    {records.get().length < 1 ?
-                        <EmptyTable headerColumns={9} message="अभी तक कोई पार्टी नहीं जोड़ी गई है." /> :
-                        <>
-                            <Table.Body>
-                                {records.get().slice((currentPage.get() - 1) * 10, currentPage.get() * 10).map((record, index) => (
-                                    <Table.Row key={`row-${index}`}>
-                                        <Table.Cell>{record.name}</Table.Cell>
-                                        <Table.Cell>{record.mandi}</Table.Cell>
-                                        <Table.Cell>{record.state}</Table.Cell>
-                                        <Table.Cell>{record.distance}</Table.Cell>
-                                        <Table.Cell>{record.licenceNumber}</Table.Cell>
-                                        <Table.Cell textAlign="center">
-                                            <i className="fas fa-edit btn-queue" title="Edit" onClick={() => editParty(record)} />&nbsp;&emsp;
-                                            <i className="fas fa-trash btn-delete" title="Delete" onClick={() => { deleteParty(record._id) }} />
-                                        </Table.Cell>
-                                    </Table.Row>
-                                ))}
-                            </Table.Body>
-                            <Table.Footer>
-                                <TablePagination colSpan={6} currentPage={currentPage} pageCount={pageCount} />
-                            </Table.Footer>
-                        </>}
-                </Table>
-                <Migrator />
+                <Table.Header>
+                    <Table.Row>
+                        <Table.HeaderCell width={5}>Name</Table.HeaderCell>
+                        <Table.HeaderCell width={3}>Mandi</Table.HeaderCell>
+                        <Table.HeaderCell width={2}>State</Table.HeaderCell>
+                        <Table.HeaderCell width={2}>Distance (K.M.)</Table.HeaderCell>
+                        <Table.HeaderCell width={3}>Licence</Table.HeaderCell>
+                        <Table.HeaderCell width={2} textAlign="center">Actions</Table.HeaderCell>
+                    </Table.Row>
+                </Table.Header>
+                {records.get().length < 1 ?
+                    <EmptyTable headerColumns={9} message="अभी तक कोई पार्टी नहीं जोड़ी गई है." /> :
+                    <>
+                        <Table.Body>
+                            {getPaginated().map((record, index) => (
+                                <Table.Row key={`row-${index}`}>
+                                    <Table.Cell>{record.name}</Table.Cell>
+                                    <Table.Cell>{record.mandi}</Table.Cell>
+                                    <Table.Cell>{record.state}</Table.Cell>
+                                    <Table.Cell>{record.distance}</Table.Cell>
+                                    <Table.Cell>{record.licenceNumber}</Table.Cell>
+                                    <Table.Cell textAlign="center">
+                                        <ButtonGroup basic compact size="tiny">
+                                            <Button title="Edit" onClick={() => editParty(record)}><Icon name="edit" link color="green" /></Button>
+                                            <Button title="Delete" onClick={() => { deleteParty(record._id) }}><Icon name="trash" link color="red" /></Button>
+                                        </ButtonGroup>
+                                    </Table.Cell>
+                                </Table.Row>
+                            ))}
+                        </Table.Body>
+                        <Table.Footer>
+                            <TablePagination colSpan={6} currentPage={currentPage} pageCount={pageCount} />
+                        </Table.Footer>
+                    </>
+                }
             </CustomTable>
-            <Modal size='tiny' closeOnDimmerClick={false} open={isModalOpen.get()} onClose={() => isModalOpen.set(false)}>
+            <Modal size="tiny" dimmer="blurring" mountNode={document.querySelector("#root > div > div.content-container > div.scrollable")} centered={false} closeOnDimmerClick={false} open={isModalOpen.get()} onClose={() => isModalOpen.set(false)}>
                 <ModalHeader>पार्टी संशोधित करें</ModalHeader>
                 <ModalContent>
                     <EditPartyForm {...{ party: recordToEdit.get(), callbackFunction: postSuccess }} />

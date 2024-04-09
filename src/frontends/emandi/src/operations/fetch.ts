@@ -55,8 +55,6 @@ export const getDistance = (destination: string) => {
 export const notifyViaWhatsApp = async (message: string) => {
     fetch(Url.NotificationUrl, {
         ...PostParams,
-        body: JSON.stringify({
-            Message: message
-        })
+        body: JSON.stringify({Message: message})
     }).catch(handleError);
 }

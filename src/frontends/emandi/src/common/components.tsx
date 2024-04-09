@@ -1,4 +1,4 @@
-import { Table, Image, Placeholder, Input, DropdownProps, Icon, Menu, Dropdown, Segment } from "semantic-ui-react";
+import { Table, Image, Placeholder, Input, DropdownProps, Icon, Menu, Dropdown, Loader, Dimmer } from "semantic-ui-react";
 import { CustomCardProps, IHeader, ITable, Pagination, RawExpense } from "./types";
 import React, { SyntheticEvent, useState } from "react";
 import dayjs from "dayjs";
@@ -34,14 +34,15 @@ export const CustomSelect: React.FC<DropdownProps> = (props) => {
 
 export const CustomTable: React.FC<React.PropsWithChildren & IHeader> = ({ children, title, refresh, isFetching }) => (
     <>
+        <Dimmer active={isFetching} inverted><Loader size="big" /></Dimmer>
         <div className="header-container">
             <div className="table-header"> {title} </div>
             <div className="header-btn-container">
-                <Icon name="retweet" className="refresh-btn" size="large" onClick={refresh}></Icon>
+                <Icon name="refresh" title="Reload" size="large" color="red" link loading={isFetching} onClick={refresh}></Icon>
             </div>
         </div>
         <div className="scrollable">
-            <Segment basic loading={isFetching} className="table-segment">{children}</Segment>
+            <Table celled fixed singleLine striped unstackable selectable compact color="red">{children}</Table>
         </div>
     </>
 );
@@ -57,15 +58,15 @@ export const EmptyTable: React.FC<ITable> = ({ message, headerColumns }) => (
 export const TablePagination: React.FC<Pagination> = ({ currentPage, pageCount, colSpan }) => (
     <Table.Row>
         <Table.HeaderCell colSpan={colSpan}>
-            <Menu pagination>
+            <Menu pagination color="red">
                 <Menu.Item icon onClick={() => { currentPage.set(currentPage.get() - 1) }} disabled={currentPage.get() <= 1}>
-                    <Icon name='chevron left' />
+                    <Icon color="red" name='chevron left' />
                 </Menu.Item>
                 {[...Array(pageCount.get())].map((item, index) => (
                     <Menu.Item key={`menu-${index}`} onClick={() => { currentPage.set(index + 1) }} active={currentPage.get() === index + 1}>{index + 1}</Menu.Item>
                 ))}
                 <Menu.Item icon onClick={() => { currentPage.set(currentPage.get() + 1) }} disabled={currentPage.get() >= pageCount.get()}>
-                    <Icon name='chevron right' />
+                    <Icon color="red" name='chevron right' />
                 </Menu.Item>
             </Menu>
         </Table.HeaderCell>

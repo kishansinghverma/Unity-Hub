@@ -104,27 +104,31 @@ export const ReactState = <T>(value: T) => {
 }
 
 export class TableRenderer<T> {
-    url = '';
-    records = ReactState<Array<Record<T>>>([]);
-    pageCount = ReactState(0);
-    currentPage = ReactState(1);
-    isFetching = ReactState(true);
-    sortDescending = false;
+    private url: string;
+    private pageSize: number
+    private sortDescending = false;
+    public records = ReactState<Array<Record<T>>>([]);
+    public pageCount = ReactState(0);
+    public currentPage = ReactState(1);
+    public isFetching = ReactState(true);
 
-    constructor(url: string, sortDescending = false) {
+    constructor(url: string, pageSize = 5, sortDescending = false) {
         this.url = url;
+        this.pageSize = pageSize
         this.sortDescending = sortDescending;
     }
 
-    render = () => {
+    public render = () => {
         this.isFetching.set(true);
         fetch(this.url)
             .then(handleJsonResponse)
             .then((data: Array<Record<T>>) => {
                 this.records.set(this.sortDescending ? data.reverse() : data);
-                this.pageCount.set(Math.ceil(data.length / 10));
+                this.pageCount.set(Math.ceil(data.length / this.pageSize));
             })
             .catch(handleError)
             .finally(() => { this.isFetching.set(false) });
     }
+
+    public getPaginated = () => this.records.get().slice((this.currentPage.get() - 1) * this.pageSize, this.currentPage.get() * this.pageSize);
 }
