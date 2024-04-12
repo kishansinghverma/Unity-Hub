@@ -36,7 +36,7 @@ class EMandi {
 
     public queueRecord = async (record: Document) => {
         const response = await this.database.insertDocument(this.constants.collections.queued, { ...record, createdOn: getEpoch() });
-        const notificationResponse = await whatsApp.sendMessageToUnityHub(getTaggedString(templates.gatepassCreated, record.party)).catch(getErrorResponse);
+        const notificationResponse = await whatsApp.sendMessageToEmandi(getTaggedString(templates.gatepassCreated, record.party)).catch(getErrorResponse);
         response.content.notification = notificationResponse.content;
         return response;
     };

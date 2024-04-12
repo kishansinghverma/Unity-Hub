@@ -4,14 +4,14 @@ import { createNewParty } from '../operations/fetch';
 
 export const Migrator: React.FC = () => {
     const execute = () => {
-        data.Records.forEach(record => {
+        data.forEach((record:any) => {
             const data = {
-                name: record.Party,
-                mandi: record.Mandi,
-                state: record.State,
-                stateCode: parseInt(record.StateCode),
-                distance: parseInt(record.Distance),
-                licenceNumber: record.PartyLicence ? record.PartyLicence.toUpperCase() : ''
+                name: record.name,
+                mandi: record.mandi,
+                state: record.state,
+                stateCode: record.stateCode,
+                distance: record.distance,
+                licenceNumber: record.licenceNumber?.toUpperCase()
             }
 
             createNewParty(data).then(()=>console.log('Created => ', data.name));

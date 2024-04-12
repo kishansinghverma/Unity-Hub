@@ -64,7 +64,7 @@ export const getDate = () => {
 export const capitalize = (str: string) => {
     if (!str) return '';
     let tokens = str.trim().split(' ');
-    let capitals = tokens.map((token) => token.charAt(0).toUpperCase() + token.substring(1).toLowerCase());
+    let capitals = tokens.map((token) => token.charAt(0).toUpperCase() + token.substring(1));
     const updatedString = capitals.join(' ');
     tokens = updatedString.split('.');
     capitals = tokens.map((token) => token.charAt(0).toUpperCase() + token.substring(1));

@@ -1,497 +1,549 @@
-{
-  "Records": [
-    {
-      "Party": "A/344 New Sabzi Mandi",
-      "Mandi": "Azadpur",
-      "State": "Delhi",
-      "StateCode": "16",
-      "Distance": "193"
-    },
-    {
-      "Party": "Aashish Aalu Bhandar",
-      "Mandi": "Neemach",
-      "State": "Madhya Pradesh",
-      "StateCode": "7",
-      "Distance": "642"
-    },
-    {
-      "Party": "Agra Alu Company",
-      "Mandi": "Ashok Nagar",
-      "State": "Madhya Pradesh",
-      "StateCode": "7",
-      "Distance": "2004"
-    },
-    {
-      "Party": "Arjun Das Kotu Mal",
-      "Mandi": "Nandurbar",
-      "State": "Maharashtra",
-      "StateCode": "6",
-      "Distance": "928"
-    },
-    {
-      "Party": "Arjun Trading Company",
-      "Mandi": "Amarpur",
-      "State": "Bihar",
-      "StateCode": "9",
-      "Distance": "2155"
-    },
-    {
-      "Party": "Arjun Trading Company",
-      "Mandi": "Amarpur Bihar",
-      "State": "Bihar",
-      "StateCode": "9",
-      "Distance": "1101"
-    },
-    {
-      "Party": "ATR Traders",
-      "Mandi": "Jabalpur",
-      "State": "Chhattisgarh",
-      "StateCode": "8",
-      "Distance": "636"
-    },
-    {
-      "Party": "Bagat Jii",
-      "Mandi": "Saharsa",
-      "State": "Bihar",
-      "StateCode": "9",
-      "Distance": "1078"
-    },
-    {
-      "Party": "Bankey Bihari Trader",
-      "Mandi": "Mumbai",
-      "State": "Maharashtra",
-      "StateCode": "6",
-      "Distance": "1252"
-    },
-    {
-      "Party": "Bankey Bihari Trader Raipur",
-      "Mandi": "Raipur",
-      "State": "Chhattishgarh",
-      "StateCode": "8",
-      "Distance": "992"
-    },
-    {
-      "Party": "Bhole Nath Aalu Bhandar",
-      "Mandi": "Nandurbar",
-      "State": "Maharashtra",
-      "StateCode": "6",
-      "Distance": "942"
-    },
-    {
-      "Party": "Bholu Traders",
-      "Mandi": "Sasaram",
-      "State": "Bihar",
-      "StateCode": "9",
-      "Distance": "817"
-    },
-    {
-      "Party": "BP Tomato Company",
-      "Mandi": "Jhajjar",
-      "State": "Haryana",
-      "StateCode": "3",
-      "Distance": "223"
-    },
-    {
-      "Party": "Deepak Traders",
-      "Mandi": "Ranchi",
-      "State": "Jharkhand",
-      "StateCode": "4",
-      "Distance": "1105"
-    },
-    {
-      "Party": "G.N. Vaddi And Comapny",
-      "Mandi": "Hubli",
-      "State": "Karnataka",
-      "StateCode": "21",
-      "Distance": "1684"
-    },
-    {
-      "Party": "Gulam Moinuddin And Company",
-      "Mandi": "Dhule",
-      "State": "Maharashtra",
-      "StateCode": "6",
-      "Distance": "917"
-    },
-    {
-      "Party": "Hayaat Traders",
-      "Mandi": "Hubali",
-      "State": "Karnataka",
-      "StateCode": "21",
-      "Distance": "1664"
-    },
-    {
-      "Party": "Hemant Traders",
-      "Mandi": "Hasan",
-      "State": "Karnataka",
-      "StateCode": "21",
-      "Distance": "2140"
-    },
-    {
-      "Party": "Jagadamba Alu Bhandar",
-      "Mandi": "Bihar Sarif",
-      "State": "Bihar",
-      "StateCode": "9",
-      "Distance": "928"
-    },
-    {
-      "Party": "Jagdish Kumar And Brothers",
-      "Mandi": "1/28 Sabji Mandi Chakarpur Kanpur",
-      "State": "Uttar Pradesh",
-      "StateCode": "1",
-      "Distance": "300",
-      "PartyLicence": "L/2021/124/83312424"
-    },
-    {
-      "Party": "Jain Trading Company",
-      "Mandi": "Saharsa",
-      "State": "Bihar",
-      "StateCode": "9",
-      "Distance": "1078"
-    },
-    {
-      "Party": "Janta Aalu Comapny",
-      "Mandi": "Nazibabad",
-      "State": "Uttar Pradesh",
-      "StateCode": "1",
-      "Distance": "342"
-    },
-    {
-      "Party": "Jay Durga Fruit Company",
-      "Mandi": "Safidon",
-      "State": "Haryana",
-      "StateCode": "3",
-      "Distance": "328"
-    },
-    {
-      "Party": "Khem Chand Hazari Lal",
-      "Mandi": "Narnaul",
-      "State": "Haryana",
-      "StateCode": "3",
-      "Distance": "269"
-    },
-    {
-      "Party": "Kiran Traders, Shop #2",
-      "Mandi": "Karad",
-      "State": "Maharashtra",
-      "StateCode": "6",
-      "Distance": "1433"
-    },
-    {
-      "Party": "Korpe And Company Sabji Mandi",
-      "Mandi": "Pune",
-      "State": "Maharashtra",
-      "StateCode": "6",
-      "Distance": "1269"
-    },
-    {
-      "Party": "Kuldeep Traders",
-      "Mandi": "Chandpur",
-      "State": "Uttar Pradesh",
-      "StateCode": "1",
-      "Distance": "248"
-    },
-    {
-      "Party": "Laxmi Trading Company",
-      "Mandi": "Madhubani",
-      "State": "Bihar",
-      "StateCode": "9",
-      "Distance": "990"
-    },
-    {
-      "Party": "M.d Tredars",
-      "Mandi": "Karoli",
-      "State": "Rajasthan",
-      "StateCode": "5",
-      "Distance": "257"
-    },
-    {
-      "Party": "Maa Vaishno Fruit Company",
-      "Mandi": "Safidon",
-      "State": "Haryana",
-      "StateCode": "3",
-      "Distance": "328"
-    },
-    {
-      "Party": "Maa Vaishno Fruit Company",
-      "Mandi": "Pundri",
-      "State": "Haryana",
-      "StateCode": "3",
-      "Distance": "377"
-    },
-    {
-      "Party": "Madan Singh Rakesh Singh And Company",
-      "Mandi": "Kanpur",
-      "State": "Uttar Pradesh",
-      "StateCode": "1",
-      "Distance": "300",
-      "PartyLicence": "L/2018/124/46457639"
-    },
-    {
-      "Party": "Maha Laxmi Trading Company",
-      "Mandi": "Warangal",
-      "State": "Telangana",
-      "StateCode": "36",
-      "Distance": "1339"
-    },
-    {
-      "Party": "Manoj Trending Company",
-      "Mandi": "Karoli",
-      "State": "Rajasthan",
-      "StateCode": "5",
-      "Distance": "257"
-    },
-    {
-      "Party": "Md Traders",
-      "Mandi": "Raichur",
-      "State": "Karnataka",
-      "StateCode": "21",
-      "Distance": "1603"
-    },
-    {
-      "Party": "Mo Tajudeen And Sons Sabji Mandii Samsabad",
-      "Mandi": "Heydrabad",
-      "State": "Telangana",
-      "StateCode": "36",
-      "Distance": "1377"
-    },
-    {
-      "Party": "Mohd Yunus Idreesh Ahmad, Naveen Mandi Sthal",
-      "Mandi": "Najibabad",
-      "State": "Uttar Pradesh",
-      "PartyLicence": "L/2018/175/43066903",
-      "StateCode": "1",
-      "Distance": "310"
-    },
-    {
-      "Party": "Murari Lal Trading Company",
-      "Mandi": "Karnal",
-      "State": "Haryana",
-      "StateCode": "3",
-      "Distance": "330"
-    },
-    {
-      "Party": "Nandlal And Sons",
-      "Mandi": "Kurukshetra",
-      "State": "Haryana",
-      "StateCode": "3",
-      "Distance": "371"
-    },
-    {
-      "Party": "National Trading Co.",
-      "Mandi": "Kanpur",
-      "State": "Uttar Pradesh",
-      "StateCode": "1",
-      "Distance": "300"
-    },
-    {
-      "Party": "New Bhole Nath Allu Bandar",
-      "Mandi": "Nandurbar",
-      "State": "Uttar Pradesh",
-      "StateCode": "1",
-      "Distance": "925"
-    },
-    {
-      "Party": "P Sakhi Mal And Sons",
-      "Mandi": "Jalgaon",
-      "State": "Maharashtra",
-      "StateCode": "6",
-      "Distance": "954"
-    },
-    {
-      "Party": "Param Anand",
-      "Mandi": "Bihar Sarif",
-      "State": "Bihar",
-      "StateCode": "9",
-      "Distance": "927"
-    },
-    {
-      "Party": "Parmanand Rajkumar, Charsi Dadri, Shop No. 37",
-      "Mandi": "Haryana",
-      "State": "Uttar Pradesh",
-      "StateCode": "1",
-      "Distance": "360"
-    },
-    {
-      "Party": "Parsu Ram Govrdhan Das And Company",
-      "Mandi": "Kanpur",
-      "State": "Uttar Pradesh",
-      "StateCode": "1",
-      "Distance": "300"
-    },
-    {
-      "Party": "R.g Baddi",
-      "Mandi": "Hubballi",
-      "State": "Karnataka",
-      "StateCode": "21",
-      "Distance": "1664"
-    },
-    {
-      "Party": "Radhe Aalu Bhandar",
-      "Mandi": "Sasaram",
-      "State": "Andhra Pradesh",
-      "StateCode": "10",
-      "Distance": "809"
-    },
-    {
-      "Party": "Radhe Aalu Bhandqr",
-      "Mandi": "Sasaram",
-      "State": "Bihar",
-      "StateCode": "9",
-      "Distance": "809"
-    },
-    {
-      "Party": "Ram Lakhan Sunehri Lal",
-      "Mandi": "Sabji Mandi Amroha",
-      "State": "Uttar Pradesh",
-      "StateCode": "1",
-      "Distance": "237"
-    },
-    {
-      "Party": "Rama Fruit Company",
-      "Mandi": "Karnal",
-      "State": "Uttar Pradesh",
-      "StateCode": "1",
-      "Distance": "308"
-    },
-    {
-      "Party": "Ramji Das Bajaj And Company",
-      "Mandi": "Jind",
-      "State": "Haryana",
-      "StateCode": "3",
-      "Distance": "336"
-    },
-    {
-      "Party": "Rayan Aalu Bandar Dumriya Ganj Uttar Pradesh",
-      "Mandi": "Dumariya Ganj",
-      "State": "Uttar Pradesh",
-      "StateCode": "1",
-      "Distance": "566"
-    },
-    {
-      "Party": "RG Vaddi And Company Sabzi Mandi",
-      "Mandi": "Hubli",
-      "State": "Karnataka",
-      "StateCode": "21",
-      "Distance": "1684"
-    },
-    {
-      "Party": "Rinku Traders",
-      "Mandi": "Bihar Sharif",
-      "State": "Bihar",
-      "StateCode": "9",
-      "Distance": "928"
-    },
-    {
-      "Party": "Rrr Company Yashwantpura",
-      "Mandi": "Banglore",
-      "State": "Karnataka",
-      "StateCode": "21",
-      "Distance": "1965"
-    },
-    {
-      "Party": "S.A. Karimulla Traders",
-      "Mandi": "Hyderabad",
-      "State": "Telangana",
-      "StateCode": "36",
-      "Distance": "1380"
-    },
-    {
-      "Party": "Sai Kari Mullaa",
-      "Mandi": "Hyderabad",
-      "State": "Telangana",
-      "StateCode": "36",
-      "Distance": "1377"
-    },
-    {
-      "Party": "Sanjay Kumar",
-      "Mandi": "Bihar Sarif",
-      "State": "Bihar",
-      "StateCode": "9",
-      "Distance": "927"
-    },
-    {
-      "Party": "Sankat Mochan Traders",
-      "Mandi": "Bihar Sarif, Nalanda",
-      "State": "Bihar",
-      "StateCode": "9",
-      "Distance": "928"
-    },
-    {
-      "Party": "Santlal & Sons",
-      "Mandi": "Karnal",
-      "State": "Haryana",
-      "StateCode": "3",
-      "Distance": "330"
-    },
-    {
-      "Party": "Satish And Co",
-      "Mandi": "Bhiwadi",
-      "State": "Haryana",
-      "StateCode": "3",
-      "Distance": "183"
-    },
-    {
-      "Party": "Shiv Traders",
-      "Mandi": "Bihar Sarif",
-      "State": "Bihar",
-      "StateCode": "9",
-      "Distance": "937"
-    },
-    {
-      "Party": "Shyam Sundar Sanjay Kumar",
-      "Mandi": "Kharkhonda",
-      "State": "Haryana",
-      "StateCode": "3",
-      "Distance": "263"
-    },
-    {
-      "Party": "Siya Ram Vipin Kumar Chakarpur",
-      "Mandi": "Kanpur",
-      "State": "Uttar Pradesh",
-      "StateCode": "1",
-      "Distance": "300"
-    },
-    {
-      "Party": "Sopal Singh And Sons",
-      "Mandi": "Chandpur Bijnaur",
-      "State": "Uttar Pradesh",
-      "StateCode": "1",
-      "Distance": "248"
-    },
-    {
-      "Party": "Sundar Lal And Sons",
-      "Mandi": "Karnal",
-      "State": "Haryana",
-      "StateCode": "3",
-      "Distance": "330"
-    },
-    {
-      "Party": "Sunil Trading Co.",
-      "Mandi": "Mahendar Garh",
-      "State": "Haryana",
-      "StateCode": "3",
-      "Distance": "268"
-    },
-    {
-      "Party": "Suraj Bhan Satya Narayan Saini",
-      "Mandi": "Mahendra Garh",
-      "State": "Haryana",
-      "StateCode": "3",
-      "Distance": "359"
-    },
-    {
-      "Party": "Usman Trading Company",
-      "Mandi": "Karauli",
-      "State": "Rajasthan",
-      "StateCode": "5",
-      "Distance": "193"
-    },
-    {
-      "Party": "Zomato Hyperpure Pvt Ltd, Gehevra Metro Station, Near CNG Pump",
-      "Mandi": "Mundka",
-      "State": "Delhi",
-      "StateCode": "16",
-      "Distance": "209"
-    }
-  ]
-}
+[
+  {
+    "_id": "66194d654347548b866bae5e",
+    "name": "A/344 New Sabzi Mandi",
+    "mandi": "Azadpur",
+    "state": "Delhi",
+    "stateCode": 16,
+    "distance": 193
+  },
+  {
+    "_id": "66194d6b4347548b866bae64",
+    "name": "ATR Traders",
+    "mandi": "Jabalpur",
+    "state": "Chhattishgarh",
+    "stateCode": 8,
+    "distance": 636
+  },
+  {
+    "_id": "66194d654347548b866bae5f",
+    "name": "Aashish Aalu Bhandar",
+    "mandi": "Neemach",
+    "state": "Madhya Pradesh",
+    "stateCode": 7,
+    "distance": 642
+  },
+  {
+    "_id": "66194d654347548b866bae60",
+    "name": "Agra Aalu Company",
+    "mandi": "Ashok Nagar",
+    "state": "Madhya Pradesh",
+    "stateCode": 7,
+    "distance": 2004
+  },
+  {
+    "_id": "66194d654347548b866bae61",
+    "name": "Arjun Das Kotu Mal",
+    "mandi": "Nandurbar",
+    "state": "Maharashtra",
+    "stateCode": 6,
+    "distance": 928
+  },
+  {
+    "_id": "66194d654347548b866bae63",
+    "name": "Arjun Trading Company",
+    "mandi": "Amarpur",
+    "state": "Bihar",
+    "stateCode": 9,
+    "distance": 1101
+  },
+  {
+    "_id": "66194d814347548b866bae6a",
+    "name": "BP Tomato Company",
+    "mandi": "Jhajjar",
+    "state": "Haryana",
+    "stateCode": 3,
+    "distance": 223
+  },
+  {
+    "_id": "66194d784347548b866bae67",
+    "name": "Bankey Bihari Trader Raipur",
+    "mandi": "Raipur",
+    "state": "Chhattishgarh",
+    "stateCode": 8,
+    "distance": 992
+  },
+  {
+    "_id": "66194d724347548b866bae66",
+    "name": "Bankey Bihari Traders",
+    "mandi": "Mumbai",
+    "state": "Maharashtra",
+    "stateCode": 6,
+    "distance": 1252
+  },
+  {
+    "_id": "66194d6c4347548b866bae65",
+    "name": "Bhagat Ji",
+    "mandi": "Saharsa",
+    "state": "Bihar",
+    "stateCode": 9,
+    "distance": 1078
+  },
+  {
+    "_id": "66194d794347548b866bae68",
+    "name": "Bhole Nath Aalu Bhandar",
+    "mandi": "Nandurbar",
+    "state": "Maharashtra",
+    "stateCode": 6,
+    "distance": 942
+  },
+  {
+    "_id": "66194d7f4347548b866bae69",
+    "name": "Bholu Traders",
+    "mandi": "Sasaram",
+    "state": "Bihar",
+    "stateCode": 9,
+    "distance": 817
+  },
+  {
+    "_id": "66194d824347548b866bae6b",
+    "name": "Deepak Traders",
+    "mandi": "Ranchi",
+    "state": "Jharkhand",
+    "stateCode": 4,
+    "distance": 1105
+  },
+  {
+    "_id": "66194d854347548b866bae6c",
+    "name": "G.N. Vaddi And Comapny",
+    "mandi": "Hubli",
+    "state": "Karnataka",
+    "stateCode": 21,
+    "distance": 1684
+  },
+  {
+    "_id": "66194d894347548b866bae6d",
+    "name": "Gulam Moinuddin And Company",
+    "mandi": "Dhule",
+    "state": "Maharashtra",
+    "stateCode": 6,
+    "distance": 917
+  },
+  {
+    "_id": "66194d8c4347548b866bae6e",
+    "name": "Hayaat Traders",
+    "mandi": "Hubli",
+    "state": "Karnataka",
+    "stateCode": 21,
+    "distance": 1664
+  },
+  {
+    "_id": "66194d8f4347548b866bae6f",
+    "name": "Hemant Traders",
+    "mandi": "Hasan",
+    "state": "Karnataka",
+    "stateCode": 21,
+    "distance": 2140
+  },
+  {
+    "_id": "66194d924347548b866bae70",
+    "name": "Jagadamba Aalu Bhandar",
+    "mandi": "Bihar Sarif",
+    "state": "Bihar",
+    "stateCode": 9,
+    "distance": 928
+  },
+  {
+    "_id": "66194d964347548b866bae71",
+    "name": "Jagdish Kumar And Brothers",
+    "mandi": "1/28 Sabji Mandi Chakarpur Kanpur",
+    "state": "Uttar Pradesh",
+    "stateCode": 1,
+    "distance": 300,
+    "licenceNumber": "L/2021/124/83312424"
+  },
+  {
+    "_id": "66194d974347548b866bae72",
+    "name": "Jain Trading Company",
+    "mandi": "Saharsa",
+    "state": "Bihar",
+    "stateCode": 9,
+    "distance": 1078
+  },
+  {
+    "_id": "66194d994347548b866bae73",
+    "name": "Janta Aalu Company",
+    "mandi": "Nazibabad",
+    "state": "Uttar Pradesh",
+    "stateCode": 1,
+    "distance": 342
+  },
+  {
+    "_id": "66194d994347548b866bae74",
+    "name": "Jay Durga Fruit Company",
+    "mandi": "Safidon",
+    "state": "Haryana",
+    "stateCode": 3,
+    "distance": 328
+  },
+  {
+    "_id": "66194d994347548b866bae75",
+    "name": "Khem Chand Hazari Lal",
+    "mandi": "Narnaul",
+    "state": "Haryana",
+    "stateCode": 3,
+    "distance": 269
+  },
+  {
+    "_id": "66194d9d4347548b866bae76",
+    "name": "Kiran Traders, Shop #2",
+    "mandi": "Karad",
+    "state": "Maharashtra",
+    "stateCode": 6,
+    "distance": 1433
+  },
+  {
+    "_id": "66194da34347548b866bae77",
+    "name": "Korpe And Company Sabji Mandi",
+    "mandi": "Pune",
+    "state": "Maharashtra",
+    "stateCode": 6,
+    "distance": 1269
+  },
+  {
+    "_id": "66194da54347548b866bae78",
+    "name": "Kuldeep Traders",
+    "mandi": "Chandpur",
+    "state": "Uttar Pradesh",
+    "stateCode": 1,
+    "distance": 248
+  },
+  {
+    "_id": "66194da54347548b866bae79",
+    "name": "Laxmi Trading Company",
+    "mandi": "Madhubani",
+    "state": "Bihar",
+    "stateCode": 9,
+    "distance": 990
+  },
+  {
+    "_id": "66194da64347548b866bae7a",
+    "name": "M.D. Traders",
+    "mandi": "Karoli",
+    "state": "Rajasthan",
+    "stateCode": 5,
+    "distance": 257
+  },
+  {
+    "_id": "66194db14347548b866bae80",
+    "name": "M.D. Traders",
+    "mandi": "Raichur",
+    "state": "Karnataka",
+    "stateCode": 21,
+    "distance": 1603
+  },
+  {
+    "_id": "66194dab4347548b866bae7c",
+    "name": "Maa Vaishno Fruit Company",
+    "mandi": "Pundri",
+    "state": "Haryana",
+    "stateCode": 3,
+    "distance": 377
+  },
+  {
+    "_id": "66194daa4347548b866bae7b",
+    "name": "Maa Vaishno Fruit Company",
+    "mandi": "Safidon",
+    "state": "Haryana",
+    "stateCode": 3,
+    "distance": 328
+  },
+  {
+    "_id": "66194dab4347548b866bae7d",
+    "name": "Madan Singh Rakesh Singh And Company",
+    "mandi": "Kanpur",
+    "state": "Uttar Pradesh",
+    "stateCode": 1,
+    "distance": 300,
+    "licenceNumber": "L/2018/124/46457639"
+  },
+  {
+    "_id": "66194dac4347548b866bae7e",
+    "name": "Maha Laxmi Trading Company",
+    "mandi": "Warangal",
+    "state": "Telangana",
+    "stateCode": 36,
+    "distance": 1339
+  },
+  {
+    "_id": "66194daf4347548b866bae7f",
+    "name": "Manoj Tranding Company",
+    "mandi": "Karoli",
+    "state": "Rajasthan",
+    "stateCode": 5,
+    "distance": 257
+  },
+  {
+    "_id": "66194db24347548b866bae81",
+    "name": "Mohd Tajudeen And Sons Sabji Mandii Shamshabad",
+    "mandi": "Heydrabad",
+    "state": "Telangana",
+    "stateCode": 36,
+    "distance": 1377
+  },
+  {
+    "_id": "66194db34347548b866bae82",
+    "name": "Mohd Yunus Idreesh Ahmad, Naveen Mandi Sthal",
+    "mandi": "Najibabad",
+    "state": "Uttar Pradesh",
+    "stateCode": 1,
+    "distance": 310,
+    "licenceNumber": "L/2018/175/43066903"
+  },
+  {
+    "_id": "66194db54347548b866bae83",
+    "name": "Murari Lal Trading Company",
+    "mandi": "Karnal",
+    "state": "Haryana",
+    "stateCode": 3,
+    "distance": 330
+  },
+  {
+    "_id": "66194db64347548b866bae84",
+    "name": "Nandlal And Sons",
+    "mandi": "Kurukshetra",
+    "state": "Haryana",
+    "stateCode": 3,
+    "distance": 371
+  },
+  {
+    "_id": "66194db74347548b866bae85",
+    "name": "National Trading Co.",
+    "mandi": "Kanpur",
+    "state": "Uttar Pradesh",
+    "stateCode": 1,
+    "distance": 300
+  },
+  {
+    "_id": "66194db84347548b866bae86",
+    "name": "New Bhole Nath Aalu Bandar",
+    "mandi": "Nandurbar",
+    "state": "Uttar Pradesh",
+    "stateCode": 1,
+    "distance": 925
+  },
+  {
+    "_id": "66194db94347548b866bae87",
+    "name": "P. Sakhi Mal And Sons",
+    "mandi": "Jalgaon",
+    "state": "Maharashtra",
+    "stateCode": 6,
+    "distance": 954
+  },
+  {
+    "_id": "66194db94347548b866bae88",
+    "name": "Param Anand",
+    "mandi": "Bihar Sarif",
+    "state": "Bihar",
+    "stateCode": 9,
+    "distance": 927
+  },
+  {
+    "_id": "66194dbb4347548b866bae89",
+    "name": "Parmanand Rajkumar, Charsi Dadri, Shop No. 37",
+    "mandi": "Haryana",
+    "state": "Uttar Pradesh",
+    "stateCode": 1,
+    "distance": 360
+  },
+  {
+    "_id": "66194dbd4347548b866bae8a",
+    "name": "Parsu Ram Govrdhan Das And Company",
+    "mandi": "Kanpur",
+    "state": "Uttar Pradesh",
+    "stateCode": 1,
+    "distance": 300
+  },
+  {
+    "_id": "66194dbf4347548b866bae8b",
+    "name": "R.G. Baddi",
+    "mandi": "Hubli",
+    "state": "Karnataka",
+    "stateCode": 21,
+    "distance": 1667
+  },
+  {
+    "_id": "66194dc64347548b866bae92",
+    "name": "R.G. Vaddi And Company Sabzi Mandi",
+    "mandi": "Hubli",
+    "state": "Karnataka",
+    "stateCode": 21,
+    "distance": 1684
+  },
+  {
+    "_id": "66194dc84347548b866bae94",
+    "name": "RRR Company Yashwantpura",
+    "mandi": "Banglore",
+    "state": "Karnataka",
+    "stateCode": 21,
+    "distance": 1965
+  },
+  {
+    "_id": "66194dc04347548b866bae8d",
+    "name": "Radhe Aalu Bhandar",
+    "mandi": "Sasaram",
+    "state": "Bihar",
+    "stateCode": 9,
+    "distance": 809
+  },
+  {
+    "_id": "66194dc14347548b866bae8e",
+    "name": "Ram Lakhan Sunehri Lal",
+    "mandi": "Sabji Mandi Amroha",
+    "state": "Uttar Pradesh",
+    "stateCode": 1,
+    "distance": 237
+  },
+  {
+    "_id": "66194dc24347548b866bae8f",
+    "name": "Rama Fruit Company",
+    "mandi": "Karnal",
+    "state": "Uttar Pradesh",
+    "stateCode": 1,
+    "distance": 308
+  },
+  {
+    "_id": "66194dc34347548b866bae90",
+    "name": "Ramji Das Bajaj And Company",
+    "mandi": "Jind",
+    "state": "Haryana",
+    "stateCode": 3,
+    "distance": 336
+  },
+  {
+    "_id": "66194dc44347548b866bae91",
+    "name": "Rayan Aalu Bhandar",
+    "mandi": "Domariyaganj",
+    "state": "Uttar Pradesh",
+    "stateCode": 1,
+    "distance": 566
+  },
+  {
+    "_id": "66194dc74347548b866bae93",
+    "name": "Rinku Traders",
+    "mandi": "Bihar Sharif",
+    "state": "Bihar",
+    "stateCode": 9,
+    "distance": 928
+  },
+  {
+    "_id": "66194dc94347548b866bae95",
+    "name": "S.A. Karimulla Traders",
+    "mandi": "Hyderabad",
+    "state": "Telangana",
+    "stateCode": 36,
+    "distance": 1380
+  },
+  {
+    "_id": "66194dc94347548b866bae96",
+    "name": "Sai Kari Mulla",
+    "mandi": "Hyderabad",
+    "state": "Telangana",
+    "stateCode": 36,
+    "distance": 1377
+  },
+  {
+    "_id": "66194dca4347548b866bae97",
+    "name": "Sanjay Kumar",
+    "mandi": "Bihar Sarif",
+    "state": "Bihar",
+    "stateCode": 9,
+    "distance": 927
+  },
+  {
+    "_id": "66194dcb4347548b866bae98",
+    "name": "Sankat Mochan Traders",
+    "mandi": "Bihar Sarif, Nalanda",
+    "state": "Bihar",
+    "stateCode": 9,
+    "distance": 928
+  },
+  {
+    "_id": "66194dcd4347548b866bae99",
+    "name": "Santlal & Sons",
+    "mandi": "Karnal",
+    "state": "Haryana",
+    "stateCode": 3,
+    "distance": 330
+  },
+  {
+    "_id": "66194dd04347548b866bae9a",
+    "name": "Satish And Co",
+    "mandi": "Bhiwadi",
+    "state": "Haryana",
+    "stateCode": 3,
+    "distance": 183
+  },
+  {
+    "_id": "66194dd14347548b866bae9b",
+    "name": "Shiv Traders",
+    "mandi": "Bihar Sarif",
+    "state": "Bihar",
+    "stateCode": 9,
+    "distance": 937
+  },
+  {
+    "_id": "66194dd14347548b866bae9c",
+    "name": "Shyam Sundar Sanjay Kumar",
+    "mandi": "Kharkhonda",
+    "state": "Haryana",
+    "stateCode": 3,
+    "distance": 263
+  },
+  {
+    "_id": "66194dd34347548b866bae9d",
+    "name": "Siya Ram Vipin Kumar Chakarpur",
+    "mandi": "Kanpur",
+    "state": "Uttar Pradesh",
+    "stateCode": 1,
+    "distance": 300
+  },
+  {
+    "_id": "66194dd64347548b866bae9e",
+    "name": "Sopal Singh And Sons",
+    "mandi": "Chandpur Bijnaur",
+    "state": "Uttar Pradesh",
+    "stateCode": 1,
+    "distance": 248
+  },
+  {
+    "_id": "66194dd64347548b866bae9f",
+    "name": "Sundar Lal And Sons",
+    "mandi": "Karnal",
+    "state": "Haryana",
+    "stateCode": 3,
+    "distance": 330
+  },
+  {
+    "_id": "66194dd64347548b866baea0",
+    "name": "Sunil Trading Co.",
+    "mandi": "Mahendar Garh",
+    "state": "Haryana",
+    "stateCode": 3,
+    "distance": 268
+  },
+  {
+    "_id": "66194dd74347548b866baea1",
+    "name": "Suraj Bhan Satya Narayan Saini",
+    "mandi": "Mahendra Garh",
+    "state": "Haryana",
+    "stateCode": 3,
+    "distance": 359
+  },
+  {
+    "_id": "66194dd74347548b866baea2",
+    "name": "Usman Trading Company",
+    "mandi": "Karauli",
+    "state": "Rajasthan",
+    "stateCode": 5,
+    "distance": 193
+  },
+  {
+    "_id": "66194dd94347548b866baea3",
+    "name": "Zomato Hyperpure Pvt Ltd, Gehevra Metro Station, Near Cng Pump",
+    "mandi": "Mundka",
+    "state": "Delhi",
+    "stateCode": 16,
+    "distance": 209
+  }
+]
