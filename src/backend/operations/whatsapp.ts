@@ -17,7 +17,7 @@ class WhatsApp {
             body: JSON.stringify({ chatId: chatId, message: message })
         };
 
-        return fetch(`${this.baseUrl}/${this.instanceId}/sendMessages/${this.token}`, fetchParams).then(getJsonResponse);
+        return fetch(`${this.baseUrl}/${this.instanceId}/sendMessage/${this.token}`, fetchParams).then(getJsonResponse);
     }
 
     public sendFile = (recipient: string, remoteUrl: string, caption: string) => {
