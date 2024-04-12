@@ -22,6 +22,13 @@
       "Distance": "2004"
     },
     {
+      "Party": "Arjun Das Kotu Mal",
+      "Mandi": "Nandurbar",
+      "State": "Maharashtra",
+      "StateCode": "6",
+      "Distance": "928"
+    },
+    {
       "Party": "Arjun Trading Company",
       "Mandi": "Amarpur",
       "State": "Bihar",
@@ -55,6 +62,13 @@
       "State": "Maharashtra",
       "StateCode": "6",
       "Distance": "1252"
+    },
+    {
+      "Party": "Bankey Bihari Trader Raipur",
+      "Mandi": "Raipur",
+      "State": "Chhattishgarh",
+      "StateCode": "8",
+      "Distance": "992"
     },
     {
       "Party": "Bhole Nath Aalu Bhandar",

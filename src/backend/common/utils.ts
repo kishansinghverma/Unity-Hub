@@ -1,8 +1,10 @@
-import { ObjectId } from "mongodb";
+import { MongoError, ObjectId } from "mongodb";
 import joi from 'joi';
 import { Throwable } from "./models";
 import { OperationResponse, ExecutionResponse } from "./types";
 import { Response as ExpressResponse } from "express";
+import { constants, mongoErrorCodes } from "./constants";
+import { MulterError } from "multer";
 
 export const getEpoch = () => new Date().getTime();
 
@@ -10,10 +12,41 @@ export const mongoId = (id: string) => new ObjectId(id);
 
 export const generateId = () => new ObjectId();
 
-export const handleJsonResponse = async (response: Response): OperationResponse => {
+export const getHttpCode = (error: MongoError) => (mongoErrorCodes[error.code ?? 8] ?? 500);
+
+export const getTaggedString = (template: string, params: any) => {
+    return Array.isArray(params) ?
+        template.replace(/\${(\d+)}/g, (_, match) => params[parseInt(match)] ?? `\${${parseInt(match)}}`) :
+        template.replace(/\${(.*?)}/g, (match, key) => params[key.trim()] || match);
+}
+
+export const getJsonResponse = async (response: Response): OperationResponse => {
     if (!response.ok) throw new Throwable(response.statusText, response.status);
     const json = await response.json();
     return { content: json, statusCode: response.status };
+}
+
+export const getErrorResponse = (error: Error) => {
+    let errorCode = 500, errorType = constants.errors.genericError;
+
+    if (joi.isError(error)) {
+        errorCode = 400;
+        errorType = constants.errors.validationError;
+    }
+    else if (error instanceof Throwable) {
+        errorCode = error.statusCode;
+        errorType = constants.errors.customError;
+    }
+    else if (error instanceof MongoError) {
+        errorCode = getHttpCode(error);
+        errorType = constants.errors.mongoError;
+    }
+    else if (error instanceof MulterError) {
+        errorCode = 400;
+        errorType = constants.errors.multerError;
+    };
+
+    return { content: `[${errorType}] ${error.message}`, statusCode: errorCode };
 }
 
 export const replySuccess = (response: ExpressResponse) => ((result: ExecutionResponse) => {
@@ -23,8 +56,6 @@ export const replySuccess = (response: ExpressResponse) => ((result: ExecutionRe
 })
 
 export const replyError = (response: ExpressResponse) => ((error: Error) => {
-    let errorCode = 500;
-    if (joi.isError(error)) errorCode = 400;
-    else if (error instanceof Throwable) errorCode = error.statusCode;
-    response.status(errorCode).send(error.message);
+    const errorResponse = getErrorResponse(error);
+    response.status(errorResponse.statusCode).send(errorResponse.content);
 });

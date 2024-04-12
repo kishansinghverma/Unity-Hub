@@ -1,115 +1,100 @@
 import express from 'express';
 import { constants, source, style } from '../common/constants';
-import * as emandiOperation from '../operations/emandi';
-import path from 'path';
+import { eMandi } from '../operations/emandi';
 import { Logger } from '../common/models';
-import { whatsApp } from '../operations/whatsapp';
+import { replyError, replySuccess } from '../common/utils';
+import { validator } from '../common/validation';
 
 const router = express.Router();
 const logger = new Logger(source.route);
 
-router.use("/", express.static(path.resolve('dist/frontends/emandi')));
-
-router.get("/api", async (req, res) => {
-    logger.info(constants.message.serviceOk, style.bold);
-    emandiOperation.validateInstance()
-        .then(response => res.status(response.statusCode).json(response.content))
-        .catch(err => res.status(500).send(err.message));
+router.get("/", async (request, response) => {
+    logger.info(constants.message.ping, style.bold);
+    eMandi.validateInstance()
+        .then(replySuccess(response))
+        .catch(replyError(response));
 });
 
-router.get("/api/init", (req, res) => {
-    emandiOperation.initializeDatabase()
-        .then(() => res.status(200).send(constants.message.initializeDb))
-        .catch(err => res.status(500).send(err.message));
+router.get("/init", (request, response) => {
+    eMandi.initializeDatabase()
+        .then(replySuccess(response))
+        .catch(replyError(response));
 });
 
-router.get("/api/peek", (req, res) => {
-    emandiOperation.peekRecord()
-        .then(response => res.status(response.statusCode).send(response.content))
-        .catch(err => res.status(500).send(err.message))
+router.get("/peek", (request, response) => {
+    eMandi.peekRecord()
+        .then(replySuccess(response))
+        .catch(replyError(response));
 });
 
-router.get("/api/pop", (req, res) => {
-    emandiOperation.popRecord()
-        .then(response => res.status(response.statusCode).send(response.content))
-        .catch(err => res.status(500).send(err.message));
+router.get("/pop", (request, response) => {
+    eMandi.popRecord()
+        .then(replySuccess(response))
+        .catch(replyError(response));
 });
 
-router.get("/api/queued", (req, res) => {
-    emandiOperation.getQueued()
-        .then(response => res.status(response.statusCode).json(response.content))
-        .catch(err => res.status(500).send(err.message));
+router.get("/queued", (request, response) => {
+    eMandi.getQueued()
+        .then(replySuccess(response))
+        .catch(replyError(response));
 });
 
-router.get("/api/processed", (req, res) => {
-    emandiOperation.getProcessed()
-        .then(response => res.status(response.statusCode).json(response.content))
-        .catch(err => res.status(500).send(err.message));
+router.get("/processed", (request, response) => {
+    eMandi.getProcessed()
+        .then(replySuccess(response))
+        .catch(replyError(response));
 });
 
-router.get("/api/parties", (req, res) => {
-    emandiOperation.getParties()
-        .then(response => res.status(response.statusCode).json(response.content))
-        .catch(err => res.status(500).send(err.message));
+router.get("/parties", (request, response) => {
+    eMandi.getParties()
+        .then(replySuccess(response))
+        .catch(replyError(response));
 });
 
-router.get("/api/requeue/:id", (req, res) => {
-    emandiOperation.requeueRecord(req.params.id)
-        .then(response => res.status(response.statusCode).json(response.content))
-        .catch(err => res.status(500).send(err.message));
+router.get("/requeue/:id", (request, response) => {
+    eMandi.requeueRecord(request.params.id)
+        .then(replySuccess(response))
+        .catch(replyError(response));
 });
 
-router.post("/api/push", (req, res) => {
-    if (Object.keys(req.body).length > 0) {
-        emandiOperation.queueRecord(req.body)
-            .then(async response => {
-                const { name, mandi, state } = req.body.party;
-                await whatsApp.sendMessageToUnityHub(`New Gatepass Requested For ${name}, ${mandi}, ${state}. Click To Proceed : https://emandi.up.gov.in/Traders/Dashboard`);
-                return response;
-            })
-            .then(response => res.status(response.statusCode).send(response.content))
-            .catch(err => res.status(500).send(err.message));
-    }
-    else
-        res.status(400).send(constants.errors.missingParams);
+router.post("/push", (request, response) => {
+    validator.validateRequest(request)
+        .then(values => eMandi.queueRecord(values)
+            .then(replySuccess(response)))
+        .catch(replyError(response))
 });
 
-router.post("/api/parties", (req, res) => {
-    if (Object.keys(req.body).length > 0) {
-        emandiOperation.addParty(req.body)
-            .then(response => res.status(response.statusCode).send(response.content))
-            .catch(err => res.status(500).send(err.message));
-    }
-    else
-        res.status(400).send(constants.errors.missingParams);
+router.post("/parties", (request, response) => {
+    validator.validateRequest(request)
+        .then(values => eMandi.addParty(values)
+            .then(replySuccess(response)))
+        .catch(replyError(response))
 });
 
-router.patch("/api/parties", (req, res) => {
-    emandiOperation.updateParty(req.body)
-        .then(response => res.status(response.statusCode).send(response.content))
-        .catch(err => res.status(500).send(err.message));
+router.patch("/parties", (request, response) => {
+    eMandi.updateParty(request.body)
+        .then(replySuccess(response))
+        .catch(replyError(response));
 });
 
-router.patch("/api/entry", (req, res) => {
-    if (Object.keys(req.body).length > 0 && req.body.rate && !isNaN(req.body.rate)) {
-        emandiOperation.updateRecordAtHead(req.body)
-            .then(response => res.status(response.statusCode).send(response.content))
-            .catch(err => res.status(500).send(err.message));
-    }
-    else
-        res.status(400).send(constants.errors.missingParams);
+router.patch("/entry", (request, response) => {
+    validator.validateRequest(request)
+        .then(values =>
+            eMandi.updateRecordAtHead(values)
+                .then(replySuccess(response)))
+        .catch(replyError(response));
 });
 
-router.delete("/api/entry/:id", (req, res) => {
-    emandiOperation.deleteRecord(req.params.id)
-        .then(response => res.status(response.statusCode).send(response.content))
-        .catch(err => res.status(500).send(err.message));
+router.delete("/entry/:id", (request, response) => {
+    eMandi.deleteRecord(request.params.id)
+        .then(replySuccess(response))
+        .catch(replyError(response));
 });
 
-router.delete("/api/parties/:id", (req, res) => {
-    emandiOperation.deleteParty(req.params.id)
-        .then(response => res.status(response.statusCode).send(response.content))
-        .catch(err => res.status(500).send(err.send));
+router.delete("/parties/:id", (request, response) => {
+    eMandi.deleteParty(request.params.id)
+        .then(replySuccess(response))
+        .catch(replyError(response));
 });
 
 export default router;

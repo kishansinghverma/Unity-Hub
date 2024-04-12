@@ -1,5 +1,6 @@
 import chalk from "chalk";
-import { constants, style } from "./constants";
+import { style } from "./constants";
+import { MulterError } from "multer";
 
 export class String {
     public static empty = '';
@@ -33,20 +34,6 @@ export class CustomError {
         console.log(error);
         console.error('*---------------------------------------*\n');
     }
-
-    public static getErrorResponse = (error: any): { content: any, statusCode: number } => {
-        switch (error.code) {
-            case 11000:
-                return { content: constants.errors.duplicateRecord, statusCode: 409 };
-            default:
-                return { content: error.message, statusCode: 500 };
-        }
-    }
-
-    public static handleErrorAndGetResponse = (error: any) => {
-        this.printException(error);
-        return this.getErrorResponse(error);
-    }
 }
 
 export class Throwable extends Error {
@@ -54,6 +41,13 @@ export class Throwable extends Error {
     constructor(message: string, statusCode: number) {
         super();
         this.statusCode = statusCode;
+        this.message = message;
+    }
+}
+
+export class MulterThrowable extends MulterError {
+    constructor(message: string) {
+        super('LIMIT_UNEXPECTED_FILE');
         this.message = message;
     }
 }

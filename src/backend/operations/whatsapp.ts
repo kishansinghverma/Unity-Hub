@@ -1,5 +1,6 @@
 import { postParams } from "../common/constants";
 import dotenv from 'dotenv';
+import { getJsonResponse } from "../common/utils";
 dotenv.config();
 
 class WhatsApp {
@@ -10,16 +11,16 @@ class WhatsApp {
     private emandiChatId = process.env.EMANDI_GROUP_ID as string;
     private unityHubChatId = process.env.UNITYHUB_GROUP_ID as string;
 
-    private sendMessage = async (message: string, chatId: string) => {
+    private sendMessage = (message: string, chatId: string) => {
         const fetchParams = {
             ...postParams,
             body: JSON.stringify({ chatId: chatId, message: message })
         };
 
-        return fetch(`${this.baseUrl}/${this.instanceId}/sendMessage/${this.token}`, fetchParams);
+        return fetch(`${this.baseUrl}/${this.instanceId}/sendMessages/${this.token}`, fetchParams).then(getJsonResponse);
     }
 
-    public sendFile = async (recipient: string, remoteUrl: string, caption: string) => {
+    public sendFile = (recipient: string, remoteUrl: string, caption: string) => {
         const fetchParams = {
             ...postParams,
             body: JSON.stringify({
@@ -29,7 +30,7 @@ class WhatsApp {
             })
         };
 
-        return fetch(`${this.baseUrl}/${this.instanceId}/sendFileByUrl/${this.token}`, fetchParams);
+        return fetch(`${this.baseUrl}/${this.instanceId}/sendFileByUrl/${this.token}`, fetchParams).then(getJsonResponse);
     }
 
     // private getRemoteUrl = async (fileName: string) => {

@@ -24,15 +24,15 @@ export const vehicleType: { [key: string]: string } = {
 };
 
 export const Url = {
-    Parties: "/emandi/api/parties",
-    Push: "/emandi/api/push",
-    Processed: "/emandi/api/processed",
-    Requeue: "/emandi/api/requeue",
-    Queued: "/emandi/api/queued",
-    Delete: "/emandi/api/entry",
+    Parties: "/api/emandi/parties",
+    Push: "/api/emandi/push",
+    Processed: "/api/emandi/processed",
+    Requeue: "/api/emandi/requeue",
+    Queued: "/api/emandi/queued",
+    Delete: "/api/emandi/entry",
     GetRawExpense: "/api/transactions",
     DeleteExpense: "/api/transactions/delete",
-    NotificationUrl: `/whatsapp/sendtext/unityhub`,
+    NotificationUrl: `/api/whatsapp/sendtext/unityhub`,
     SplitWiseGroups: `${ApiServer}/splitwise/groups`,
     SplitWiseGroup: `${ApiServer}/splitwise/group`,
     SplitWiseExpenses: `${ApiServer}/splitwise/transactions`,
@@ -62,7 +62,9 @@ export const DeleteParams = {
 export const HttpStatusCode: { [key: number]: string } = {
     200: 'Operation Successfull.',
     201: 'Record Created Successfully.',
+    401: 'Authorization Error!',
     500: 'Something Wrong On Server!',
+    501: 'Method Not Implemented!',
     404: 'Resource Not Found!',
     400: 'Bad Request!',
     409: 'Duplicate Record!'

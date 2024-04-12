@@ -9,20 +9,34 @@ export const constants = {
         }
     },
     errors: {
-        invalidJson: 'Bad Request: Invalid JSON',
-        missingParams: 'Bad Request: Parameters Missing',
-        duplicateRecord: 'Bad Request: Duplicate Record',
-        fileExpected: 'Bad Request: File Expected',
-        fileTypeMismatch: 'Bad Request: Only PDFs Allowed',
+        genericError: "ServerFault",
+        customError: "CustomError",
+        mongoError: "DatabaseError",
+        validationError: "ValidationError",
+        multerError: "UploadError",
+        invalidJson: 'Invalid JSON',
+        missingParams: 'Parameters Missing',
+        fileExpected: 'File Expected',
+        fileTypeMismatch: 'Only PDFs Allowed',
         unknownError: 'Something Went Wrong On Server',
-        schemaNotReady: 'Internal Error: Validation Schema Not Found'
+        schemaNotReady: 'Validation Schema Not Found'
     },
     message: {
         serviceOk: 'Service Ok',
-        initializeDb: 'Database Initialized...'
+        ping: 'Recieved Ping: Health Normal'
     },
     adminDb: 'admin'
 };
+
+export const templates = {
+    gatepassCreated: 'Gatepass requested for ${name}, ${mandi}, ${state}. Proceed here : https://emandi.up.gov.in/Traders/Dashboard'
+}
+
+export const mongoErrorCodes: { [key: string]: number } = {
+    8: 500,
+    8000: 401,
+    11000: 409
+}
 
 export enum source {
     server = 'Server',

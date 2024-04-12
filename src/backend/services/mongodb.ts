@@ -1,18 +1,19 @@
 import { Collection, Db, Document, Filter, FindOptions, MongoClient } from "mongodb";
 import { constants } from "../common/constants";
 import { mongoId } from "../common/utils";
-import { CustomError, String } from "../common/models";
 import { CollectionOperation, DatabaseOperation } from "../common/types";
+import { Throwable } from "../common/models";
 
 export class MongoDb {
     private database: string;
+    public emptyResponse = { content: null, statusCode: 404 };
 
     constructor(database: string) {
         this.database = database;
     }
 
     getClientWithDatabase = (database = this.database) => {
-        const client = new MongoClient(process.env.MONGO_CONNECTION_STRING || String.empty);
+        const client = new MongoClient(process.env.MONGO_CONNECTION_STRING as string);
         return { client: client, database: client.db(database) };
     }
 
@@ -21,44 +22,28 @@ export class MongoDb {
         return { client: client, collection: database.collection(collectionName) };
     };
 
-    executeOperationOnCollection = async(collectionName: string, operation: CollectionOperation) => {
+    executeOperationOnCollection = async (collectionName: string, operation: CollectionOperation) => {
         const { client, collection } = this.getClientWithCollection(collectionName);
-        try {
-            const response = await operation(collection);
-            return response;
-        }
-        catch (err: any) {
-            return CustomError.handleErrorAndGetResponse(err);
-        }
-        finally {
-            client.close();
-        };
+        try { return await operation(collection) }
+        finally { await client.close() };
     }
 
     executeOperationOnDatabase = async (operation: DatabaseOperation) => {
         const { client, database } = this.getClientWithDatabase();
-        try {
-            const response = await operation(database);
-            return response;
-        }
-        catch (err: any) {
-            return CustomError.handleErrorAndGetResponse(err);
-        }
-        finally {
-            client.close();
-        };
+        try { return await operation(database) }
+        finally { await client.close() };
     }
 
-    getDocument = async (collectionName: string, filter: Filter<Document>, options: FindOptions<Document>) => {
+    getDocument = (collectionName: string, filter: Filter<Document>, options: FindOptions<Document>) => {
         const operation = async (collection: Collection) => {
             const data = await collection.findOne(filter, options);
-            return { content: data, statusCode: data ? 200 : 404 };
+            return (data ? { content: data, statusCode: 200 } : this.emptyResponse);
         }
 
         return this.executeOperationOnCollection(collectionName, operation);
     };
 
-    getDocuments = async (collectionName: string, filter: Filter<Document>, options: FindOptions<Document>) => {
+    getDocuments = (collectionName: string, filter: Filter<Document>, options: FindOptions<Document>) => {
         const operation = async (collection: Collection) => {
             const response = await collection.find(filter, options).toArray();
             return { content: response, statusCode: 200 };
@@ -67,7 +52,7 @@ export class MongoDb {
         return this.executeOperationOnCollection(collectionName, operation);
     };
 
-    insertDocument = async (collectionName: string, document: Document) => {
+    insertDocument = (collectionName: string, document: Document) => {
         const operation = async (collection: Collection) => {
             const { insertedId } = await collection.insertOne(document);
             return { content: { insertedId }, statusCode: 201 };
@@ -76,36 +61,35 @@ export class MongoDb {
         return this.executeOperationOnCollection(collectionName, operation);
     };
 
-    deleteDocument = async (collectionName: string, recordId: string) => {
+    deleteDocument = (collectionName: string, documentId: string) => {
         const operation = async (collection: Collection) => {
-            const { deletedCount } = await collection.deleteOne({ _id: mongoId(recordId) });
-            return (deletedCount > 0 ? { content: { _id: recordId }, statusCode: 200 } : { content: null, statusCode: 404 });
+            const { deletedCount } = await collection.deleteOne({ _id: mongoId(documentId) });
+            return (deletedCount > 0 ? { content: { _id: documentId }, statusCode: 200 } : this.emptyResponse);
         }
 
         return this.executeOperationOnCollection(collectionName, operation);
     };
 
-    updateDocumentById = async (collectionName: string, documentId: string, patchData: Document) => {
+    updateDocumentById = (collectionName: string, documentId: string, patchData: Document) => {
         const operation = async (collection: Collection) => {
-            const { modifiedCount } = await collection.updateOne({ _id: mongoId(documentId) }, { $set: patchData });
-            return { content: { modifiedCount }, statusCode: 200 };
+            const { matchedCount } = await collection.updateOne({ _id: mongoId(documentId) }, { $set: patchData });
+            return (matchedCount > 0 ? { content: { _id: documentId }, statusCode: 200 } : this.emptyResponse);
         }
 
         return this.executeOperationOnCollection(collectionName, operation);
     };
 
-    updateDocument = async (collectionName: string, document: Document) => {
+    updateDocument = (collectionName: string, document: Document) => {
         const { _id, ...patchData } = document;
-        return (_id && Object.keys(patchData).length > 0) ?
-            this.updateDocumentById(collectionName, _id, patchData) :
-            { content: constants.errors.missingParams, statusCode: 400 };
+        if (!_id || Object.keys(patchData).length < 1) return Promise.reject(new Throwable(constants.errors.missingParams, 400));
+        return this.updateDocumentById(collectionName, _id, patchData);
     }
 
-    moveDocument = async (sourceCollection: string, targetCollection: string, filter: Filter<Document>, options: any) => {
+    moveDocument = (sourceCollection: string, targetCollection: string, filter: Filter<Document>, options: any) => {
         const operation = async (database: Db) => {
             const record = await database.collection(sourceCollection).findOneAndDelete(filter, options);
             if (record) await database.collection(targetCollection).insertOne(record);
-            return { content: record, statusCode: record ? 200 : 404 };
+            return (record ? { content: record, statusCode: 200 } : this.emptyResponse);
         }
 
         return this.executeOperationOnDatabase(operation);

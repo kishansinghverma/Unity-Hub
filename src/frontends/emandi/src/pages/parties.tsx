@@ -5,6 +5,7 @@ import { Party, Record } from "../common/types"
 import { useEffect } from "react"
 import { DeleteParams, Url } from "../common/constants"
 import { EditPartyForm } from "./editparty"
+import { toast } from "react-toastify"
 
 export const Parties: React.FC = () => {
     const { records, render, getPaginated, pageCount, currentPage, isFetching } = new TableRenderer<Party>(Url.Parties, 8);
@@ -21,6 +22,7 @@ export const Parties: React.FC = () => {
         fetch(`${Url.Parties}/${partyId}`, DeleteParams)
             .then(handleJsonResponse)
             .then(filterRecords)
+            .then(() => toast.success("पार्टी सफलतापूर्वक हटा दी गई है।"))
             .catch(handleError)
             .finally(() => isFetching.set(false));
     };
@@ -77,7 +79,7 @@ export const Parties: React.FC = () => {
                     </>
                 }
             </CustomTable>
-            <Modal size="tiny" dimmer="blurring" mountNode={document.querySelector("#root > div > div.content-container > div.scrollable")} centered={false} closeOnDimmerClick={false} open={isModalOpen.get()} onClose={() => isModalOpen.set(false)}>
+            <Modal size="tiny" dimmer="blurring" centered={false} mountNode={document.querySelector('#root > div > div.content-container')} closeOnDimmerClick={false} open={isModalOpen.get()} onClose={() => isModalOpen.set(false)}>
                 <ModalHeader>पार्टी संशोधित करें</ModalHeader>
                 <ModalContent>
                     <EditPartyForm {...{ party: recordToEdit.get(), callbackFunction: postSuccess }} />

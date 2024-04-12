@@ -2,21 +2,30 @@ import { Table, Image, Placeholder, Input, DropdownProps, Icon, Menu, Dropdown, 
 import { CustomCardProps, IHeader, ITable, Pagination, RawExpense } from "./types";
 import React, { SyntheticEvent, useState } from "react";
 import dayjs from "dayjs";
+import { getRandom } from "../operations/utils";
 
 export const CustomForm: React.FC<React.PropsWithChildren> = ({ children }) => (
     <div className="custom-form"> {children} </div>
 );
 
 export const CustomSelect: React.FC<DropdownProps> = (props) => {
-    const [value, setValue] = useState<string>((props.value ?? '').toString());
+    const elementId = getRandom(8);
+
     const onChange = (e: SyntheticEvent<HTMLElement, Event>, element: DropdownProps) => {
-        setValue(element.value as string);
-        props.onChange && props.onChange(e, element);
+        (document.getElementById(elementId) as HTMLInputElement).value = element.value?.toString() ?? '';
+        (e.target as HTMLInputElement).value = element.value?.toString() ?? '';
+        props.onChange?.(e, element);
     }
 
     return (
         <>
-            <Input name={props.name} type="text" value={value} required={props.required} style={{ display: 'none' }} />
+            <Input
+                id={elementId}
+                name={props.name}
+                required={props.required}
+                value={props.value}
+                style={{ display: 'none' }}
+            />
             <Dropdown
                 selection
                 name={props.name}
@@ -26,7 +35,7 @@ export const CustomSelect: React.FC<DropdownProps> = (props) => {
                 clearable={props.clearable}
                 options={props.options ?? []}
                 loading={props.loading}
-                value={value}
+                value={props.value?.toString()}
             />
         </>
     )

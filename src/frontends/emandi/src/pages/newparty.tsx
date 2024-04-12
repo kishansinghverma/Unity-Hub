@@ -22,15 +22,15 @@ export const NewParty: React.FC = () => {
         triggerValidation(e, field);
     }
 
-    const onCheckboxChange = (e: BaseSyntheticEvent, field: CheckboxProps) => {
+    const setLicenceRequired = () => {
         const stateInput = document.getElementsByName('stateCode')[0] as HTMLInputElement;
-        isLicenceRequired.set(stateInput.value === '1' && !field.checked as boolean);
+        const checkboxInput = document.getElementById('licence-required') as HTMLInputElement;
+        isLicenceRequired.set(stateInput.value === '1' && !checkboxInput.checked);
     }
 
     const onStateChange = (e: BaseSyntheticEvent, field: DropdownProps) => {
-        triggerValidation(e, field);
-        const checkbox = document.getElementById('licence-required') as HTMLInputElement;
-        isLicenceRequired.set(field.value === '1' && !checkbox.checked);
+        triggerValidation(e, field); 
+        setLicenceRequired();
     };
 
     const onMandiBlur = (e: BaseSyntheticEvent) => {
@@ -127,7 +127,7 @@ export const NewParty: React.FC = () => {
                     <Checkbox
                         id="licence-required"
                         label="लाइसेंस नंबर की आवश्यकता नहीं है"
-                        onChange={onCheckboxChange}
+                        onChange={setLicenceRequired}
                     />
                 </Form.Field>
                 <Divider hidden />

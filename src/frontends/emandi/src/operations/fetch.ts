@@ -39,7 +39,7 @@ export const updateParty = (formData: any) => {
         state: States[formData.stateCode],
         stateCode: parseInt(formData.stateCode),
         distance: parseInt(formData.distance),
-        licenceNumber: formData.licenceNumber.toUpperCase()
+        licenceNumber: formData.licenceNumber?.toUpperCase()
     };
 
     return {

@@ -1,13 +1,15 @@
+import React from "react";
 import { toast } from "react-toastify";
 import { HttpStatusCode } from "../common/constants";
 import { BaseSyntheticEvent } from "react";
 import { InputOnChangeData, DropdownProps, CheckboxProps } from "semantic-ui-react";
 import { Party, Record, SplitwiseGroupResponse, SplitwiseGroupsResponse } from "../common/types";
-import React from "react";
 
 export const handleError = (error: Error) => toast.error(error.message);
 
 export const trimInput = (e: BaseSyntheticEvent) => { e.currentTarget.value = e.target.value.trim() };
+
+export const getRandom = (length: number) => Math.random().toString(36).substring(2, 2 + length);
 
 export const triggerValidation = (e: BaseSyntheticEvent, field: InputOnChangeData | DropdownProps) => validateField(field);
 
@@ -60,8 +62,13 @@ export const getDate = () => {
 }
 
 export const capitalize = (str: string) => {
-    const capitalizeWords = str.split(' ').map(word => `${word.charAt(0).toUpperCase()}${word.slice(1).toLowerCase()}`).join(' ');
-    return capitalizeWords.trim();
+    if (!str) return '';
+    let tokens = str.trim().split(' ');
+    let capitals = tokens.map((token) => token.charAt(0).toUpperCase() + token.substring(1).toLowerCase());
+    const updatedString = capitals.join(' ');
+    tokens = updatedString.split('.');
+    capitals = tokens.map((token) => token.charAt(0).toUpperCase() + token.substring(1));
+    return capitals.join('.');
 }
 
 export const MandiOptionsMapper = (party: Record<Party>) => {

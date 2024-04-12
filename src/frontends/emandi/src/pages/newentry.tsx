@@ -23,8 +23,6 @@ export const NewEntry: React.FC = () => {
                 .then(() => {
                     toast.success("नया गेटपास सफलतापूर्वक बनाया गया।");
                     formKey.set(Math.random());
-                    const { name, mandi, state } = JSON.parse(formData.party);
-                    //notifyViaWhatsApp(`New Gatepass Requested For ${name}, ${mandi}, ${state}. Click To Proceed : https://emandi.up.gov.in/Traders/Dashboard`);
                 })
                 .catch(handleError)
                 .finally(() => isFormLoading.set(false));
@@ -104,7 +102,7 @@ export const NewEntry: React.FC = () => {
                         placeholder="आढ़तिया फर्म का नाम"
                         options={mandiOptions.get()}
                         loading={isMandiLoading.get()}
-                        onChange={triggerValidation}
+                        onChange={triggerValidation} 
                     />
                 </Form.Field>
                 <Form.Field>

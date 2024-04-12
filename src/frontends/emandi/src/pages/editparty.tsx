@@ -29,7 +29,7 @@ export const EditPartyForm: React.FC<{ party: Record<Party>, callbackFunction: (
 
     const onStateChange = (e: BaseSyntheticEvent, field: DropdownProps) => {
         onChange(e, field);
-        setLicenceRequired()
+        setLicenceRequired();
     };
 
     const onMandiBlur = (e: BaseSyntheticEvent) => {
