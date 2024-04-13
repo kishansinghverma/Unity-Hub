@@ -37,7 +37,7 @@ export class MongoDb {
     getDocument = (collectionName: string, filter: Filter<Document>, options: FindOptions<Document>) => {
         const operation = async (collection: Collection) => {
             const data = await collection.findOne(filter, options);
-            return (data ? { content: data, statusCode: 200 } : this.emptyResponse);
+            return ({ content: data, statusCode: data ? 200 : 204 });
         }
 
         return this.executeOperationOnCollection(collectionName, operation);
