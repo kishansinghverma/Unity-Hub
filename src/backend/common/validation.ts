@@ -12,7 +12,7 @@ const schemas: { [key: string]: object } = {
         message: joi.string().min(3).required()
     },
     "/api/emandi/push": {
-        date: joi.date().required(),
+        date: joi.string().required(),
         seller: joi.string().trim().min(3).required(),
         weight: joi.number().required(),
         bags: joi.number().required(),
