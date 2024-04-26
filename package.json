@@ -13,8 +13,9 @@
     "build": "npm run build-all && npm run copy-all",
     "build-all": "tsc && npm run build-emandi",
     "build-emandi": "npm run build --prefix src/frontends/emandi",
-    "copy-all": "mkdir -p dist/frontends && npm run copy-emandi",
-    "copy-emandi": "ncp src/frontends/emandi/build dist/frontends/emandi",
+    "copy-all": "npm run copy-assets && npm run copy-emandi",
+    "copy-assets": "ncp src/backend/assets dist/backend/assets",
+    "copy-emandi": "mkdir -p dist/frontends && ncp src/frontends/emandi/build dist/frontends/emandi",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Kishan Singh",
