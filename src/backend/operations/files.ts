@@ -50,7 +50,8 @@ class Files {
         const docPrefix = 2;
         const hashId = crypto.randomBytes(16).toString("hex");
         const fileName = `${docPrefix}${hashId}.pdf`;
-        const dirPath = path.join(__dirname, '../static/pdf')
+        const dirPath = path.join(__dirname, '../static/pdf');
+        if (!fs.existsSync(dirPath)) fs.mkdirSync(dirPath, { recursive: true });
         const filePath = `${dirPath}/${fileName}`;
 
         const htmlContent = await this.renderPdf(content);
