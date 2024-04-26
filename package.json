@@ -7,7 +7,7 @@
     "start": "node dist/index.js",
     "start-dev-backend": "nodemon src/index.ts --ignore src/frontends",
     "start-dev-emandi": "concurrently \"npm run start-dev-backend\" \"npm start --prefix src/frontends/emandi\"",
-    "deploy": "pwd && npm install && npm run build",
+    "deploy": "npm install && npm run build",
     "prepare": "npm run install-emandi",
     "install-emandi": "npm install --prefix src/frontends/emandi",
     "build": "npm run build-all && npm run copy-all",
@@ -15,7 +15,7 @@
     "build-emandi": "npm run build --prefix src/frontends/emandi",
     "copy-all": "npm run copy-assets && npm run copy-emandi",
     "copy-assets": "ncp src/backend/assets dist/backend/assets",
-    "copy-emandi": "mkdir -p dist/frontends && ncp src/frontends/emandi/build dist/frontends/emandi",
+    "copy-emandi": "mkdir -p dist/frontends && ncp src/frontends/emandi/build dist/frontends/emandi && ls ./dist/.cache/puppeteer",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Kishan Singh",
