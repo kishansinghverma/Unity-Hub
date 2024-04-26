@@ -15,7 +15,7 @@
     "build-emandi": "npm run build --prefix src/frontends/emandi",
     "copy-all": "npm run copy-assets && npm run copy-emandi",
     "copy-assets": "ncp src/backend/assets dist/backend/assets",
-    "copy-emandi": "mkdir -p dist/frontends && ncp src/frontends/emandi/build dist/frontends/emandi && ls ./dist/.cache/puppeteer",
+    "copy-emandi": "mkdir -p dist/frontends && ncp src/frontends/emandi/build dist/frontends/emandi",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Kishan Singh",
