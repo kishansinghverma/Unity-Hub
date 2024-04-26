@@ -1,0 +1,271 @@
+<html>
+<head>
+    <style>
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            max-width: 100%;
+            zoom: 0.45;
+            padding: 15px;
+        }
+        .container {
+            margin: auto;
+            border: 2px solid rgb(0, 0, 0);
+            width: 100%;
+        }
+        .table-box {
+            padding: 20px;
+        }
+        .header-table {
+            font-size: 28px;
+            width: 100%;
+        }
+        .header-table td {
+            border: none
+        }
+        .footer-table {
+            padding: 10px 20px;
+        }
+        .footer-table td {
+            font-size: 30px;
+            border: none
+        }
+        .title {
+            text-align: center;
+            font-size: 36px;
+        }
+        .place {
+            margin-top: 8px;
+            font-weight: 700;
+        }
+        td {
+            border: 1px solid;
+            padding: 2px 6px;
+        }
+        th {
+            border: 1px solid;
+            padding: 2px 6px;
+        }
+        label {
+            font-weight: 600;
+            line-height: 1.5;
+        }
+        .table {
+            border-spacing: 0;
+            border: 1px solid;
+            border-collapse: collapse;
+            width: 100%;
+            background: rgb(255, 255, 255);
+            font-size: 30px;
+        }
+        .text-center {
+            text-align: center;
+        }
+        th>p {
+            font-weight: 600;
+        }
+        td.p-4 {
+            padding-bottom: 6px;
+        }
+        .footer {
+            padding: 0px 20px 40px 20px;
+        }
+        td[rowspan] {
+            position: relative;
+        }
+        td[rowspan]:before {
+            position: absolute;
+            content: "";
+            top: -1px;
+            left: -1px;
+            background-color: transparent;
+            border: solid rgb(0, 0, 0) 1px;
+            width: 100%;
+            height: 100%;
+            border-collapse: collapse;
+            border-top: none;
+            border-bottom: none;
+        }
+        .form-control {
+            display: block;
+            width: 100%;
+            height: 34px;
+            padding: 6px 2px;
+            border: none;
+            background: transparent;
+            font-weight: 600;
+            font-size: 32px;
+        }
+        table:not([class]) td {
+            border: none;
+            padding: 2px 16px 2px 0;
+            font-size: 30px;
+        }
+        h5 {
+            font-size: 30px !important;
+            color: black !important;
+        }
+        .errorMessage {
+            font-size: 30px;
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" style="page-break-after: always;">
+        <% if (data.name == 'niner') { %>
+            <div class="table-box">
+                <table class="header-table">
+                    <tr>
+                        <td>
+                            <img width="280" height="280" src="<%= data.logo %>" alt="Logo" />
+                        </td>
+                        <td>
+                            <div class="title">
+                                <div>कृषि उत्पादन मंडी समिति सादाबाद</div>
+                                <div>(प्रपत्र-9)</div>
+                                <div>[ नियम 76(12) देखिये ]</div>
+                                <div>आढ़तिया / थोक व्यापारी का बिल</div>
+                                <div>(केवल विक्रय के प्रथम सौदे के लिए)</div>
+                                <div class="place">मण्डी समिति(जहाँ विक्रय सौदा हुआ है) प्रति</div>
+                            </div>
+                        </td>
+                        <td>
+                            <img src="<%= data.qr %>" width="280" height="280" style="float: right;" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        <% } %>
+        <% if (data.name == 'gatepass') { %>
+            <div class="table-box">
+                <table class="header-table">
+                    <tr>
+                        <td>
+                            <img width="280" height="280" src="<%= data.logo %>" />
+                        </td>
+                        <td>
+                            <div class="title">
+                                <div>कृषि उत्पादन मंडी समिति सादाबाद</div>
+                                <div>[ प्रपत्र संख्या-5 (क)]</div>
+                                <div class="place">गेटपास</div>
+                            </div>
+                        </td>
+                        <td>
+                            <img src="<%= data.qr %>" width="280" height="280" style="float: right;" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        <% } %>
+        <% data.tables.forEach(table => { %>
+        <div class="table-box">
+            <%- table %>
+        </div>
+        <% }); %>
+        <% if (data.name == 'niner') { %>
+            <div class="footer-table">
+                <table class="last" width="100%">
+                    <tbody>
+                        <tr>
+                            <td>व्यापारी का पूरा नाम: <label>NEM SINGH </label></td>
+                            <td align="left"> </td>
+                            <td>&nbsp;</td>
+                            <td align="right"> व्यापारी का हस्ताक्षर </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        <% } %>
+        <% if (data.name == 'gatepass') { %>
+            <div style="margin: 1rem 2rem;">
+                <label class="errorMessage">
+                    नोट :<br>
+                    गंतव्य स्थान तक पहुंचने की अधिकतम दूरी 50 किमी (0-50 किमी)  है तो तक पहुंचने का समय 2 घंटा अधिकतम होगा !<br>
+                    गंतव्य स्थान तक पहुंचने की अधिकतम दूरी 50-100 किमी  है तो तक पहुंचने का समय 4 घंटा अधिकतम होगा !<br>
+                    गंतव्य स्थान तक पहुंचने की अधिकतम दूरी 100-200 किमी है तो तक पहुंचने का समय 8 घंटा अधिकतम होगा !<br>
+                    गंतव्य स्थान तक पहुंचने की अधिकतम दूरी 200-500 किमी है तो तक पहुंचने का समय 12 घंटा अधिकतम होगा !<br>
+                    गंतव्य स्थान तक पहुंचने की अधिकतम दूरी 500-1200 किमी है तो तक पहुंचने का समय 48 घंटा अधिकतम होगा !
+                </label>
+            </div>
+        <%} %>
+    </div>
+    <div class="container" style="margin-top: 15px;">
+        <% if (data.name == 'niner') { %>
+            <div class="table-box">
+                <table class="header-table">
+                    <tr>
+                        <td>
+                            <img width="280" height="280" src="<%= data.logo %>" />
+                        </td>
+                        <td>
+                            <div class="title">
+                                <div>कृषि उत्पादन मंडी समिति सादाबाद</div>
+                                <div>(प्रपत्र-9)</div>
+                                <div>[ नियम 76(12) देखिये ]</div>
+                                <div>आढ़तिया / थोक व्यापारी का बिल</div>
+                                <div>(केवल विक्रय के प्रथम सौदे के लिए)</div>
+                                <div class="place">मण्डी समिति(जहाँ विक्रय सौदा हुआ है) प्रति</div>
+                            </div>
+                        </td>
+                        <td>
+                            <img src="<%= data.qr %>" width="280" height="280" style="float: right;" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        <% } %>
+        <% if (data.name == 'gatepass') { %>
+            <div class="table-box">
+                <table class="header-table">
+                    <tr>
+                        <td>
+                            <img width="280" height="280" src="<%= data.logo %>">
+                        </td>
+                        <td>
+                            <div class="title">
+                                <div>कृषि उत्पादन मंडी समिति सादाबाद</div>
+                                <div>[ प्रपत्र संख्या-5 (क)]</div>
+                                <div class="place">गेटपास</div>
+                            </div>
+                        </td>
+                        <td>
+                            <img src="<%= data.qr %>" width="280" height="280" style="float: right;" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        <% } %>
+        <% data.tables.forEach(table => { %>
+        <div class="table-box">
+            <%- table %>
+        </div>
+        <% }); %>
+        <% if (data.name == 'niner') { %>
+            <div class="footer-table">
+                <table class="last" width="100%">
+                    <tbody>
+                        <tr>
+                            <td>व्यापारी का पूरा नाम: <label>NEM SINGH </label></td>
+                            <td align="left"> </td>
+                            <td>&nbsp;</td>
+                            <td align="right"> व्यापारी का हस्ताक्षर </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        <% } %>
+        <% if (data.name == 'gatepass') { %>
+            <div style="margin: 1rem 2rem;">
+                <label class="errorMessage">
+                    नोट :<br>
+                    गंतव्य स्थान तक पहुंचने की अधिकतम दूरी 50 किमी (0-50 किमी)  है तो तक पहुंचने का समय 2 घंटा अधिकतम होगा !<br>
+                    गंतव्य स्थान तक पहुंचने की अधिकतम दूरी 50-100 किमी  है तो तक पहुंचने का समय 4 घंटा अधिकतम होगा !<br>
+                    गंतव्य स्थान तक पहुंचने की अधिकतम दूरी 100-200 किमी है तो तक पहुंचने का समय 8 घंटा अधिकतम होगा !<br>
+                    गंतव्य स्थान तक पहुंचने की अधिकतम दूरी 200-500 किमी है तो तक पहुंचने का समय 12 घंटा अधिकतम होगा !<br>
+                    गंतव्य स्थान तक पहुंचने की अधिकतम दूरी 500-1200 किमी है तो तक पहुंचने का समय 48 घंटा अधिकतम होगा !
+                </label>
+            </div>
+        <%} %>
+    </div>
+</body>
+</html>

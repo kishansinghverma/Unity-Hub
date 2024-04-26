@@ -1,59 +1,70 @@
-import { postParams } from "../common/constants";
-import dotenv from 'dotenv';
+import fs from "fs";
+import path from "path";
+import dotenv from "dotenv";
+import { mimeType, postParams } from "../common/constants";
 import { getJsonResponse } from "../common/utils";
+
 dotenv.config();
 
 class WhatsApp {
     private instanceId = process.env.GREEN_API_INSTANCE_ID;
     private token = process.env.GREEN_API_TOKEN;
     private baseUrl = process.env.GREEN_API_URI;
-    private fsUrl = process.env.GREEN_API_FS;
-    private emandiChatId = process.env.EMANDI_GROUP_ID as string;
-    private unityHubChatId = process.env.UNITYHUB_GROUP_ID as string;
+    private fsUrl = process.env.GREEN_API_FS as string;
 
-    private sendMessage = (message: string, chatId: string) => {
-        const fetchParams = {
-            ...postParams,
-            body: JSON.stringify({ chatId: chatId, message: message })
-        };
+    private getUrl = (path: string, origin = this.baseUrl) => (`${origin}/${this.instanceId}/${path}/${this.token}`);
 
-        return fetch(`${this.baseUrl}/${this.instanceId}/sendMessage/${this.token}`, fetchParams).then(getJsonResponse);
+    private getRemoteFileUrl = (fileName: string) => {
+        const extension = fileName.split('.').pop() ?? 'any';
+        const fetchParams = { ...postParams, headers: { 'Content-Type': mimeType[extension] }, body: fs.readFileSync(path.join(__dirname, `../static/pdf/${fileName}`)) };
+        return fetch(this.getUrl('uploadFile', this.fsUrl), fetchParams).then(getJsonResponse);
     }
 
-    public sendFile = (recipient: string, remoteUrl: string, caption: string) => {
-        const fetchParams = {
-            ...postParams,
-            body: JSON.stringify({
-                chatId: recipient,
-                urlFile: remoteUrl,
-                fileName: caption
-            })
-        };
-
-        return fetch(`${this.baseUrl}/${this.instanceId}/sendFileByUrl/${this.token}`, fetchParams).then(getJsonResponse);
+    private addUserToGroup = (participantChatId: string, groupId: string) => {
+        const fetchParams = { ...postParams, body: JSON.stringify({ groupId, participantChatId }) };
+        return fetch(this.getUrl('addGroupParticipant'), fetchParams).then(getJsonResponse);
     }
 
-    // private getRemoteUrl = async (fileName: string) => {
-    //     const fetchParams = {
-    //         ...postParams,
-    //         body: fs.readFileSync(path.join(__dirname, `../uploaded/${fileName}`)),
-    //     };
-
-    //     return fetch(`${this.fsUrl}/${this.instanceId}/uploadFile/${this.token}`, fetchParams);
-    // }
-
-    public sendMessageToEmandi = (message: string) => this.sendMessage(message, this.emandiChatId);
-
-    public sendMessageToUnityHub = (message: string) => this.sendMessage(message, this.unityHubChatId);
-
-    public SendFileToEmandi = async (fileName: string, caption: string) => {
-        //const { urlFile } = await this.getRemoteUrl(fileName);
-        return this.sendFile(this.emandiChatId, '', caption);
+    private removeUserFromGroup = (participantChatId: string, groupId: string) => {
+        const fetchParams = { ...postParams, body: JSON.stringify({ groupId, participantChatId }) };
+        return fetch(this.getUrl('removeGroupParticipant'), fetchParams).then(getJsonResponse);
     }
 
-    public SendFileToUnityHub = async (fileName: string, caption: string) => {
-        //const { urlFile } = await this.getRemoteUrl(fileName);
-        return this.sendFile(this.unityHubChatId, '', caption);
+    public sendMessage = (chatId: string, message: string) => {
+        const fetchParams = { ...postParams, body: JSON.stringify({ chatId: chatId, message: message }) };
+        return fetch(this.getUrl('sendMessage'), fetchParams).then(getJsonResponse);
+    }
+
+    public sendUploadedFile = () => {
+
+    }
+
+    public sendLocalFile = async (chatId: string, fileName: string, caption: string) => {
+        const { content: { urlFile } } = await this.getRemoteFileUrl(fileName);
+        const fetchParams = { ...postParams, body: JSON.stringify({ chatId, fileName, urlFile, caption }) };
+        return fetch(this.getUrl('sendFileByUrl'), fetchParams).then(getJsonResponse);
+    }
+
+    public shareMessageViaGroup = async (participantNumber: string, groupId: string, message: string) => {
+        return this.addUserToGroup(`91${participantNumber}@c.us`, groupId)
+            .then(() => (this.sendMessage(groupId, message)))
+            .then(response => {
+                setTimeout(() => this.removeUserFromGroup(`91${participantNumber}@c.us`, groupId), 10*1000);
+                return response;
+            });
+    }
+
+    public shareLocalFileViaGroup = async (participantNumber: string, groupId: string, fileName: string, caption: string) => {
+        return this.addUserToGroup(`91${participantNumber}@c.us`, groupId)
+            .then(() => (this.sendLocalFile(groupId, fileName, caption)))
+            .then(response => {
+                setTimeout(() => this.removeUserFromGroup(`91${participantNumber}@c.us`, groupId), 60*1000);
+                return response;
+            });
+    }
+
+    public shareUploadedFileViaGroup = () => {
+
     }
 }
 

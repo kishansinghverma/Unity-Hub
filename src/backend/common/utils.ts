@@ -1,4 +1,4 @@
-import { MongoError, ObjectId } from "mongodb";
+import { MongoError } from "mongodb";
 import joi from 'joi';
 import { Throwable } from "./models";
 import { OperationResponse, ExecutionResponse } from "./types";
@@ -6,19 +6,7 @@ import { Response as ExpressResponse } from "express";
 import { constants, mongoErrorCodes } from "./constants";
 import { MulterError } from "multer";
 
-export const getEpoch = () => new Date().getTime();
-
-export const mongoId = (id: string) => new ObjectId(id);
-
-export const generateId = () => new ObjectId();
-
 export const getHttpCode = (error: MongoError) => (mongoErrorCodes[error.code ?? 8] ?? 500);
-
-export const getTaggedString = (template: string, params: any) => {
-    return Array.isArray(params) ?
-        template.replace(/\${(\d+)}/g, (_, match) => params[parseInt(match)] ?? `\${${parseInt(match)}}`) :
-        template.replace(/\${(.*?)}/g, (match, key) => params[key.trim()] || match);
-}
 
 export const getJsonResponse = async (response: Response): OperationResponse => {
     if (!response.ok) throw new Throwable(response.statusText, response.status);

@@ -3,6 +3,7 @@ import { Request } from "express";
 import { Throwable } from "./models";
 import { constants } from "./constants";
 
+const joiError = (message: string) => (new joi.ValidationError(message, [], null))
 
 const schemas: { [key: string]: object } = {
     "/api/whatsapp/sendtext/emandi": {
@@ -18,7 +19,7 @@ const schemas: { [key: string]: object } = {
         bags: joi.number().required(),
         vehicleNumber: joi.string().trim().min(6).required(),
         vehicleType: joi.number().max(4).required(),
-        driverMobile: joi.number().empty(''),
+        driverMobile: joi.string().regex(/^(\d{10})?$/).empty(''),
         party: {
             name: joi.string().trim().min(3).required(),
             mandi: joi.string().trim().min(3).required(),
@@ -37,7 +38,17 @@ const schemas: { [key: string]: object } = {
         licenceNumber: joi.string().trim().empty('')
     },
     "/api/emandi/entry": {
-        rate: joi.number().required()
+        rate: joi.number().required(),
+        finalize: joi.boolean()
+    },
+    "/api/files/html": {
+        name: joi.string().valid('niner', 'gatepass'),
+        party: joi.string().trim().min(3).required(),
+        qr: joi.string().required(),
+        tables: joi.array().required(),
+        print: joi.bool().required(),
+        forceDownload: joi.bool().required(),
+        driverMobile: joi.string().regex(/^(\d{10})?$/).empty(''),
     }
 }
 

@@ -10,3 +10,13 @@ export type ExecutionResponse = {
     content: any,
     statusCode: number
 }
+
+export type CreatePdfRequest = {
+    name: string,
+    tables: string,
+    qr: string,
+    print: boolean,
+    forceDownload: boolean,
+    party: string,
+    driverMobile: string
+};

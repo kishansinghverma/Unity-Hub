@@ -1,8 +1,7 @@
 import { Collection, Db, Document, Filter, FindOptions, MongoClient } from "mongodb";
 import { constants } from "../common/constants";
-import { mongoId } from "../common/utils";
 import { CollectionOperation, DatabaseOperation } from "../common/types";
-import { Throwable } from "../common/models";
+import { String, Throwable } from "../common/models";
 
 export class MongoDb {
     private database: string;
@@ -63,7 +62,7 @@ export class MongoDb {
 
     deleteDocument = (collectionName: string, documentId: string) => {
         const operation = async (collection: Collection) => {
-            const { deletedCount } = await collection.deleteOne({ _id: mongoId(documentId) });
+            const { deletedCount } = await collection.deleteOne({ _id: String.mongoId(documentId) });
             return (deletedCount > 0 ? { content: { _id: documentId }, statusCode: 200 } : this.emptyResponse);
         }
 
@@ -72,7 +71,7 @@ export class MongoDb {
 
     updateDocumentById = (collectionName: string, documentId: string, patchData: Document) => {
         const operation = async (collection: Collection) => {
-            const { matchedCount } = await collection.updateOne({ _id: mongoId(documentId) }, { $set: patchData });
+            const { matchedCount } = await collection.updateOne({ _id: String.mongoId(documentId) }, { $set: patchData });
             return (matchedCount > 0 ? { content: { _id: documentId }, statusCode: 200 } : this.emptyResponse);
         }
 

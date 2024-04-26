@@ -32,6 +32,13 @@ export const templates = {
     gatepassCreated: 'Gatepass requested for ${name}, ${mandi}, ${state}. Proceed here : https://emandi.up.gov.in/Traders/Dashboard'
 }
 
+export const greenApi = {
+    groupId: {
+        emandi: '120363153442141119@g.us',
+        unityHub: '120363265204710984@g.us'
+    }
+}
+
 export const mongoErrorCodes: { [key: string]: number } = {
     8: 500,
     8000: 401,
@@ -57,4 +64,13 @@ export const postParams = {
     headers: {
         'Content-Type': 'application/json'
     }
+}
+
+export const mimeType: { [key: string]: string } = {
+    pdf: 'application/pdf',
+    zip: 'application/zip',
+    jpg: 'image/jpeg',
+    jpeg: 'image/jpeg',
+    png: 'image/png',
+    any: 'application/x-binary'
 }
