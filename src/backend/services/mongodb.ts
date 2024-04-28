@@ -1,10 +1,12 @@
+import 'dotenv/config';
 import { Collection, Db, Document, Filter, FindOptions, MongoClient } from "mongodb";
 import { constants } from "../common/constants";
 import { CollectionOperation, DatabaseOperation } from "../common/types";
 import { String, Throwable } from "../common/models";
 
-export class MongoDb {
+export class MongoDbService {
     private database: string;
+    private connectionString = process.env.MONGO_CONNECTION_STRING as string;
     public emptyResponse = { content: null, statusCode: 404 };
 
     constructor(database: string) {
@@ -12,7 +14,7 @@ export class MongoDb {
     }
 
     getClientWithDatabase = (database = this.database) => {
-        const client = new MongoClient(process.env.MONGO_CONNECTION_STRING as string);
+        const client = new MongoClient(this.connectionString);
         return { client: client, database: client.db(database) };
     }
 

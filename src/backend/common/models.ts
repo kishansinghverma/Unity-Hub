@@ -1,7 +1,7 @@
 import chalk from "chalk";
 import fs from "fs";
 import path from "path";
-import { style } from "./constants";
+import { source, style } from "./constants";
 import { MulterError } from "multer";
 import { ObjectId } from "mongodb";
 
@@ -41,7 +41,7 @@ export class String {
 export class Logger {
     private source: string;
 
-    constructor(source: string) {
+    constructor(source: source) {
         this.source = source;
     }
 

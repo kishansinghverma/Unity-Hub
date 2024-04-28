@@ -1,71 +1,20 @@
-import fs from "fs";
-import path from "path";
-import dotenv from "dotenv";
-import { mimeType, postParams } from "../common/constants";
-import { getJsonResponse } from "../common/utils";
 
-dotenv.config();
+import { Request, Response } from "express";
+import { greenApi } from "../common/constants";
+import { fileService } from "../services/file";
+import { whatsAppService } from "../services/whatsapp";
 
 class WhatsApp {
-    private instanceId = process.env.GREEN_API_INSTANCE_ID;
-    private token = process.env.GREEN_API_TOKEN;
-    private baseUrl = process.env.GREEN_API_URI;
-    private fsUrl = process.env.GREEN_API_FS as string;
+    public sendMessageToEmandiGroup = (message: string) => whatsAppService.sendMessage(greenApi.groupId.emandi, message);
 
-    private getUrl = (path: string, origin = this.baseUrl) => (`${origin}/${this.instanceId}/${path}/${this.token}`);
+    public sendMessageToUnityGroup = (message: string) => whatsAppService.sendMessage(greenApi.groupId.unityHub, message);
 
-    private getRemoteFileUrl = (fileName: string) => {
-        const extension = fileName.split('.').pop() ?? 'any';
-        const fetchParams = { ...postParams, headers: { 'Content-Type': mimeType[extension] }, body: fs.readFileSync(path.join(__dirname, `../static/pdf/${fileName}`)) };
-        return fetch(this.getUrl('uploadFile', this.fsUrl), fetchParams).then(getJsonResponse);
-    }
+    public shareMessageViaUnityGroup = (recipientNumber: string, message: string) =>
+        whatsAppService.shareMessageViaGroup(recipientNumber, greenApi.groupId.unityHub, message);
 
-    private addUserToGroup = (participantChatId: string, groupId: string) => {
-        const fetchParams = { ...postParams, body: JSON.stringify({ groupId, participantChatId }) };
-        return fetch(this.getUrl('addGroupParticipant'), fetchParams).then(getJsonResponse);
-    }
-
-    private removeUserFromGroup = (participantChatId: string, groupId: string) => {
-        const fetchParams = { ...postParams, body: JSON.stringify({ groupId, participantChatId }) };
-        return fetch(this.getUrl('removeGroupParticipant'), fetchParams).then(getJsonResponse);
-    }
-
-    public sendMessage = (chatId: string, message: string) => {
-        const fetchParams = { ...postParams, body: JSON.stringify({ chatId: chatId, message: message }) };
-        return fetch(this.getUrl('sendMessage'), fetchParams).then(getJsonResponse);
-    }
-
-    public sendUploadedFile = () => {
-
-    }
-
-    public sendLocalFile = async (chatId: string, fileName: string, caption: string) => {
-        const { content: { urlFile } } = await this.getRemoteFileUrl(fileName);
-        const fetchParams = { ...postParams, body: JSON.stringify({ chatId, fileName, urlFile, caption }) };
-        return fetch(this.getUrl('sendFileByUrl'), fetchParams).then(getJsonResponse);
-    }
-
-    public shareMessageViaGroup = async (participantNumber: string, groupId: string, message: string) => {
-        return this.addUserToGroup(`91${participantNumber}@c.us`, groupId)
-            .then(() => (this.sendMessage(groupId, message)))
-            .then(response => {
-                setTimeout(() => this.removeUserFromGroup(`91${participantNumber}@c.us`, groupId), 10*1000);
-                return response;
-            });
-    }
-
-    public shareLocalFileViaGroup = async (participantNumber: string, groupId: string, fileName: string, caption: string) => {
-        return this.addUserToGroup(`91${participantNumber}@c.us`, groupId)
-            .then(() => (this.sendLocalFile(groupId, fileName, caption)))
-            .then(response => {
-                setTimeout(() => this.removeUserFromGroup(`91${participantNumber}@c.us`, groupId), 60*1000);
-                return response;
-            });
-    }
-
-    public shareUploadedFileViaGroup = () => {
-
-    }
+    public shareFileViaUnityGroup = (request: Request, response: Response) =>
+        fileService.saveIncomingFile(request, response).then(({ content }) =>
+            whatsAppService.shareLocalFileViaGroup(request.params.number, greenApi.groupId.unityHub, content, request.body.caption));
 }
 
 export const whatsApp = new WhatsApp();

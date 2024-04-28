@@ -19,11 +19,18 @@ export const constants = {
         fileExpected: 'File Expected',
         fileTypeMismatch: 'Only PDFs Allowed',
         unknownError: 'Something Went Wrong On Server',
-        schemaNotReady: 'Validation Schema Not Found'
+        schemaNotReady: 'Validation Schema Not Found',
+        mqttNotReady: 'Mqtt Service Not Ready',
+        timeLimitExceeded: "Max Wait Time Exceeded",
     },
     message: {
         serviceOk: 'Service Ok',
-        ping: 'Recieved Ping: Health Normal'
+        ping: 'Recieved Ping: Health Normal',
+        mqttConnected: "Connected to Mqtt Server!",
+        mqttDisconnected: "Disconnected from Mqtt Server",
+        printerSubscribed: "Subscribed to Printer Status Feeds",
+        mqttPublished: "Mqtt Message Published Successfully",
+        cronJobRegistered: 'Cron Jobs Registered!'
     },
     adminDb: 'admin'
 };
@@ -47,7 +54,10 @@ export const mongoErrorCodes: { [key: string]: number } = {
 
 export enum source {
     server = 'Server',
-    route = 'Route'
+    route = 'Route',
+    mqtt = 'Mqtt',
+    smartnest = 'SmartNest',
+    cronjob = 'CronJob'
 }
 
 export enum style {

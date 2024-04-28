@@ -1,16 +1,16 @@
 import { Collection, Db, Document } from "mongodb";
 import { greenApi, constants as invariants, templates } from "../common/constants";
-import { MongoDb } from "../services/mongodb";
-import { whatsApp } from "./whatsapp";
+import { MongoDbService } from "../services/mongodb";
 import { String } from "../common/models";
 import { getErrorResponse, getHttpCode } from "../common/utils";
+import { whatsAppService } from "../services/whatsapp";
 
 class EMandi {
     private constants = invariants.emandi;
-    private database: MongoDb;
+    private database: MongoDbService;
 
     constructor() {
-        this.database = new MongoDb(this.constants.database);
+        this.database = new MongoDbService(this.constants.database);
     }
 
     public peekRecord = () => this.database.getDocument(this.constants.collections.queued, {}, { sort: { createdOn: 1 } });
@@ -37,7 +37,7 @@ class EMandi {
 
     public queueRecord = async (record: Document) => {
         const response = await this.database.insertDocument(this.constants.collections.queued, { ...record, createdOn: String.getEpoch() });
-        const notificationResponse = await whatsApp.sendMessage(greenApi.groupId.emandi, String.getTaggedString(templates.gatepassCreated, record.party)).catch(getErrorResponse);
+        const notificationResponse = await whatsAppService.sendMessage(greenApi.groupId.emandi, String.getTaggedString(templates.gatepassCreated, record.party)).catch(getErrorResponse);
         response.content.notification = notificationResponse.content;
         return response;
     };
