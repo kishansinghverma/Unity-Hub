@@ -57,7 +57,8 @@ export enum source {
     route = 'Route',
     mqtt = 'Mqtt',
     smartnest = 'SmartNest',
-    cronjob = 'CronJob'
+    cronjob = 'CronJob',
+    assistant = 'GoogleAssistant'
 }
 
 export enum style {
