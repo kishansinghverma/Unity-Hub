@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { IClientOptions, MqttClient, connect } from "mqtt";
 import { source, constants, style } from "../common/constants";
-import { Logger } from "../common/models";
+import { Logger, Throwable } from "../common/models";
 import { MqttPacket } from "../common/types";
 
 class MqttService {
@@ -37,14 +37,13 @@ class MqttService {
     }
 
     public publishMessage = (packets: Array<MqttPacket>) => {
-        if (!this.client.connected) return { content: constants.errors.mqttNotReady, statusCode: 500 };
+        if (!this.client.connected) throw new Throwable(constants.errors.mqttNotReady, 500);
         packets.forEach(packet => this.client.publish(packet.topic, packet.message));
-        return { content: constants.message.mqttPublished, statusCode: 200 };
     }
 
     public publishPrinterAction = (operation: string, payload: string) => {
         const topic = `printer/${operation}`;
-        return this.publishMessage([{ topic: topic, message: payload }]);
+        this.publishMessage([{ topic: topic, message: payload }]);
     }
 }
 

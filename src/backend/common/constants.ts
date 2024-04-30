@@ -58,7 +58,8 @@ export enum source {
     mqtt = 'Mqtt',
     smartnest = 'SmartNest',
     cronjob = 'CronJob',
-    assistant = 'GoogleAssistant'
+    assistant = 'GoogleAssistant',
+    smarthome = 'SmartHome'
 }
 
 export enum style {

@@ -5,6 +5,12 @@ import { replySuccess, replyError } from '../common/utils';
 
 const router = express.Router();
 
+router.post('/webhook', (request, response) => {
+    validator.validateRequest(request)
+        .then(values => whatsApp.handleIncomingMessages(values))
+        .catch().finally(() => response.end());
+});
+
 router.post('/sendtext/emandi', (request, response) => {
     validator.validateRequest(request)
         .then(({ message }) => whatsApp.sendMessageToEmandiGroup(message)

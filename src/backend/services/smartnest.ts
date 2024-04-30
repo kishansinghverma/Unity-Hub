@@ -3,6 +3,7 @@ import { IClientOptions, MqttClient, connect } from "mqtt";
 import { source, style } from "../common/constants";
 import { getNestDevice, nestDeviceGroupIds, nestDeviceGroups } from "../common/devices";
 import { Logger, Throwable } from "../common/models";
+import { smartHomeService } from './smarthome';
 
 class SmartNest {
     private logger: Logger;
@@ -32,14 +33,14 @@ class SmartNest {
             const device = this.deviceMap.get(groupId).get(deviceId);
             const state = message.toString() == 'ON' ? '1' : '0';
             this.logger.info(`${device} => ${state}`);
-            // switchDeviceState(device, state);
+            smartHomeService.switchDeviceState(device, state);
         }
     }
 
     private connectDevice = (clientId: string) => {
         const client = connect({ ...this.mqttOptions, clientId });
         this.clientMap[clientId] = client;
-
+        
         client.on('message', this.processMessage);
 
         client.on('connect', () => {

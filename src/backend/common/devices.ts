@@ -66,7 +66,7 @@ export const nestDeviceGroups: NestDevice = {
     facadefrontlight: { GroupId: nestDeviceGroupIds.ComboTwo, DeviceId: 'powerState2' }
 }
 
-export const HelperDevices = ["assistant", "broadcast", "wait"];
+export const helperDevices = ["assistant", "broadcast", "wait"];
 
 export const getCustomDevice = (device: string) => {
     const targetDevice = deviceAliases[device];

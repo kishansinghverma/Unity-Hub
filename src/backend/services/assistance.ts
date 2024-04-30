@@ -28,12 +28,10 @@ class GoogleAssistant {
     }
 
     public initialize = () => {
-        this.ask('Ping').then(response => {
-            response.text ? this.logger.success(response.text, style.bold) : this.logger.error('Assistant Service Not Available!');
-        });
+        this.ask('Ping').then(response => this.logger.success(response, style.bold));
     }
 
-    public ask = (query: string) => this.assistant.query(query);
+    public ask = (query: string) => this.assistant.query(query).then(response => (response.text ?? 'Command Executed'));
 }
 
 export const assistantService = new GoogleAssistant();

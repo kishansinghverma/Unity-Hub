@@ -1,11 +1,22 @@
 import joi from 'joi';
 import { Request } from "express";
 import { Throwable } from "./models";
-import { constants } from "./constants";
+import { constants, greenApi } from "./constants";
 
 const joiError = (message: string) => (new joi.ValidationError(message, [], null))
 
-const schemas: { [key: string]: object } = {
+const schemas: { [key: string]: any } = {
+    "/api/whatsapp/webhook": joi.object({
+        typeWebhook: joi.string().valid("incomingMessageReceived").required(),
+        senderData: joi.object({
+            chatId: joi.string().valid(greenApi.groupId.unityHub).required()
+        }).unknown(true),
+        messageData: joi.object({
+            typeMessage: joi.string().valid("textMessage", "documentMessage").required(),
+            textMessageData: joi.any().optional(),
+            fileMessageData: joi.any().optional()
+        }).required()
+    }).unknown(true),
     "/api/whatsapp/sendtext/emandi": {
         message: joi.string().min(3).required()
     },
@@ -56,7 +67,7 @@ class Validator {
     public validateRequest = (request: Request) => {
         const path = request.originalUrl;
         const schema = schemas[path];
-        if (schema) return joi.object(schema).validateAsync(request.body);
+        if (schema) return joi.isSchema(schema) ? schema.validateAsync(request.body) : joi.object(schema).validateAsync(request.body);
         else return Promise.reject(new Throwable(constants.errors.schemaNotReady, 501));
     }
 }

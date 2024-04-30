@@ -8,8 +8,13 @@ import { MulterError } from "multer";
 
 export const getHttpCode = (error: MongoError) => (mongoErrorCodes[error.code ?? 8] ?? 500);
 
-export const getJsonResponse = async (response: Response): OperationResponse => {
+export const validateResponse = (response: Response) => {
     if (!response.ok) throw new Throwable(response.statusText, response.status);
+    return response;
+}
+
+export const getJsonResponse = async (response: Response): OperationResponse => {
+    validateResponse(response);
     const json = await response.json();
     return { content: json, statusCode: response.status };
 }
