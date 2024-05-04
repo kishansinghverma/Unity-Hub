@@ -2,13 +2,17 @@ import express from 'express';
 import { whatsApp } from '../operations/whatsapp';
 import { validator } from '../common/validation';
 import { replySuccess, replyError } from '../common/utils';
+import { Logger } from '../common/models';
+import { source } from '../common/constants';
 
 const router = express.Router();
+const logger = new Logger(source.route);
 
 router.post('/webhook', (request, response) => {
     validator.validateRequest(request)
         .then(values => whatsApp.handleIncomingMessages(values))
-        .catch().finally(() => response.end());
+        .catch(({ message }) => logger.error(message))
+        .finally(() => response.end());
 });
 
 router.post('/sendtext/emandi', (request, response) => {
