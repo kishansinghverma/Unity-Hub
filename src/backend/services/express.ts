@@ -8,6 +8,7 @@ import splitwiseRoute from '../routes/splitwise';
 import whatsappRoute from '../routes/whatsapp';
 import fileRoute from '../routes/files';
 import mqttRoute from '../routes/mqtt';
+import expenseRoute from '../routes/expense';
 import { Logger } from '../common/models';
 import { source, style } from '../common/constants';
 
@@ -35,10 +36,11 @@ class ExpressServer {
         this.router.get('/api/test', (request, response) => {});
 
         this.router.use('/api/emandi', emandiRoute);
+        this.router.use('/api/expenses', expenseRoute);
         this.router.use('/api/files', fileRoute);
+        this.router.use('/api/mqtt', mqttRoute);
         this.router.use('/api/splitwise', splitwiseRoute);
         this.router.use('/api/whatsapp', whatsappRoute);
-        this.router.use('/api/mqtt', mqttRoute);
         this.router.all("*", (req, res) => res.status(404).end());
     }
 

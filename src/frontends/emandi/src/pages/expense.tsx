@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Card, Divider, Grid, Header, Segment, Image, Button, Modal, Loader, Form } from "semantic-ui-react"
 import { ModalParams, RawExpense, SplitwiseGroup } from "../common/types";
 import { PostParams, Url } from "../common/constants";
-import { SplitwiseGroupMapper, SplitwiseGroupsMapper, handleError, handleJsonResponse } from "../operations/utils";
+import { SplitwiseGroupMapper, SplitwiseGroupsMapper, handleError, handleJsonResponse, handleResponse } from "../operations/utils";
 import { ExpenseItem, GroupCard } from "../common/components";
 
 export const Expense: React.FC = () => {
@@ -67,14 +67,12 @@ export const Expense: React.FC = () => {
             Amount: ''
         };
 
-        if (expense) {
-            params = {
-                ...params,
-                ExpenseId: expense.Id,
-                DateTime: dayjs(expense.DateTime).format('YYYY-MM-DDTHH:mm'),
-                Location: expense.Location
-            }
-        }
+        params = expense ? {
+            ...params,
+            ExpenseId: expense.Id,
+            DateTime: dayjs(expense.DateTime).format('YYYY-MM-DDTHH:mm'),
+            Location: expense.Location
+        } : params;
 
         setModalParams(params);
     }
@@ -93,34 +91,30 @@ export const Expense: React.FC = () => {
         };
 
         fetch(Url.SplitWiseExpenses, formData)
+            .then(handleResponse)
             .then(() => deleteExpense(modalParams?.ExpenseId))
+            .then(() => (fetch(`${Url.SplitWiseGroup}/${modalParams?.GroupId}`)
+                .then(handleJsonResponse)
+                .then(SplitwiseGroupMapper)
+                .then(data => setGroups(groups.map(item => item.Id === modalParams?.GroupId ? data : item)))
+                .then(onModalClose)
+                .catch(handleError)))
+            .then(() => toast.success("Expense Created Successfully!"))
             .catch(handleError)
-            .finally(() => {
-                setExpenseSaving(false);
-                toast.success("Expense Created Successfully!");
-                fetch(`${Url.SplitWiseGroup}/${modalParams?.GroupId}`)
-                    .then(handleJsonResponse)
-                    .then(SplitwiseGroupMapper)
-                    .then(data => {
-                        const updatedGroups = groups.map(item => item.Id === modalParams?.GroupId ? data : item);
-                        setGroups(updatedGroups);
-                    })
-                    .catch(handleError);
-                onModalClose();
-            });
+            .finally(() => setExpenseSaving(false));
     }
 
     const deleteExpense = (id?: string) => {
         if (id) {
             setExpenseLoading(true);
-            return fetch(`${Url.DeleteExpense}/${id}`)
+            return fetch(`${Url.DraftExpenses}/${id}`)
                 .then(loadRawTransactions)
                 .catch(handleError);
         }
     }
 
     const loadRawTransactions = () => {
-        fetch(Url.GetRawExpense)
+        fetch(Url.DraftExpenses)
             .then(handleJsonResponse)
             .then(setExpenses)
             .catch(handleError)
@@ -147,9 +141,10 @@ export const Expense: React.FC = () => {
             <Segment basic>
                 <Grid columns={2}>
                     <Divider vertical style={{ paddingLeft: '3px' }}>❤️</Divider>
-                    <Grid.Column>
+                    <Grid.Column style={{ paddingRight: '32px' }}>
                         <Header as='h2' textAlign='center'>Transactions</Header>
                         {expenseLoading && <Loader active inline='centered' />}
+                        {!expenseLoading && expenses.length < 1 && <Segment textAlign='center' className='list-item'><h4>No Expense To Show.</h4></Segment>}
                         {expenses.map((item, index) => (
                             <Segment
                                 id={item.Id}
@@ -162,8 +157,8 @@ export const Expense: React.FC = () => {
                             </Segment>
                         ))}
                     </Grid.Column>
-                    <Grid.Column>
-                        <Header as='h2' textAlign='center'>SplitWise</Header>
+                    <Grid.Column style={{ paddingLeft: '32px' }}>
+                        <Header as='h2' textAlign='center'>Splitwise</Header>
                         {groupsLoading && <Loader active inline='centered' />}
                         <Grid>
                             {groups.map((item, index) => (

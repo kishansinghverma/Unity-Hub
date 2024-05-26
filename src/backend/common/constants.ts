@@ -8,6 +8,12 @@ export const constants = {
             transactions: 'Transactions'
         }
     },
+    expense: {
+        database: 'Expense',
+        collection: {
+            draft: 'Draft'
+        }
+    },
     errors: {
         genericError: "ServerFault",
         customError: "CustomError",
@@ -71,13 +77,6 @@ export enum style {
     strikethrough = 'strikethrough'
 }
 
-export const postParams = {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json'
-    }
-}
-
 export const mimeType: { [key: string]: string } = {
     pdf: 'application/pdf',
     zip: 'application/zip',
@@ -85,4 +84,20 @@ export const mimeType: { [key: string]: string } = {
     jpeg: 'image/jpeg',
     png: 'image/png',
     any: 'application/x-binary'
+}
+
+
+export const requestParams = {
+    get: {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    },
+    post: {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }
 }

@@ -30,12 +30,11 @@ export const Url = {
     Requeue: "/api/emandi/requeue",
     Queued: "/api/emandi/queued",
     Delete: "/api/emandi/entry",
-    GetRawExpense: "/api/transactions",
-    DeleteExpense: "/api/transactions/delete",
+    DraftExpenses: "/api/expenses",
     NotificationUrl: `/api/whatsapp/sendtext/unityhub`,
-    SplitWiseGroups: `${ApiServer}/splitwise/groups`,
-    SplitWiseGroup: `${ApiServer}/splitwise/group`,
-    SplitWiseExpenses: `${ApiServer}/splitwise/transactions`,
+    SplitWiseGroups: `/api/splitwise/groups`,
+    SplitWiseGroup: `/api/splitwise/group`,
+    SplitWiseExpenses: `/api/splitwise/transactions`,
     Distance: "https://dev.virtualearth.net/REST/V1/Routes/Driving?o=json&wp.0=sadabad&key=AhWAWkHKZZ0JtpBDWvq2_vZqrtmAgf3prbe31w7FbepXyGzvHoWzvpetsQIA7DpL&wp.1="
 }
 

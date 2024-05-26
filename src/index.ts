@@ -8,6 +8,6 @@ import { smartHomeService } from './backend/services/smarthome';
 assistantService.initialize();
 mqttService.initialize();
 smartHomeService.initialize();
-httpServer.initialize();
 cronJobs.initialize();
 smartNestService.initialize();
+httpServer.initialize();

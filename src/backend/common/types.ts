@@ -48,3 +48,31 @@ export type IncomingMessage = {
         }
     };
 };
+
+export type GroupExpenseRequest = {
+    group_id: number
+    details: string,
+    description: string,
+    cost: string,
+    date?: string
+}
+
+export type SelfPaidExpense = {
+    details: string,
+    group_id: number
+    description: string,
+    users__0__user_id: number,
+    users__0__paid_share: string,
+    users__0__owed_share: string,
+    users__1__user_id: number,
+    users__1__paid_share: string,
+    users__1__owed_share: string,
+}
+
+export type SharedExpense = {
+    group_id: number
+    details: string,
+    description: string,
+    cost: string,
+    split_equally: boolean
+};

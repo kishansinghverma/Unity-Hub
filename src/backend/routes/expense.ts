@@ -1,23 +1,23 @@
 import express from 'express';
+import { expenses } from '../operations/expense';
 import { replyError, replySuccess } from '../common/utils';
-import { splitwise } from '../operations/splitwise';
 
 const router = express.Router();
 
-router.get('/group/:id', (request, response) => {
-    splitwise.getGroupDetails(request.params.id)
+router.get('/', (request, response) => {
+    expenses.getTransactions()
         .then(replySuccess(response))
         .catch(replyError(response));
 });
 
-router.get('/groups', (request, response) => {
-    splitwise.listGroups()
+router.post('/', (request, response) => {
+    expenses.addTransaction(request.body)
         .then(replySuccess(response))
         .catch(replyError(response));
 });
 
-router.post('/transactions', (request, response) => {
-    splitwise.addGenericExpense(request.body)
+router.delete('/:id', (request, response) => {
+    expenses.deleteTransaction(request.params.id)
         .then(replySuccess(response))
         .catch(replyError(response));
 });

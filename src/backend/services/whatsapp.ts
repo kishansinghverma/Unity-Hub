@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import fs from "fs";
 import path from "path";
-import { postParams, mimeType } from "../common/constants";
+import { mimeType, requestParams } from "../common/constants";
 import { getJsonResponse } from "../common/utils";
 
 class WhatsApp {
@@ -14,28 +14,28 @@ class WhatsApp {
 
     private getRemoteFileUrl = (fileName: string) => {
         const extension = fileName.split('.').pop() ?? 'any';
-        const fetchParams = { ...postParams, headers: { 'Content-Type': mimeType[extension] }, body: fs.readFileSync(path.join(__dirname, `../static/${fileName}`)) };
+        const fetchParams = { ...requestParams.post, headers: { 'Content-Type': mimeType[extension] }, body: fs.readFileSync(path.join(__dirname, `../static/${fileName}`)) };
         return fetch(this.getUrl('uploadFile', this.fsUrl), fetchParams).then(getJsonResponse);
     }
 
     private addUserToGroup = (participantChatId: string, groupId: string) => {
-        const fetchParams = { ...postParams, body: JSON.stringify({ groupId, participantChatId }) };
+        const fetchParams = { ...requestParams.post, body: JSON.stringify({ groupId, participantChatId }) };
         return fetch(this.getUrl('addGroupParticipant'), fetchParams).then(getJsonResponse);
     }
 
     private removeUserFromGroup = (participantChatId: string, groupId: string) => {
-        const fetchParams = { ...postParams, body: JSON.stringify({ groupId, participantChatId }) };
+        const fetchParams = { ...requestParams.post, body: JSON.stringify({ groupId, participantChatId }) };
         return fetch(this.getUrl('removeGroupParticipant'), fetchParams).then(getJsonResponse);
     }
 
     public sendMessage = (chatId: string, message: string) => {
-        const fetchParams = { ...postParams, body: JSON.stringify({ chatId: chatId, message: message }) };
+        const fetchParams = { ...requestParams.post, body: JSON.stringify({ chatId: chatId, message: message }) };
         return fetch(this.getUrl('sendMessage'), fetchParams).then(getJsonResponse);
     }
 
     public sendLocalFile = async (chatId: string, fileName: string, caption: string) => {
         const { content: { urlFile } } = await this.getRemoteFileUrl(fileName);
-        const fetchParams = { ...postParams, body: JSON.stringify({ chatId, fileName, urlFile, caption }) };
+        const fetchParams = { ...requestParams.post, body: JSON.stringify({ chatId, fileName, urlFile, caption }) };
         return fetch(this.getUrl('sendFileByUrl'), fetchParams).then(getJsonResponse);
     }
 
