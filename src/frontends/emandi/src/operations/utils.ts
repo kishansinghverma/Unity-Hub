@@ -83,10 +83,10 @@ export const MandiOptionsMapper = (party: Record<Party>) => {
 export const SplitwiseGroupMapper = ({ group }: SplitwiseGroupResponse) => {
     const debt = group.simplified_debts.find(item => (item.to === 62039516));
     return {
-        Id: group.id,
-        Name: group.name,
-        Avatar: group.avatar.large,
-        Due: debt ? debt.amount : '0'
+        id: group.id,
+        name: group.name,
+        avatar: group.avatar.large,
+        due: debt ? debt.amount : '0'
     };
 }
 
@@ -94,10 +94,10 @@ export const SplitwiseGroupsMapper = (data: SplitwiseGroupsResponse) => {
     return data.groups.map(item => {
         const debt = item.simplified_debts.find(debt => (debt.to === 62039516));
         return {
-            Id: item.id,
-            Name: item.name,
-            Avatar: item.avatar.large,
-            Due: debt ? debt.amount : '0'
+            id: item.id,
+            name: item.name,
+            avatar: item.avatar.large,
+            due: debt ? debt.amount : '0'
         };
     });
 }

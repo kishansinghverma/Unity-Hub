@@ -74,11 +74,11 @@ export type DistanceResponse = {
 }
 
 export type RawExpense = {
-    Id: string
-    DateTime: string,
-    Location: string,
-    Coordinate: string
-    OnDelete: Function
+    _id: string
+    dateTime: string,
+    location: string,
+    coordinate: string
+    onDelete: Function
 }
 
 export type CustomCardProps = {
@@ -108,19 +108,19 @@ export interface SplitwiseGroupsResponse {
 }
 
 export type SplitwiseGroup = {
-    Id: number,
-    Name: string,
-    Avatar: string,
-    Due: string
+    id: number,
+    name: string,
+    avatar: string,
+    due: string
 }
 
 export type ModalParams = {
-    GroupId?: number,
-    ExpenseId?: string,
-    AvatarLink?: string,
-    Name?: string,
-    DateTime?: string,
-    Location?: string,
-    Description?: string,
-    Amount?: string
+    groupId?: number,
+    expenseId?: string,
+    avatarLink?: string,
+    name?: string,
+    dateTime?: string,
+    location?: string,
+    description?: string,
+    amount?: string
 }

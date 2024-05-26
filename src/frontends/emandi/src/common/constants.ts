@@ -1,7 +1,5 @@
 import { SelectOption } from "./types";
 
-const ApiServer = 'https://nextcloud.azure-api.net/api';
-
 export enum PageTitle {
     NewEntry = 'new',
     AddParty = 'add party',

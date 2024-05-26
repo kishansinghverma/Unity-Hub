@@ -17,7 +17,7 @@ export const Expense: React.FC = () => {
     const [modalParams, setModalParams] = useState<ModalParams>();
 
     const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
-        e.dataTransfer.setData('text/plain', JSON.stringify({ Id: e.currentTarget.id, Class: e.currentTarget.className }));
+        e.dataTransfer.setData('text/plain', JSON.stringify({ id: e.currentTarget.id, class: e.currentTarget.className }));
     };
 
     const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -35,9 +35,9 @@ export const Expense: React.FC = () => {
         e.currentTarget.style.backgroundColor = 'white';
         try {
             const sourceData = JSON.parse(e.dataTransfer.getData('text/plain'));
-            if (sourceData.Class.includes('list-item')) {
-                const group = groups.find(group => group.Id.toString() === e.currentTarget.id);
-                const expense = expenses.find(expense => expense.Id === sourceData.Id);
+            if (sourceData.class.includes('list-item')) {
+                const group = groups.find(group => group.id.toString() === e.currentTarget.id);
+                const expense = expenses.find(expense => expense._id === sourceData.id);
                 setModalParameters(group, expense)
                 setOpen(true);
             }
@@ -51,27 +51,27 @@ export const Expense: React.FC = () => {
     }
 
     const onGroupClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-        const group = groups.find(group => group.Id.toString() === e.currentTarget.id);
+        const group = groups.find(group => group.id.toString() === e.currentTarget.id);
         setModalParameters(group);
         setOpen(true);
     }
 
     const setModalParameters = (group?: SplitwiseGroup, expense?: RawExpense) => {
         let params: ModalParams = {
-            GroupId: group?.Id,
-            Name: group?.Name,
-            AvatarLink: group?.Avatar,
-            DateTime: dayjs(Date.now()).format('YYYY-MM-DDTHH:mm'),
-            Location: 'Manual Entry',
-            Description: '',
-            Amount: ''
+            groupId: group?.id,
+            name: group?.name,
+            avatarLink: group?.avatar,
+            dateTime: dayjs(Date.now()).format('YYYY-MM-DDTHH:mm'),
+            location: 'Manual Entry',
+            description: '',
+            amount: ''
         };
 
         params = expense ? {
             ...params,
-            ExpenseId: expense.Id,
-            DateTime: dayjs(expense.DateTime).format('YYYY-MM-DDTHH:mm'),
-            Location: expense.Location
+            expenseId: expense._id,
+            dateTime: dayjs(expense.dateTime).format('YYYY-MM-DDTHH:mm'),
+            location: expense.location
         } : params;
 
         setModalParams(params);
@@ -82,21 +82,21 @@ export const Expense: React.FC = () => {
         const formData = {
             ...PostParams,
             body: JSON.stringify({
-                cost: modalParams?.Amount,
-                description: modalParams?.Description,
-                details: modalParams?.Location,
-                group_id: modalParams?.GroupId,
-                date: modalParams?.DateTime
+                cost: modalParams?.amount,
+                description: modalParams?.description,
+                details: modalParams?.location,
+                group_id: modalParams?.groupId,
+                date: modalParams?.dateTime
             })
         };
 
         fetch(Url.SplitWiseExpenses, formData)
             .then(handleResponse)
-            .then(() => deleteExpense(modalParams?.ExpenseId))
-            .then(() => (fetch(`${Url.SplitWiseGroup}/${modalParams?.GroupId}`)
+            .then(() => deleteExpense(modalParams?.expenseId))
+            .then(() => (fetch(`${Url.SplitWiseGroup}/${modalParams?.groupId}`)
                 .then(handleJsonResponse)
                 .then(SplitwiseGroupMapper)
-                .then(data => setGroups(groups.map(item => item.Id === modalParams?.GroupId ? data : item)))
+                .then(data => setGroups(groups.map(item => item.id === modalParams?.groupId ? data : item)))
                 .then(onModalClose)
                 .catch(handleError)))
             .then(() => toast.success("Expense Created Successfully!"))
@@ -107,7 +107,7 @@ export const Expense: React.FC = () => {
     const deleteExpense = (id?: string) => {
         if (id) {
             setExpenseLoading(true);
-            return fetch(`${Url.DraftExpenses}/${id}`)
+            return fetch(`${Url.DraftExpenses}/${id}`, {method: 'DELETE'})
                 .then(loadRawTransactions)
                 .catch(handleError);
         }
@@ -145,15 +145,15 @@ export const Expense: React.FC = () => {
                         <Header as='h2' textAlign='center'>Transactions</Header>
                         {expenseLoading && <Loader active inline='centered' />}
                         {!expenseLoading && expenses.length < 1 && <Segment textAlign='center' className='list-item'><h4>No Expense To Show.</h4></Segment>}
-                        {expenses.map((item, index) => (
+                        {!expenseLoading && expenses.map((item, index) => (
                             <Segment
-                                id={item.Id}
+                                id={item._id}
                                 className='list-item'
                                 key={`list-${index}`}
                                 draggable
                                 onDragStart={handleDragStart}
                             >
-                                <ExpenseItem {...item} OnDelete={deleteExpense} />
+                                <ExpenseItem {...item} onDelete={deleteExpense} />
                             </Segment>
                         ))}
                     </Grid.Column>
@@ -164,7 +164,7 @@ export const Expense: React.FC = () => {
                             {groups.map((item, index) => (
                                 <Grid.Column mobile={16} tablet={8} computer={4} key={`group-${index}`}>
                                     <Card
-                                        id={item.Id}
+                                        id={item.id}
                                         raised
                                         onDragLeave={handleDragLeave}
                                         onDragOver={handleDragOver}
@@ -172,7 +172,7 @@ export const Expense: React.FC = () => {
                                         onClick={onGroupClick}
                                         style={{ userSelect: 'none' }}
                                     >
-                                        <GroupCard ImageSrc={item.Avatar} Name={item.Name} Info={`Due : ${item.Due}`} />
+                                        <GroupCard ImageSrc={item.avatar} Name={item.name} Info={`Due : ${item.due}`} />
                                     </Card>
                                 </Grid.Column>
                             ))}
@@ -183,15 +183,15 @@ export const Expense: React.FC = () => {
             <Modal onClose={onModalClose} onOpen={() => setOpen(true)} open={open} >
                 <Modal.Header>
                     <div style={{ display: 'flex' }}>
-                        <Image size='mini' circular src={modalParams?.AvatarLink} />
+                        <Image size='mini' circular src={modalParams?.avatarLink} />
                         <div style={{ display: 'flex', alignItems: 'center', marginLeft: '10px' }}>Add Expense To SplitWise</div>
                     </div>
                 </Modal.Header>
                 <Modal.Content>
                     <div style={{ display: 'flex', justifyContent: 'center', textAlign: 'center' }}>
                         <div>
-                            <div style={{ fontSize: '18px', fontWeight: 'bold', minWidth: '240px' }}>{modalParams?.Name}</div>
-                            <div style={{ fontSize: '16px' }}>{modalParams?.Location}</div>
+                            <div style={{ fontSize: '18px', fontWeight: 'bold', minWidth: '240px' }}>{modalParams?.name}</div>
+                            <div style={{ fontSize: '16px' }}>{modalParams?.location}</div>
                             <div style={{ padding: '10px' }}>
                                 <Form id='expense-form' onSubmit={onSubmit} loading={expenseSaving}>
                                     <Form.Input
@@ -199,8 +199,8 @@ export const Expense: React.FC = () => {
                                         required
                                         type='datetime-local'
                                         size='small'
-                                        value={modalParams?.DateTime}
-                                        onChange={e => setModalParams({ ...modalParams, DateTime: e.target.value })}
+                                        value={modalParams?.dateTime}
+                                        onChange={e => setModalParams({ ...modalParams, dateTime: e.target.value })}
                                     />
                                     <Form.Input
                                         fluid
@@ -208,8 +208,8 @@ export const Expense: React.FC = () => {
                                         placeholder='Description'
                                         size='small'
                                         style={{ margin: '8px 0px' }}
-                                        value={modalParams?.Description}
-                                        onChange={e => setModalParams({ ...modalParams, Description: e.target.value })}
+                                        value={modalParams?.description}
+                                        onChange={e => setModalParams({ ...modalParams, description: e.target.value })}
                                     />
                                     <Form.Input
                                         fluid
@@ -217,8 +217,8 @@ export const Expense: React.FC = () => {
                                         type='number'
                                         placeholder='Amount'
                                         size='small'
-                                        value={modalParams?.Amount}
-                                        onChange={e => setModalParams({ ...modalParams, Amount: e.target.value })}
+                                        value={modalParams?.amount}
+                                        onChange={e => setModalParams({ ...modalParams, amount: e.target.value })}
                                     />
                                 </Form>
                             </div>

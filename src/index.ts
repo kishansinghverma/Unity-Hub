@@ -9,5 +9,5 @@ assistantService.initialize();
 mqttService.initialize();
 smartHomeService.initialize();
 cronJobs.initialize();
-smartNestService.initialize();
+//smartNestService.initialize();
 httpServer.initialize();

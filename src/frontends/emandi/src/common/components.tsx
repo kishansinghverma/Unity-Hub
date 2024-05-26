@@ -83,17 +83,21 @@ export const TablePagination: React.FC<Pagination> = ({ currentPage, pageCount, 
 
 );
 
-export const ExpenseItem: React.FC<React.PropsWithChildren & RawExpense> = ({ Id, DateTime, Location, Coordinate, OnDelete }) => {
+export const ExpenseItem: React.FC<React.PropsWithChildren & RawExpense> = ({ _id, dateTime, location, coordinate, onDelete }) => {
     return (
-        <div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', fontWeight: 'bold' }}>
-                <div style={{ marginBottom: '5px' }}>🗓️&nbsp;{dayjs(DateTime).format('DD/MM/YYYY')}</div>
-                <div style={{ marginBottom: '5px' }}>🕒&nbsp;{dayjs(DateTime).format('hh:mm A')}</div>
+        <div style={{ display: 'flex', flexDirection: 'row' }}>
+            <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', fontWeight: 'bold' }}>
+                    <div style={{ marginBottom: '5px' }}>🗓️&nbsp;{dayjs(dateTime).format('DD/MM/YYYY')}</div>
+                    <div style={{ marginBottom: '5px' }}>🕒&nbsp;{dayjs(dateTime).format('hh:mm A')}</div>
+                </div>
+                <div style={{ color: 'grey', display: 'flex' }}>
+                    <div>🌎&nbsp;</div>
+                    <div><a target='_blank' rel="noreferrer" href={`https://www.google.com/maps?q=${coordinate}`}>{location.replaceAll('\n', ', ')}</a></div>
+                </div>
             </div>
-            <div style={{ color: 'grey', display: 'flex' }}>
-                <div>🌎&nbsp;</div>
-                <div><a target='_blank' rel="noreferrer" href={`https://www.google.com/maps?q=${Coordinate}`}>{Location}</a></div>
-                <div>&emsp;<i className="fas fa-trash btn-delete" onClick={() => OnDelete(Id)} /></div>
+            <div style={{paddingLeft: '16px', display: 'flex', alignItems: 'center'}}>
+                <Icon name="trash" title="Requeue" color="red" link onClick={() => { onDelete(_id) }} />
             </div>
         </div>
     )
