@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
-import { Card, Divider, Grid, Header, Segment, Image, Button, Modal, Loader, Form } from "semantic-ui-react"
+import { Card, Divider, Grid, Header, Segment, Image, Button, Modal, Loader, Form, Icon, Label, FormRadioProps, RadioProps } from "semantic-ui-react"
 import { ModalParams, RawExpense, SplitwiseGroup } from "../common/types";
 import { PostParams, Url } from "../common/constants";
 import { SplitwiseGroupMapper, SplitwiseGroupsMapper, handleError, handleJsonResponse, handleResponse } from "../operations/utils";
@@ -15,6 +15,8 @@ export const Expense: React.FC = () => {
     const [expenseSaving, setExpenseSaving] = useState(false);
     const [open, setOpen] = useState(false);
     const [modalParams, setModalParams] = useState<ModalParams>();
+
+    const onCheckedChanged = (_: any, { name, value }: RadioProps) => setModalParams({ ...modalParams, [name as string]: value as string });
 
     const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
         e.dataTransfer.setData('text/plain', JSON.stringify({ id: e.currentTarget.id, class: e.currentTarget.className }));
@@ -64,7 +66,9 @@ export const Expense: React.FC = () => {
             dateTime: dayjs(Date.now()).format('YYYY-MM-DDTHH:mm'),
             location: 'Manual Entry',
             description: '',
-            amount: ''
+            amount: '',
+            debitFrom: '66299282',
+            shared: 'false'
         };
 
         params = expense ? {
@@ -86,7 +90,9 @@ export const Expense: React.FC = () => {
                 description: modalParams?.description,
                 details: modalParams?.location,
                 group_id: modalParams?.groupId,
-                date: modalParams?.dateTime
+                date: modalParams?.dateTime,
+                shared: modalParams?.shared,
+                debitFrom: modalParams?.debitFrom
             })
         };
 
@@ -107,7 +113,7 @@ export const Expense: React.FC = () => {
     const deleteExpense = (id?: string) => {
         if (id) {
             setExpenseLoading(true);
-            return fetch(`${Url.DraftExpenses}/${id}`, {method: 'DELETE'})
+            return fetch(`${Url.DraftExpenses}/${id}`, { method: 'DELETE' })
                 .then(loadRawTransactions)
                 .catch(handleError);
         }
@@ -141,7 +147,7 @@ export const Expense: React.FC = () => {
             <Segment basic>
                 <Grid columns={2}>
                     <Divider vertical style={{ paddingLeft: '3px' }}>❤️</Divider>
-                    <Grid.Column style={{ paddingRight: '32px' }}>
+                    <Grid.Column className='list-transactions'>
                         <Header as='h2' textAlign='center'>Transactions</Header>
                         {expenseLoading && <Loader active inline='centered' />}
                         {!expenseLoading && expenses.length < 1 && <Segment textAlign='center' className='list-item'><h4>No Expense To Show.</h4></Segment>}
@@ -157,7 +163,7 @@ export const Expense: React.FC = () => {
                             </Segment>
                         ))}
                     </Grid.Column>
-                    <Grid.Column style={{ paddingLeft: '32px' }}>
+                    <Grid.Column className='list-groups'>
                         <Header as='h2' textAlign='center'>Splitwise</Header>
                         {groupsLoading && <Loader active inline='centered' />}
                         <Grid>
@@ -180,7 +186,7 @@ export const Expense: React.FC = () => {
                     </Grid.Column>
                 </Grid>
             </Segment>
-            <Modal onClose={onModalClose} onOpen={() => setOpen(true)} open={open} >
+            <Modal onClose={onModalClose} onOpen={() => setOpen(true)} open={open} className='add-expense-modal'>
                 <Modal.Header>
                     <div style={{ display: 'flex' }}>
                         <Image size='mini' circular src={modalParams?.avatarLink} />
@@ -190,8 +196,8 @@ export const Expense: React.FC = () => {
                 <Modal.Content>
                     <div style={{ display: 'flex', justifyContent: 'center', textAlign: 'center' }}>
                         <div>
-                            <div style={{ fontSize: '18px', fontWeight: 'bold', minWidth: '240px' }}>{modalParams?.name}</div>
-                            <div style={{ fontSize: '16px' }}>{modalParams?.location}</div>
+                            <div style={{ fontSize: '20px', fontWeight: 'bold', minWidth: '240px', marginBottom: '4px' }}>{modalParams?.name}</div>
+                            <div style={{ fontSize: '16px', color: 'grey' }}>{modalParams?.location}</div>
                             <div style={{ padding: '10px' }}>
                                 <Form id='expense-form' onSubmit={onSubmit} loading={expenseSaving}>
                                     <Form.Input
@@ -220,6 +226,61 @@ export const Expense: React.FC = () => {
                                         value={modalParams?.amount}
                                         onChange={e => setModalParams({ ...modalParams, amount: e.target.value })}
                                     />
+                                    <Segment padded size='mini' className='radio-segment'>
+                                        <Label attached='top'>Amounted Debited From</Label>
+                                        <div className='form-radio-container'>
+                                            <Form.Radio
+                                                fluid
+                                                label='HDFC'
+                                                size='small'
+                                                value='66299282'
+                                                name='debitFrom'
+                                                checked={modalParams?.debitFrom === '66299282'}
+                                                onChange={onCheckedChanged}
+                                            />
+                                            <Form.Radio
+                                                fluid
+                                                label='SBI'
+                                                size='small'
+                                                value='66299350'
+                                                name='debitFrom'
+                                                checked={modalParams?.debitFrom === '66299350'}
+                                                onChange={onCheckedChanged}
+                                            />
+                                            <Form.Radio
+                                                fluid
+                                                label='Other'
+                                                size='small'
+                                                value='other'
+                                                name='debitFrom'
+                                                checked={modalParams?.debitFrom === 'other'}
+                                                onChange={onCheckedChanged}
+                                            />
+                                        </div>
+                                    </Segment>
+                                    <Segment padded size='mini' className='radio-segment'>
+                                        <Label attached='top'>Manage Expense Amount</Label>
+                                        <div className='form-radio-container'>
+                                            <Form.Radio
+                                                fluid
+                                                label='Self Paid'
+                                                size='small'
+                                                value='false'
+                                                name='shared'
+                                                checked={modalParams?.shared === 'false' }
+                                                onChange={onCheckedChanged}
+                                            />
+                                            <Form.Radio
+                                                fluid
+                                                label='Split Equally'
+                                                size='small'
+                                                value='true'
+                                                name='shared'
+                                                checked={modalParams?.shared === 'true'}
+                                                onChange={onCheckedChanged}
+                                            />
+                                        </div>
+                                    </Segment>
                                 </Form>
                             </div>
                         </div>
@@ -229,7 +290,7 @@ export const Expense: React.FC = () => {
                     <Button onClick={() => setOpen(false)}>Cancel</Button>
                     <Button positive type='submit' form='expense-form'>Ok</Button>
                 </Modal.Actions>
-            </Modal>
+            </Modal >
         </>
     )
 }

@@ -14,6 +14,10 @@ body {
   min-height: 100vh;
 }
 
+.d-flex {
+  display: flex;
+}
+
 .content-container {
   display: flex;
   justify-content: center;
@@ -102,4 +106,79 @@ table.fixed {
 
 .scrollable::-webkit-scrollbar {
   display: none;
+}
+
+.list-transactions {
+  padding-right: 32px !important;
+}
+
+.list-groups {
+  padding-left: 32px !important;
+}
+
+.expense-card {
+  display: flex;
+  flex-direction: row;
+}
+
+.expense-card-body {
+  flex: 1;
+}
+
+.expense-card-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  font-weight: bold;
+}
+
+.expense-card-link {
+  color: grey;
+  display: flex;
+}
+
+.expense-card-action {
+  padding-left: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.expense-card .ui.divider {
+  margin: 0.5rem 0;
+}
+
+.add-expense-modal .form-radio-container{
+  display: flex;
+  justify-content: space-around;
+}
+
+.add-expense-modal .radio-segment {
+  padding-bottom: 0 !important;
+}
+
+.add-expense-modal .ui.radio.checkbox label {
+  padding-left: 1.5rem;
+}
+
+@media (max-width: 660px) {
+  .expense-card-header {
+    flex-direction: column;
+  }
+
+  .expense-card {
+    flex-direction: column;
+  }
+
+  .expense-card-action {
+    padding-left: 0;
+  }
+
+  .list-transactions {
+    padding-right: 1rem !important;
+  }
+  
+  .list-groups {
+    padding-left: 1rem !important;
+  }
 }

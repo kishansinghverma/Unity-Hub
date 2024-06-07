@@ -122,5 +122,7 @@ export type ModalParams = {
     dateTime?: string,
     location?: string,
     description?: string,
-    amount?: string
+    amount?: string,
+    debitFrom?: string,
+    shared?: string
 }

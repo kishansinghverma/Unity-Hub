@@ -3,71 +3,74 @@ import { splitwiseService } from "../services/splitwise";
 
 class Splitwise {
     private constants;
-
-    private groupOwner = new Map<number, number>();
+    private payers: Map<number, number> = new Map();
 
     constructor() {
         this.constants = {
-            "groups": {
-                "familyExpenses": {
-                    "id": 52168740,
-                    "payerId": 65793539
+            groups: {
+                Miscellaneous: {
+                    id: 52697237,
+                    payerId: 74792591
                 },
-                "miscellaneous": {
-                    "id": 52697237,
-                    "payerId": 74792591
+                Self: {
+                    id: 52697298,
+                    payerId: 74792591
                 },
-                "self": {
-                    "id": 52697298,
-                    "payerId": 74792591
+                PapaJi: {
+                    id: 66300166,
+                    payerId: 65793540
                 },
-                "prepaid Gatepass": {
-                    "id": 52740365,
-                    "payerId": 74841231
+                Uncle: {
+                    id: 66300207,
+                    payerId: 65793539
                 }
             },
-            "nonSharingGroups": [52168740, 52697237, 52697298, 52740365],
-            "userId": {
-                "self": 62039516
-            }
+            userId: {
+                Self: 62039516,
+                Kishan: 74792591,
+                Uncle: 65793539,
+                Papa: 65793540
+            },
         };
-        Object.values(this.constants.groups).forEach(({ id, payerId }) => this.groupOwner.set(id, payerId));
+
+        Object.values(this.constants.groups).forEach(group => this.payers.set(group.id, group.payerId));
     }
 
     public listGroups = () => splitwiseService.listGroups();
 
     public getGroupDetails = (groupId: string) => splitwiseService.getGroup(groupId);
 
-    public addGenericExpense = (transaction: GroupExpenseRequest) => {
-        if (this.constants.nonSharingGroups.includes(transaction.group_id)) {
+    public addExpense = (transaction: GroupExpenseRequest) => {
+        const forceSharing = !Object.values(this.constants.groups).map(value => (value.id)).includes(transaction.group_id);
+
+        if (forceSharing || transaction.shared === 'true') {
+            const expense: SharedExpense = {
+                date: transaction.date,
+                cost: transaction.cost,
+                description: transaction.description,
+                details: transaction.details,
+                group_id: transaction.group_id,
+                split_equally: true
+            }
+            return splitwiseService.addExpense(expense, transaction.debitFrom);
+        }
+        else {
             const expense: SelfPaidExpense = {
-                ...transaction,
-                users__0__user_id: this.constants.userId.self,
+                date: transaction.date,
+                cost: transaction.cost,
+                description: transaction.description,
+                details: transaction.details,
+                group_id: transaction.group_id,
+                users__0__user_id: this.constants.userId.Self,
                 users__0__paid_share: `${transaction.cost}`,
                 users__0__owed_share: "0",
-                users__1__user_id: this.groupOwner.get(transaction.group_id) ?? this.constants.userId.self,
+                users__1__user_id: this.payers.get(transaction.group_id) as number,
                 users__1__paid_share: "0",
                 users__1__owed_share: `${transaction.cost}`
             };
-            return splitwiseService.addExpense(expense);
-        }
-        else {
-            const expenseData: SharedExpense = {
-                ...transaction,
-                split_equally: true
-            }
-            return splitwiseService.addExpense(expenseData);
+            return splitwiseService.addExpense(expense, transaction.debitFrom);
         }
     };
-
-    public addEmandiExpense = (transaction: GroupExpenseRequest) => {
-        const expense = {
-            ...transaction,
-            group_id: this.constants.groups.familyExpenses.id
-        }
-
-        return splitwiseService.addExpense(expense);
-    }
 }
 
 export const splitwise = new Splitwise();

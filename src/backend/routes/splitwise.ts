@@ -17,7 +17,7 @@ router.get('/groups', (request, response) => {
 });
 
 router.post('/transactions', (request, response) => {
-    splitwise.addGenericExpense(request.body)
+    splitwise.addExpense(request.body)
         .then(replySuccess(response))
         .catch(replyError(response));
 });

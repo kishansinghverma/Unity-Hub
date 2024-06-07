@@ -1,4 +1,4 @@
-import { Table, Image, Placeholder, Input, DropdownProps, Icon, Menu, Dropdown, Loader, Dimmer } from "semantic-ui-react";
+import { Table, Image, Placeholder, Input, DropdownProps, Icon, Menu, Dropdown, Loader, Dimmer, Divider } from "semantic-ui-react";
 import { CustomCardProps, IHeader, ITable, Pagination, RawExpense } from "./types";
 import React, { SyntheticEvent, useState } from "react";
 import dayjs from "dayjs";
@@ -85,18 +85,19 @@ export const TablePagination: React.FC<Pagination> = ({ currentPage, pageCount, 
 
 export const ExpenseItem: React.FC<React.PropsWithChildren & RawExpense> = ({ _id, dateTime, location, coordinate, onDelete }) => {
     return (
-        <div style={{ display: 'flex', flexDirection: 'row' }}>
-            <div style={{ flex: 1 }}>
-                <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', fontWeight: 'bold' }}>
+        <div className="expense-card">
+            <div className="expense-card-body">
+                <div className="expense-card-header">
                     <div style={{ marginBottom: '5px' }}>🗓️&nbsp;{dayjs(dateTime).format('DD/MM/YYYY')}</div>
                     <div style={{ marginBottom: '5px' }}>🕒&nbsp;{dayjs(dateTime).format('hh:mm A')}</div>
                 </div>
-                <div style={{ color: 'grey', display: 'flex' }}>
+                <div className="expense-card-link">
                     <div>🌎&nbsp;</div>
                     <div><a target='_blank' rel="noreferrer" href={`https://www.google.com/maps?q=${coordinate}`}>{location.replaceAll('\n', ', ')}</a></div>
                 </div>
             </div>
-            <div style={{paddingLeft: '16px', display: 'flex', alignItems: 'center'}}>
+            <Divider />
+            <div className="expense-card-action">
                 <Icon name="trash" title="Requeue" color="red" link onClick={() => { onDelete(_id) }} />
             </div>
         </div>

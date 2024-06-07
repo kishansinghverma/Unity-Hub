@@ -54,10 +54,14 @@ export type GroupExpenseRequest = {
     details: string,
     description: string,
     cost: string,
-    date?: string
+    date?: string,
+    shared?: string,
+    debitFrom?: string
 }
 
 export type SelfPaidExpense = {
+    date?: string,
+    cost: string,
     details: string,
     group_id: number
     description: string,
@@ -70,7 +74,8 @@ export type SelfPaidExpense = {
 }
 
 export type SharedExpense = {
-    group_id: number
+    date?: string, 
+    group_id: number,
     details: string,
     description: string,
     cost: string,
