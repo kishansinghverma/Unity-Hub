@@ -53,13 +53,15 @@ export const isFormValid = ({ currentTarget }: BaseSyntheticEvent) => {
     return isFormValid;
 }
 
-export const getDate = () => {
-    const currentDate = new Date()
+export const getDate = (epoch?: number) => {
+    const currentDate = epoch ? new Date(epoch) : new Date();
     const day = currentDate.getDate()
     const month = currentDate.getMonth() + 1
     const year = currentDate.getFullYear()
     return `${day}-${month}-${year}`;
 }
+
+export const getDateTime = (epoch?: number) => (`${getDate(epoch)}, ${epoch ? new Date(epoch).toLocaleTimeString() : new Date().toLocaleTimeString()}`);
 
 export const capitalize = (str: string) => {
     if (!str) return '';

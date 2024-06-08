@@ -10,6 +10,12 @@ router.get('/', (request, response) => {
         .catch(replyError(response));
 });
 
+router.get('/lastrefinement', (request, response) => {
+    expenses.getLastRefinementDate()
+        .then(replySuccess(response))
+        .catch(replyError(response));
+});
+
 router.post('/', (request, response) => {
     expenses.addTransaction(request.body)
         .then(replySuccess(response))

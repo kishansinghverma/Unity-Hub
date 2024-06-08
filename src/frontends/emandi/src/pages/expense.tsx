@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Card, Divider, Grid, Header, Segment, Image, Button, Modal, Loader, Form, Icon, Label, FormRadioProps, RadioProps } from "semantic-ui-react"
 import { ModalParams, RawExpense, SplitwiseGroup } from "../common/types";
 import { PostParams, Url } from "../common/constants";
-import { SplitwiseGroupMapper, SplitwiseGroupsMapper, handleError, handleJsonResponse, handleResponse } from "../operations/utils";
+import { SplitwiseGroupMapper, SplitwiseGroupsMapper, getDate, getDateTime, handleError, handleJsonResponse, handleResponse } from "../operations/utils";
 import { ExpenseItem, GroupCard } from "../common/components";
 
 export const Expense: React.FC = () => {
@@ -15,6 +15,7 @@ export const Expense: React.FC = () => {
     const [expenseSaving, setExpenseSaving] = useState(false);
     const [open, setOpen] = useState(false);
     const [modalParams, setModalParams] = useState<ModalParams>();
+    const [refinementDate, setRefinementDate] = useState(1);
 
     const onCheckedChanged = (_: any, { name, value }: RadioProps) => setModalParams({ ...modalParams, [name as string]: value as string });
 
@@ -113,6 +114,7 @@ export const Expense: React.FC = () => {
     const deleteExpense = (id?: string) => {
         if (id) {
             setExpenseLoading(true);
+            setRefinementDate((new Date().getTime()));
             return fetch(`${Url.DraftExpenses}/${id}`, { method: 'DELETE' })
                 .then(loadRawTransactions)
                 .catch(handleError);
@@ -136,9 +138,17 @@ export const Expense: React.FC = () => {
             .finally(() => setGroupsLoading(false));
     }
 
+    const getRefinementDate = () => {
+        fetch(Url.ExpenseMeta)
+            .then(handleJsonResponse)
+            .then(response => setRefinementDate(response.value))
+            .catch(handleError);
+    }
+
     useEffect(() => {
         loadRawTransactions();
         loadGroups();
+        getRefinementDate();
     }, [])
 
 
@@ -183,6 +193,8 @@ export const Expense: React.FC = () => {
                                 </Grid.Column>
                             ))}
                         </Grid>
+                        <br /><br /><br /><br />
+                        <center><Label size='huge'>Last Refinement Done On {getDateTime(refinementDate)}</Label></center>
                     </Grid.Column>
                 </Grid>
             </Segment>
@@ -267,7 +279,7 @@ export const Expense: React.FC = () => {
                                                 size='small'
                                                 value='false'
                                                 name='shared'
-                                                checked={modalParams?.shared === 'false' }
+                                                checked={modalParams?.shared === 'false'}
                                                 onChange={onCheckedChanged}
                                             />
                                             <Form.Radio

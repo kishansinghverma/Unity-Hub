@@ -11,7 +11,8 @@ export const constants = {
     expense: {
         database: 'Expense',
         collection: {
-            draft: 'Draft'
+            draft: 'Draft',
+            meta: 'Meta'
         }
     },
     errors: {

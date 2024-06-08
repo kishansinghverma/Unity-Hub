@@ -29,6 +29,7 @@ export const Url = {
     Queued: "/api/emandi/queued",
     Delete: "/api/emandi/entry",
     DraftExpenses: "/api/expenses",
+    ExpenseMeta: "/api/expenses/lastrefinement",
     NotificationUrl: `/api/whatsapp/sendtext/unityhub`,
     SplitWiseGroups: `/api/splitwise/groups`,
     SplitWiseGroup: `/api/splitwise/group`,

@@ -86,6 +86,15 @@ export class MongoDbService {
         return this.updateDocumentById(collectionName, _id, patchData);
     }
 
+    patchDocument = (collectionName: string, patchData: Document, query: Document, options: Document) => {
+        const operation = async (collection: Collection) => {
+            await collection.updateOne(query, patchData, options);
+            return this.emptyResponse;
+        }
+
+        return this.executeOperationOnCollection(collectionName, operation);
+    }
+
     moveDocument = (sourceCollection: string, targetCollection: string, filter: Filter<Document>, options: any) => {
         const operation = async (database: Db) => {
             const record = await database.collection(sourceCollection).findOneAndDelete(filter, options);
