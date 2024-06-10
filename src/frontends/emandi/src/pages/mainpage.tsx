@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { Segment, Menu, Dropdown, DropdownMenu } from "semantic-ui-react";
 import { pages } from "../common/constants";
 import { Link, Outlet, useLocation } from "react-router-dom";

@@ -1,6 +1,6 @@
 import { BaseSyntheticEvent, useRef } from "react";
 import { toast } from "react-toastify";
-import { InputOnChangeData, Form, Input, Divider, Button, DropdownProps, Checkbox, CheckboxProps } from "semantic-ui-react";
+import { InputOnChangeData, Form, Input, Divider, Button, DropdownProps, Checkbox } from "semantic-ui-react";
 import { CustomForm, CustomSelect } from "../common/components";
 import { DistanceResponse, SelectOption } from "../common/types";
 import { ReactState, getFormData, handleError, handleJsonResponse, handleResponse, isFormValid, triggerValidation, trimInput, validateField } from "../operations/utils";
