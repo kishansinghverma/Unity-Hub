@@ -1,46 +1,29 @@
-import { BaseSyntheticEvent, useState } from "react";
+import { useEffect, useState } from "react";
 import { Segment, Menu, Dropdown, DropdownMenu } from "semantic-ui-react";
-import { MenuItemProps } from "semantic-ui-react/dist/commonjs/collections/Menu/MenuItem";
-import { NewEntry } from "./newentry";
-import { NewParty } from "./newparty";
-import { ProcessedPage } from "./processed";
-import { QueuedPage } from "./queued";
-import { Expense } from "./expense";
-import { Parties } from "./parties";
-import { PageTitle } from "../common/constants";
+import { pages } from "../common/constants";
+import { Link, Outlet, useLocation } from "react-router-dom";
 
 export const MainPage = () => {
-    const pageMap: { [key: string]: JSX.Element } = {
-        [PageTitle.NewEntry]: <NewEntry />,
-        [PageTitle.AddParty]: <NewParty />,
-        [PageTitle.Queued]: <QueuedPage />,
-        [PageTitle.Processed]: <ProcessedPage />,
-        [PageTitle.Parties]: <Parties />,
-        [PageTitle.Expenses]: <Expense />
-    }
-
-    const [selectedItem, setSelectedItem] = useState<string | undefined>(PageTitle.NewEntry);
-    const handleClick = (event: BaseSyntheticEvent, { name }: MenuItemProps) => setSelectedItem(name);
+    const location = useLocation();
+    const isActive = (route: string) => (location.pathname.replace(/\/+$/, '') === route);
 
     return (
         <>
             <Segment inverted attached>
                 <Menu inverted pointing secondary size='small' attached>
-                    <Menu.Item icon='add' name={PageTitle.NewEntry} active={selectedItem === PageTitle.NewEntry} onClick={handleClick} />
-                    <Menu.Item icon='wait' name={PageTitle.Queued} active={selectedItem === PageTitle.Queued} onClick={handleClick} />
-                    <Menu.Item icon='tasks' name={PageTitle.Processed} active={selectedItem === PageTitle.Processed} onClick={handleClick} />
+                    <Menu.Item icon='add' name={pages.newEntry.label} active={isActive(pages.root.route) || isActive(pages.newEntry.route)} as={Link} to={pages.newEntry.route} />
+                    <Menu.Item icon='wait' name={pages.queued.label} active={isActive(pages.queued.route)} as={Link} to={pages.queued.route} />
+                    <Menu.Item icon='tasks' name={pages.processed.label} active={isActive(pages.processed.route)} as={Link} to={pages.processed.route} />
                     <Dropdown item text='More' pointing="top right">
                         <DropdownMenu>
-                            <Menu.Item icon='user plus' name={PageTitle.AddParty} active={selectedItem === PageTitle.AddParty} onClick={handleClick} />
-                            <Menu.Item icon='users' name={PageTitle.Parties} active={selectedItem === PageTitle.Parties} onClick={handleClick} />
-                            <Menu.Item icon='pie chart' name={PageTitle.Expenses} active={selectedItem === PageTitle.Expenses} onClick={handleClick} />
+                            <Menu.Item icon='user plus' name={pages.addParty.label} active={isActive(pages.addParty.route)} as={Link} to={pages.addParty.route} />
+                            <Menu.Item icon='users' name={pages.parties.label} active={isActive(pages.parties.route)} as={Link} to={pages.parties.route} />
+                            <Menu.Item icon='pie chart' name={pages.expenses.label} active={isActive(pages.expenses.route)} as={Link} to={pages.expenses.route} />
                         </DropdownMenu>
                     </Dropdown>
                 </Menu>
             </Segment>
-            <div className='content-container'>
-                {pageMap[selectedItem as string]}
-            </div>
+            <div className='content-container'><Outlet /></div>
         </>
     )
 }

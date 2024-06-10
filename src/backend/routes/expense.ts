@@ -10,8 +10,20 @@ router.get('/', (request, response) => {
         .catch(replyError(response));
 });
 
+router.get('/init', (request, response) => {
+    expenses.initializeDatabase()
+        .then(replySuccess(response))
+        .catch(replyError(response));
+});
+
 router.get('/lastrefinement', (request, response) => {
     expenses.getLastRefinementDate()
+        .then(replySuccess(response))
+        .catch(replyError(response));
+});
+
+router.get('/descriptions', (request, response) => {
+    expenses.getDescriptions()
         .then(replySuccess(response))
         .catch(replyError(response));
 });
@@ -21,6 +33,12 @@ router.post('/', (request, response) => {
         .then(replySuccess(response))
         .catch(replyError(response));
 });
+
+router.post('/description', (request, response) => {
+    expenses.addDescription(request.body.item)
+        .then(replySuccess(response))
+        .catch(replyError(response));
+})
 
 router.delete('/:id', (request, response) => {
     expenses.deleteTransaction(request.params.id)

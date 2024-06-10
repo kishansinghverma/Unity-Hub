@@ -1,10 +1,10 @@
 import dayjs from 'dayjs';
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
-import { Card, Divider, Grid, Header, Segment, Image, Button, Modal, Loader, Form, Icon, Label, FormRadioProps, RadioProps } from "semantic-ui-react"
-import { ModalParams, RawExpense, SplitwiseGroup } from "../common/types";
+import { Card, Divider, Grid, Header, Segment, Image, Button, Modal, Loader, Form, Icon, Label, FormRadioProps, RadioProps, DropdownItemProps, DropdownProps } from "semantic-ui-react"
+import { ModalParams, RawExpense, SelectOption, SplitwiseGroup } from "../common/types";
 import { PostParams, Url } from "../common/constants";
-import { SplitwiseGroupMapper, SplitwiseGroupsMapper, getDate, getDateTime, handleError, handleJsonResponse, handleResponse } from "../operations/utils";
+import { SplitwiseGroupMapper, SplitwiseGroupsMapper, capitalize, getDate, getDateTime, handleError, handleJsonResponse, handleResponse } from "../operations/utils";
 import { ExpenseItem, GroupCard } from "../common/components";
 
 export const Expense: React.FC = () => {
@@ -16,6 +16,8 @@ export const Expense: React.FC = () => {
     const [open, setOpen] = useState(false);
     const [modalParams, setModalParams] = useState<ModalParams>();
     const [refinementDate, setRefinementDate] = useState(1);
+    const [descriptions, setDescriptions] = useState<SelectOption[]>([]);
+    const [descriptionLoading, setDescriptionLoading] = useState(true);
 
     const onCheckedChanged = (_: any, { name, value }: RadioProps) => setModalParams({ ...modalParams, [name as string]: value as string });
 
@@ -139,16 +141,36 @@ export const Expense: React.FC = () => {
     }
 
     const getRefinementDate = () => {
-        fetch(Url.ExpenseMeta)
+        fetch(Url.ExpenseLastRefinement)
             .then(handleJsonResponse)
             .then(response => setRefinementDate(response.value))
             .catch(handleError);
+    }
+
+    const loadDescriptions = () => {
+        setDescriptionLoading(true);
+        fetch(Url.ExpenseDescriptions)
+            .then(handleJsonResponse)
+            .then(response => setDescriptions(response.value.map((item: string, index: number) => ({ key: `desc-${index}`, text: item, value: item }))))
+            .catch(handleError)
+            .finally(() => setDescriptionLoading(false));
+    }
+
+    const onAddItem = (data: DropdownProps) => {
+        setDescriptions([...descriptions, {
+            key: `desc-${descriptions.length}`,
+            text: capitalize(data.value as string),
+            value: capitalize(data.value as string)
+        }]);
+        setModalParams({ ...modalParams, description: capitalize(data.value as string) });
+        fetch(Url.AddDescriptions, { ...PostParams, body: JSON.stringify({ item: capitalize(data.value as string) }) });
     }
 
     useEffect(() => {
         loadRawTransactions();
         loadGroups();
         getRefinementDate();
+        loadDescriptions();
     }, [])
 
 
@@ -216,25 +238,28 @@ export const Expense: React.FC = () => {
                                         fluid
                                         required
                                         type='datetime-local'
-                                        size='small'
                                         value={modalParams?.dateTime}
                                         onChange={e => setModalParams({ ...modalParams, dateTime: e.target.value })}
                                     />
-                                    <Form.Input
+                                    <Form.Dropdown
+                                        search
                                         fluid
-                                        required
+                                        selection
+                                        allowAdditions
+                                        additionPosition='bottom'
                                         placeholder='Description'
-                                        size='small'
-                                        style={{ margin: '8px 0px' }}
+                                        options={descriptions}
                                         value={modalParams?.description}
-                                        onChange={e => setModalParams({ ...modalParams, description: e.target.value })}
+                                        loading={descriptionLoading}
+                                        selectOnBlur={false}
+                                        onChange={(_, data) => setModalParams({ ...modalParams, description: data.value as string })}
+                                        onAddItem={(_, data) => onAddItem(data)}
                                     />
                                     <Form.Input
                                         fluid
                                         required
                                         type='number'
                                         placeholder='Amount'
-                                        size='small'
                                         value={modalParams?.amount}
                                         onChange={e => setModalParams({ ...modalParams, amount: e.target.value })}
                                     />

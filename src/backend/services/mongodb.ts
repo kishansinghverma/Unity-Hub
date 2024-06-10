@@ -88,8 +88,8 @@ export class MongoDbService {
 
     patchDocument = (collectionName: string, patchData: Document, query: Document, options: Document) => {
         const operation = async (collection: Collection) => {
-            await collection.updateOne(query, patchData, options);
-            return this.emptyResponse;
+            const response = await collection.updateOne(query, patchData, options);
+            return { content: response, statusCode: 202 };
         }
 
         return this.executeOperationOnCollection(collectionName, operation);

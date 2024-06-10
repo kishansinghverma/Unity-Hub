@@ -30,10 +30,11 @@ class ExpressServer {
 
     private registerStaticServer = () => {
         this.router.use("/emandi", express.static(path.resolve('dist/frontends/emandi')));
+        this.router.get('/emandi/*', (req, res) => { res.sendFile(path.join(path.resolve('dist/frontends/emandi'), 'index.html')) });
     }
 
     private registerRoutes = () => {
-        this.router.get('/api/test', (request, response) => {});
+        this.router.get('/api/test', (request, response) => { });
 
         this.router.use('/api/emandi', emandiRoute);
         this.router.use('/api/expenses', expenseRoute);

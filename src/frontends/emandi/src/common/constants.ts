@@ -1,12 +1,13 @@
 import { SelectOption } from "./types";
 
-export enum PageTitle {
-    NewEntry = 'new',
-    AddParty = 'add party',
-    Queued = 'queued',
-    Processed = 'processed',
-    Parties = 'parties',
-    Expenses = 'expenses'
+export const pages = {
+    root: { route: '/emandi' },
+    newEntry: { label: 'New', route: '/emandi/new' },
+    addParty: { label: 'Add Party', route: '/emandi/addparty' },
+    queued: { label: 'Queued', route: '/emandi/queued' },
+    processed: { label: 'Processed', route: '/emandi/processed' },
+    parties: { label: 'Parties', route: '/emandi/parties' },
+    expenses: { label: 'Expenses', route: '/emandi/expenses' }
 }
 
 export const VehicleTypeOptions: Array<SelectOption> = [
@@ -29,7 +30,9 @@ export const Url = {
     Queued: "/api/emandi/queued",
     Delete: "/api/emandi/entry",
     DraftExpenses: "/api/expenses",
-    ExpenseMeta: "/api/expenses/lastrefinement",
+    ExpenseLastRefinement: "/api/expenses/lastrefinement",
+    ExpenseDescriptions: "/api/expenses/descriptions",
+    AddDescriptions: "/api/expenses/description",
     NotificationUrl: `/api/whatsapp/sendtext/unityhub`,
     SplitWiseGroups: `/api/splitwise/groups`,
     SplitWiseGroup: `/api/splitwise/group`,
