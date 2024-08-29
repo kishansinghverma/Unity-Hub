@@ -21,7 +21,7 @@ class ExpressServer {
         const ipAddress = request.ip || request.connection.remoteAddress;
         const method = request.method;
         const path = request.originalUrl;
-        console.log(`[${method}] ${ipAddress} -> ${path}`);
+        console.error(`[${method}] ${ipAddress} -> ${path}`);
         next();
     }
 
