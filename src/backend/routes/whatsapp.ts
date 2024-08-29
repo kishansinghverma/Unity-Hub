@@ -10,7 +10,7 @@ const logger = new Logger(source.route);
 
 router.post('/webhook', (request, response) => {
     validator.validateRequest(request)
-        .then(values => whatsApp.handleIncomingMessages(values))
+        .then(whatsApp.handleIncomingMessages)
         .catch(({ message }) => logger.error(message))
         .finally(() => response.end());
 });

@@ -66,7 +66,8 @@ export enum source {
     smartnest = 'SmartNest',
     cronjob = 'CronJob',
     assistant = 'GoogleAssistant',
-    smarthome = 'SmartHome'
+    smarthome = 'SmartHome',
+    whatsapp = 'WhatsApp'
 }
 
 export enum style {
