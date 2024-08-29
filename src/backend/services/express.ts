@@ -54,6 +54,7 @@ class ExpressServer {
     }
 
     public initialize = () => {
+        console.log('\x1b[33m%s\x1b[0m', 'This is a colored output...');
         this.registerMiddleWares();
         this.registerStaticServer();
         this.registerRoutes();
