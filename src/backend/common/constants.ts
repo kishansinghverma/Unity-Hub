@@ -70,15 +70,6 @@ export enum source {
     whatsapp = 'WhatsApp'
 }
 
-export enum style {
-    none = 'visible',
-    bold = 'bold',
-    dim = 'dim',
-    italic = 'italic',
-    underline = 'underline',
-    strikethrough = 'strikethrough'
-}
-
 export const mimeType: { [key: string]: string } = {
     pdf: 'application/pdf',
     zip: 'application/zip',

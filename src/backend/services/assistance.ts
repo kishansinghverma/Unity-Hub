@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { Assistant, AssistantLanguage } from 'nodejs-assistant';
 import { Logger } from '../common/models';
-import { source, style } from '../common/constants';
+import { source } from '../common/constants';
 
 class GoogleAssistant {
     private logger: Logger;
@@ -28,7 +28,7 @@ class GoogleAssistant {
     }
 
     public initialize = () => {
-        this.ask('Ping').then(response => this.logger.success(response, style.bold));
+        this.ask('Ping').then(response => this.logger.info(response));
     }
 
     public ask = (query: string) => this.assistant.query(query).then(response => (response.text ?? 'Command Executed'));

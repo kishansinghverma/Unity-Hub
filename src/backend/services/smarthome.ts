@@ -1,4 +1,4 @@
-import { source, style } from "../common/constants";
+import { source } from "../common/constants";
 import { getCustomDevice, helperDevices } from "../common/devices";
 import { Logger, Throwable } from "../common/models";
 import { Action } from "../common/types";
@@ -85,7 +85,7 @@ class SmartHome {
     }
 
     public initialize = () => {
-        this.logger.success('Home Automation Service Ready!', style.bold);
+        this.logger.info('Home Automation Service Ready!');
     }
 }
 

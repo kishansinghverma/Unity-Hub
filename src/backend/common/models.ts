@@ -1,7 +1,7 @@
 import chalk from "chalk";
 import fs from "fs";
 import path from "path";
-import { source, style } from "./constants";
+import { source } from "./constants";
 import { MulterError } from "multer";
 import { ObjectId } from "mongodb";
 
@@ -20,7 +20,7 @@ export class String {
         const base64Image = fs.readFileSync(path.join(__dirname, `../assets/${assetName}`)).toString('base64');
         return `data:image/png;base64,${base64Image}`;
     }
-    
+
     public static getTaggedString = (template: string, params: any) => {
         return Array.isArray(params) ?
             template.replace(/\${(\d+)}/g, (_, match) => params[parseInt(match)] ?? `\${${parseInt(match)}}`) :
@@ -45,18 +45,14 @@ export class Logger {
         this.source = source;
     }
 
-    private writeLog = (source: string, message: string, color: string, loggingStyle?: style) => {
-        const header = `[${chalk.bold(source)} ${new Date().toLocaleTimeString()}]`;
-        console.log(chalk.hex('#fff')(header), chalk.hex(color)[loggingStyle ?? style.none](message));
-    }
+    private getMessage = (source: string, message: string) =>
+        `[${new Date().toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', second: '2-digit' })} -> ${source}] ${message}`;
 
-    public success = (message: string, loggingStyle?: style, source = this.source) => this.writeLog(source, message, '#66bb6a', loggingStyle);
+    public error = (message: string, source = this.source) => console.error(this.getMessage(source, message));
 
-    public error = (message: string, loggingStyle?: style, source = this.source) => this.writeLog(source, message, '#f44336', loggingStyle);
+    public warning = (message: string, source = this.source) => console.warn(this.getMessage(source, message));
 
-    public warning = (message: string, loggingStyle?: style, source = this.source) => this.writeLog(source, message, '#ffa726', loggingStyle);
-
-    public info = (message: string, loggingStyle?: style, source = this.source) => this.writeLog(source, message, '#29b6f6', loggingStyle);
+    public info = (message: string, source = this.source) => console.debug(this.getMessage(source, message));
 }
 
 export class CustomError {

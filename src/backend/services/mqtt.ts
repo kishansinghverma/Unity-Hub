@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import { IClientOptions, MqttClient, connect } from "mqtt";
-import { source, constants, style } from "../common/constants";
+import { source, constants } from "../common/constants";
 import { Logger, Throwable } from "../common/models";
 import { MqttPacket } from "../common/types";
 
@@ -29,7 +29,7 @@ class MqttService {
 
     public initialize = () => {
         this.client.on('connect', () => {
-            this.logger.success(constants.message.mqttConnected, style.bold);
+            this.logger.info(constants.message.mqttConnected);
             this.subscribeToPrinterStatus();
         });
         this.client.on('disconnect', () => this.logger.warning(constants.message.mqttDisconnected));

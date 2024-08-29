@@ -1,5 +1,5 @@
 import express from 'express';
-import { constants, source, style } from '../common/constants';
+import { constants, source } from '../common/constants';
 import { eMandi } from '../operations/emandi';
 import { Logger } from '../common/models';
 import { replyError, replySuccess } from '../common/utils';
@@ -9,7 +9,7 @@ const router = express.Router();
 const logger = new Logger(source.route);
 
 router.get("/", async (request, response) => {
-    logger.info(constants.message.ping, style.bold);
+    logger.info(constants.message.ping);
     eMandi.validateInstance()
         .then(replySuccess(response))
         .catch(replyError(response));

@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import express from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import path from 'path';
@@ -10,19 +10,27 @@ import fileRoute from '../routes/files';
 import mqttRoute from '../routes/mqtt';
 import expenseRoute from '../routes/expense';
 import { Logger } from '../common/models';
-import { source, style } from '../common/constants';
+import { source } from '../common/constants';
 
 class ExpressServer {
     private logger: Logger;
     private address = process.env.ADDRESS || 'localhost';
     private port = parseInt(process.env.PORT || '8080');
     private router = express();
+    private tracer = (request: Request, response: Response, next: NextFunction) => {
+        const ipAddress = request.ip || request.connection.remoteAddress;
+        const method = request.method;
+        const path = request.originalUrl;
+        console.log(`[${method}] ${ipAddress} -> ${path}`);
+        next();
+    }
 
     constructor() {
         this.logger = new Logger(source.server);
     }
 
     private registerMiddleWares = () => {
+        this.router.use(this.tracer);
         this.router.use(bodyParser.json({ limit: '5mb' }));
         this.router.use(bodyParser.urlencoded({ extended: true }));
         this.router.use(cors());
@@ -49,7 +57,7 @@ class ExpressServer {
         this.registerMiddleWares();
         this.registerStaticServer();
         this.registerRoutes();
-        this.router.listen(this.port, this.address, () => this.logger.success(`Unity server is live on ${this.port}! 🎉`, style.bold));
+        this.router.listen(this.port, this.address, () => this.logger.info(`Unity server is live on ${this.port}! 🎉`));
     }
 }
 

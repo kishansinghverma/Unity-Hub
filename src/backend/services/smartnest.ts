@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import { IClientOptions, MqttClient, connect } from "mqtt";
-import { source, style } from "../common/constants";
+import { source } from "../common/constants";
 import { getNestDevice, nestDeviceGroupIds, nestDeviceGroups } from "../common/devices";
 import { Logger, Throwable } from "../common/models";
 import { smartHomeService } from './smarthome';
@@ -45,7 +45,7 @@ class SmartNest {
 
         client.on('connect', () => {
             client.subscribe(`${clientId}/#`, (err) => {
-                err ? this.logger.error(err.message) : this.logger.success(`Client Connected : ${clientId}`, style.bold);
+                err ? this.logger.error(err.message) : this.logger.info(`Client Connected : ${clientId}`);
             })
         });
     }

@@ -1,6 +1,6 @@
 import cron from 'node-cron';
 import { Logger } from '../common/models';
-import { constants, source, style } from '../common/constants';
+import { constants, source } from '../common/constants';
 import path from 'path';
 import fs from 'fs';
 
@@ -28,7 +28,7 @@ class CronJobs {
     }
 
     public initialize = () => {
-        this.logger.success(constants.message.cronJobRegistered, style.bold);
+        this.logger.info(constants.message.cronJobRegistered);
         cron.schedule('0 1 * * *', () => {
             this.clearPdfFiles();
         });
