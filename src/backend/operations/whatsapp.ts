@@ -32,7 +32,7 @@ class WhatsApp {
             whatsAppService.shareLocalFileViaGroup(request.params.number, greenApi.groupId.unityHub, content, request.body.caption));
 
     public handleIncomingMessages = async (message: IncomingMessage) => {
-        this.logger.info('Message Recieved!');
+        this.logger.success('Message Recieved!');
         if (message.messageData.typeMessage === 'textMessage') {
             this.logger.info(`Text : ${message.messageData.textMessageData?.textMessage}`);
             if (message.messageData.textMessageData?.textMessage.endsWith('!'))

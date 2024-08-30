@@ -18,15 +18,12 @@ class ExpressServer {
     private port = parseInt(process.env.PORT || '8080');
     private router = express();
     private tracer = (request: Request, response: Response, next: NextFunction) => {
-        const ipAddress = request.ip || request.connection.remoteAddress;
-        const method = request.method;
-        const path = request.originalUrl;
-        console.error(`[${method}] ${ipAddress} -> ${path}`);
+        this.logger.log(`${request.method} -> ${request.originalUrl}`);
         next();
     }
 
     constructor() {
-        this.logger = new Logger(source.server);
+        this.logger = new Logger(source.http);
     }
 
     private registerMiddleWares = () => {
@@ -54,11 +51,10 @@ class ExpressServer {
     }
 
     public initialize = () => {
-        console.log('\x1b[33m%s\x1b[0m', 'This is a colored output...');
         this.registerMiddleWares();
         this.registerStaticServer();
         this.registerRoutes();
-        this.router.listen(this.port, this.address, () => this.logger.info(`Unity server is live on ${this.port}! 🎉`));
+        this.router.listen(this.port, this.address, () => this.logger.success(`Unity server is live on ${this.port}! 🎉`));
     }
 }
 

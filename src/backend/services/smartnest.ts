@@ -45,7 +45,7 @@ class SmartNest {
 
         client.on('connect', () => {
             client.subscribe(`${clientId}/#`, (err) => {
-                err ? this.logger.error(err.message) : this.logger.info(`Client Connected : ${clientId}`);
+                err ? this.logger.error(err.message) : this.logger.success(`Client Connected : ${clientId}`);
             })
         });
     }

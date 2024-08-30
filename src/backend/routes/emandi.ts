@@ -9,7 +9,7 @@ const router = express.Router();
 const logger = new Logger(source.route);
 
 router.get("/", async (request, response) => {
-    logger.info(constants.message.ping);
+    logger.log(constants.message.ping);
     eMandi.validateInstance()
         .then(replySuccess(response))
         .catch(replyError(response));

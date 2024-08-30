@@ -1,4 +1,4 @@
-import chalk from "chalk";
+import 'dotenv/config';
 import fs from "fs";
 import path from "path";
 import { source } from "./constants";
@@ -40,19 +40,43 @@ export class String {
 
 export class Logger {
     private source: string;
+    private environment = process.env.APP_ENV;
+    private color = {
+        red: '\x1b[31m',
+        green: '\x1b[32m',
+        yellow: '\x1b[33m',
+        blue: '\x1b[34m',
+        white: '\x1b[37m',
+        reset: '\x1b[0m'
+    }
 
     constructor(source: source) {
         this.source = source;
     }
 
-    private getMessage = (source: string, message: string) =>
-        `[${new Date().toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', second: '2-digit' })} -> ${source}] ${message}`;
+    private getMessage = (message: string, color: string) => {
+        const currentTime = new Date().toLocaleTimeString('en-IN', {
+            timeZone: 'Asia/Kolkata',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
 
-    public error = (message: string, source = this.source) => console.error(this.getMessage(source, message));
+        return this.environment === 'Production' ?
+            `${color}[${this.source}] ${message}${this.color.reset}` :
+            `${color}${currentTime} <-> [${this.source}] ${message}${this.color.reset}`;
+    }
 
-    public warning = (message: string, source = this.source) => console.warn(this.getMessage(source, message));
 
-    public info = (message: string, source = this.source) => console.debug(this.getMessage(source, message));
+    public error = (message: string) => console.log(this.getMessage(message, this.color.red));
+
+    public warning = (message: string) => console.log(this.getMessage(message, this.color.yellow));
+
+    public info = (message: string) => console.log(this.getMessage(message, this.color.blue));
+
+    public success = (message: string) => console.log(this.getMessage(message, this.color.green));
+
+    public log = (message: string) => console.log(this.getMessage(message, this.color.white));
 }
 
 export class CustomError {

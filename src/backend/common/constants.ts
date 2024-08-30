@@ -60,7 +60,7 @@ export const mongoErrorCodes: { [key: string]: number } = {
 }
 
 export enum source {
-    server = 'Server',
+    http = 'HTTP',
     route = 'Route',
     mqtt = 'Mqtt',
     smartnest = 'SmartNest',

@@ -28,7 +28,7 @@ class CronJobs {
     }
 
     public initialize = () => {
-        this.logger.info(constants.message.cronJobRegistered);
+        this.logger.success(constants.message.cronJobRegistered);
         cron.schedule('0 1 * * *', () => {
             this.clearPdfFiles();
         });

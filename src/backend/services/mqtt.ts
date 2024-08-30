@@ -23,7 +23,7 @@ class MqttService {
 
     private subscribeToPrinterStatus = () => {
         this.client.subscribe('printer/status', err => {
-            err ? this.logger.error(err.message) : this.logger.info(constants.message.printerSubscribed);
+            err ? this.logger.error(err.message) : this.logger.success(constants.message.printerSubscribed);
         });
     }
 

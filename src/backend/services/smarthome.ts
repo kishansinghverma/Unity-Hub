@@ -85,7 +85,7 @@ class SmartHome {
     }
 
     public initialize = () => {
-        this.logger.info('Home Automation Service Ready!');
+        this.logger.success('Home Automation Service Ready!');
     }
 }
 
