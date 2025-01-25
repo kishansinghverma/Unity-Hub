@@ -81,10 +81,24 @@ export type RawExpense = {
     onDelete: Function
 }
 
-export type CustomCardProps = {
-    ImageSrc: string,
-    Name: string,
-    Info: string
+export type GroupInfo = {
+    id: number,
+    name: string,
+    isShared: boolean
+}
+
+export type GroupCardProps = {
+    onDragLeave: (e: React.DragEvent<HTMLDivElement>) => void,
+    onDragOver: (e: React.DragEvent<HTMLDivElement>) => void,
+    onDrop: (e: React.DragEvent<HTMLDivElement>) => void,
+    onClick: (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => void
+} & CardInfoProps;
+
+export type CardInfoProps = {
+    id: number,
+    imageSrc: string,
+    name: string,
+    due: string
 }
 export interface Group {
     id: number;
@@ -99,19 +113,27 @@ export interface Group {
     avatar: {
         large: string;
     };
+    members: Array<Member>;
+}
+
+export interface Member {
+    id: number;
+    first_name: string;
+    email: string;
 }
 export interface SplitwiseGroupResponse {
-    group: Group
+    group: Group;
 }
 export interface SplitwiseGroupsResponse {
-    groups: Array<Group>
+    groups: Array<Group>;
 }
 
 export type SplitwiseGroup = {
     id: number,
     name: string,
     avatar: string,
-    due: string
+    due: string,
+    members: Array<Member>
 }
 
 export type ModalParams = {
@@ -123,6 +145,6 @@ export type ModalParams = {
     location?: string,
     description?: string,
     amount?: string,
-    debitFrom?: string,
-    shared?: string
+    shared?: boolean,
+    parties?: Array<number>
 }

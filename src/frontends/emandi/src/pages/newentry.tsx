@@ -105,14 +105,6 @@ export const NewEntry: React.FC = () => {
                         onChange={triggerValidation} 
                     />
                 </Form.Field>
-                <Form.Field>
-                    <Input
-                        name="driverMobile"
-                        type="number"
-                        placeholder="ड्राइवर का मोबाइल नंबर"
-                        onBlur={trimInput}
-                        onChange={triggerValidation} />
-                </Form.Field>
                 <Divider hidden />
                 <div className="flex-full">
                     <Button color="red" type='submit' className="btn-submit"> गेटपास जारी करें </Button>

@@ -37,7 +37,6 @@ export class String {
         return capitals.join('.');
     };
 }
-
 export class Logger {
     private source: string;
     private environment = process.env.APP_ENV;
@@ -54,7 +53,7 @@ export class Logger {
         this.source = source;
     }
 
-    private getMessage = (message: string, color: string) => {
+    private getMessage = (message: any, color: string) => {
         const currentTime = new Date().toLocaleTimeString('en-IN', {
             timeZone: 'Asia/Kolkata',
             hour: '2-digit',
@@ -62,21 +61,27 @@ export class Logger {
             second: '2-digit'
         });
 
+        message = typeof message === 'object' ? JSON.stringify(message) : message;
+
         return this.environment === 'Production' ?
             `${color}[${this.source}] ${message}${this.color.reset}` :
             `${color}${currentTime} <-> [${this.source}] ${message}${this.color.reset}`;
     }
 
+    public error = (message: any) => console.log(this.getMessage(message, this.color.red));
 
-    public error = (message: string) => console.log(this.getMessage(message, this.color.red));
+    public warning = (message: any) => console.log(this.getMessage(message, this.color.yellow));
 
-    public warning = (message: string) => console.log(this.getMessage(message, this.color.yellow));
+    public info = (message: any) => console.log(this.getMessage(message, this.color.blue));
 
-    public info = (message: string) => console.log(this.getMessage(message, this.color.blue));
+    public success = (message: any) => console.log(this.getMessage(message, this.color.green));
 
-    public success = (message: string) => console.log(this.getMessage(message, this.color.green));
+    public log = (message: any) => console.log(this.getMessage(message, this.color.white));
+}
 
-    public log = (message: string) => console.log(this.getMessage(message, this.color.white));
+export class ObjectUtils {
+    public static isEmpty = (object: any) => !object || Object.keys(object).length === 0;
+    public static isEmptyResponse = (object: any) => object?.content === null;
 }
 
 export class CustomError {

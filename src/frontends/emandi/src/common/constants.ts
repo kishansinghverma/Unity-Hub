@@ -1,5 +1,11 @@
 import { SelectOption } from "./types";
 
+export enum SharingStatus {
+    Unknown = -1,
+    Shared = 1,
+    NotShared = 0
+};
+
 export const pages = {
     root: { route: '/emandi' },
     newEntry: { label: 'New', route: '/emandi/new' },
@@ -33,11 +39,12 @@ export const Url = {
     ExpenseLastRefinement: "/api/expenses/lastrefinement",
     ExpenseDescriptions: "/api/expenses/descriptions",
     AddDescriptions: "/api/expenses/description",
+    ExpenseGroups: "/api/expenses/groups",
     NotificationUrl: `/api/whatsapp/sendtext/unityhub`,
     SplitWiseGroups: `/api/splitwise/groups`,
     SplitWiseGroup: `/api/splitwise/group`,
     SplitWiseExpenses: `/api/splitwise/transactions`,
-    Distance: "https://dev.virtualearth.net/REST/V1/Routes/Driving?o=json&wp.0=sadabad&key=AhWAWkHKZZ0JtpBDWvq2_vZqrtmAgf3prbe31w7FbepXyGzvHoWzvpetsQIA7DpL&wp.1="
+    Distance: "https://dev.virtualearth.net/REST/V1/Routes/Driving?o=json&wp.0=sadabad&key=AhWAWkHKZZ0JtpBDWvq2_vZqrtmAgf3prbe31w7FbepXyGzvHoWzvpetsQIA7DpL&wp.1"
 }
 
 export const PostParams = {

@@ -82,26 +82,16 @@ export const MandiOptionsMapper = (party: Record<Party>) => {
     }
 }
 
-export const SplitwiseGroupMapper = ({ group }: SplitwiseGroupResponse) => {
-    const debt = group.simplified_debts.find(item => (item.to === 62039516));
-    return {
-        id: group.id,
-        name: group.name,
-        avatar: group.avatar.large,
-        due: debt ? debt.amount : '0'
-    };
-}
+export const SplitwiseGroupMapper = ({ group }: SplitwiseGroupResponse) => ({
+    id: group.id,
+    name: group.name,
+    avatar: group.avatar.large,
+    due: group.simplified_debts.find(item => (item.to === 62039516))?.amount ?? '0',
+    members: group.members
+});
 
 export const SplitwiseGroupsMapper = (data: SplitwiseGroupsResponse) => {
-    return data.groups.map(item => {
-        const debt = item.simplified_debts.find(debt => (debt.to === 62039516));
-        return {
-            id: item.id,
-            name: item.name,
-            avatar: item.avatar.large,
-            due: debt ? debt.amount : '0'
-        };
-    });
+    return data.groups.map(item => (SplitwiseGroupMapper({ group: item })));
 }
 
 export const ReactState = <T>(value: T) => {

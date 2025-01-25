@@ -1,5 +1,6 @@
 import { capitalize, getDate, handleError } from "./utils";
 import { PatchParams, PostParams, States, Url } from "../common/constants";
+import { GroupInfo } from "../common/types";
 
 export const createNewEntry = (formData: any) => {
     return fetch(Url.Push, {
@@ -11,8 +12,7 @@ export const createNewEntry = (formData: any) => {
             bags: parseInt(formData.bags),
             party: JSON.parse(formData.party),
             vehicleNumber: formData.vehicleNumber.replace(/\s/g, "").toUpperCase(),
-            vehicleType: parseInt(formData.vehicleType),
-            driverMobile: formData.driverMobile
+            vehicleType: parseInt(formData.vehicleType)
         })
     });
 }
@@ -43,18 +43,25 @@ export const updateParty = (formData: any) => {
     };
 
     return {
-        executeRequest: ()=>fetch(Url.Parties, { ...PatchParams, body: JSON.stringify(patchData) }),
+        executeRequest: () => fetch(Url.Parties, { ...PatchParams, body: JSON.stringify(patchData) }),
         data: patchData
     };
 }
 
+export const updateGroupInfo = (groupInfo: GroupInfo) => {
+    return fetch(`${Url.ExpenseGroups}`, {
+        ...PostParams,
+        body: JSON.stringify(groupInfo)
+    }).catch(handleError);
+}
+
 export const getDistance = (destination: string) => {
-    return fetch(`${Url.Distance}${destination}`);
+    return fetch(`${Url.Distance}=${destination}`);
 }
 
 export const notifyViaWhatsApp = async (message: string) => {
     fetch(Url.NotificationUrl, {
         ...PostParams,
-        body: JSON.stringify({Message: message})
+        body: JSON.stringify({ Message: message })
     }).catch(handleError);
 }

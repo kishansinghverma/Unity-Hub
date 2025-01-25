@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
-import { Card, Divider, Grid, Header, Segment, Image, Button, Modal, Loader, Form, Label, RadioProps, DropdownProps } from "semantic-ui-react"
+import { Divider, Grid, Header, Segment, Image, Button, Modal, Loader, Form, Label, RadioProps, DropdownProps, Container, Icon } from "semantic-ui-react"
 import { ModalParams, RawExpense, SelectOption, SplitwiseGroup } from "../common/types";
 import { PostParams, Url } from "../common/constants";
 import { SplitwiseGroupMapper, SplitwiseGroupsMapper, capitalize, getDateTime, handleError, handleJsonResponse, handleResponse } from "../operations/utils";
@@ -19,7 +19,8 @@ export const Expense: React.FC = () => {
     const [descriptions, setDescriptions] = useState<SelectOption[]>([]);
     const [descriptionLoading, setDescriptionLoading] = useState(true);
 
-    const onCheckedChanged = (_: any, { name, value }: RadioProps) => setModalParams({ ...modalParams, [name as string]: value as string });
+    const onCheckedChanged = (_: any, { name, value }: RadioProps) =>
+        setModalParams({ ...modalParams, [name as string]: JSON.parse(value as string) });
 
     const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
         e.dataTransfer.setData('text/plain', JSON.stringify({ id: e.currentTarget.id, class: e.currentTarget.className }));
@@ -70,8 +71,8 @@ export const Expense: React.FC = () => {
             location: 'Manual Entry',
             description: '',
             amount: '',
-            debitFrom: '66299282',
-            shared: 'false'
+            shared: !(['0', '-1'].includes(document.getElementById(`group-${group?.id}`)?.dataset['isShared'] ?? '0')),
+            parties: groups.find(item => item.id === group?.id)?.members.map(item => (item.id))
         };
 
         params = expense ? {
@@ -95,7 +96,7 @@ export const Expense: React.FC = () => {
                 group_id: modalParams?.groupId,
                 date: modalParams?.dateTime,
                 shared: modalParams?.shared,
-                debitFrom: modalParams?.debitFrom
+                parties: modalParams?.parties
             })
         };
 
@@ -115,10 +116,9 @@ export const Expense: React.FC = () => {
 
     const deleteExpense = (id?: string) => {
         if (id) {
-            setExpenseLoading(true);
-            setRefinementDate((new Date().getTime()));
+            setExpenses(expenses.filter(expense => (expense._id !== id)));
             return fetch(`${Url.DraftExpenses}/${id}`, { method: 'DELETE' })
-                .then(loadRawTransactions)
+                .then(() => setRefinementDate((new Date().getTime())))
                 .catch(handleError);
         }
     }
@@ -178,22 +178,23 @@ export const Expense: React.FC = () => {
         <>
             <Segment basic>
                 <Grid columns={2}>
-                    <Divider vertical style={{ paddingLeft: '3px' }}>❤️</Divider>
                     <Grid.Column className='list-transactions'>
                         <Header as='h2' textAlign='center'>Transactions</Header>
-                        {expenseLoading && <Loader active inline='centered' />}
-                        {!expenseLoading && expenses.length < 1 && <Segment textAlign='center' className='list-item'><h4>No Expense To Show.</h4></Segment>}
-                        {!expenseLoading && expenses.map((item, index) => (
-                            <Segment
-                                id={item._id}
-                                className='list-item'
-                                key={`list-${index}`}
-                                draggable
-                                onDragStart={handleDragStart}
-                            >
-                                <ExpenseItem {...item} onDelete={deleteExpense} />
-                            </Segment>
-                        ))}
+                        <Container className='list-scrollable'>
+                            {expenseLoading && <Loader active inline='centered' />}
+                            {!expenseLoading && expenses.length < 1 && <Segment textAlign='center' className='list-item'><h4>No Expense To Show.</h4></Segment>}
+                            {!expenseLoading && expenses.map(item => (
+                                <Segment
+                                    id={item._id}
+                                    className='list-item'
+                                    key={`list-${item._id}`}
+                                    draggable
+                                    onDragStart={handleDragStart}
+                                >
+                                    <ExpenseItem {...item} onDelete={deleteExpense} />
+                                </Segment>
+                            ))}
+                        </Container>
                     </Grid.Column>
                     <Grid.Column className='list-groups'>
                         <Header as='h2' textAlign='center'>Splitwise</Header>
@@ -201,22 +202,25 @@ export const Expense: React.FC = () => {
                         <Grid>
                             {groups.map((item, index) => (
                                 <Grid.Column mobile={16} tablet={8} computer={4} key={`group-${index}`}>
-                                    <Card
+                                    <GroupCard
                                         id={item.id}
-                                        raised
+                                        imageSrc={item.avatar}
+                                        name={item.name}
+                                        due={item.due}
                                         onDragLeave={handleDragLeave}
                                         onDragOver={handleDragOver}
                                         onDrop={handleDrop}
                                         onClick={onGroupClick}
-                                        style={{ userSelect: 'none' }}
-                                    >
-                                        <GroupCard ImageSrc={item.avatar} Name={item.name} Info={`Due : ${item.due}`} />
-                                    </Card>
+                                    />
                                 </Grid.Column>
                             ))}
                         </Grid>
-                        <br /><br /><br /><br />
-                        <center><Label size='huge'>Last Refinement Done On {getDateTime(refinementDate)}</Label></center>
+                        <Divider horizontal section>
+                            <Header as='h5'>
+                                <Icon name='time' />
+                                {getDateTime(refinementDate)}
+                            </Header>
+                        </Divider>
                     </Grid.Column>
                 </Grid>
             </Segment>
@@ -264,39 +268,7 @@ export const Expense: React.FC = () => {
                                         onChange={e => setModalParams({ ...modalParams, amount: e.target.value })}
                                     />
                                     <Segment padded size='mini' className='radio-segment'>
-                                        <Label attached='top'>Amounted Debited From</Label>
-                                        <div className='form-radio-container'>
-                                            <Form.Radio
-                                                fluid
-                                                label='HDFC'
-                                                size='small'
-                                                value='66299282'
-                                                name='debitFrom'
-                                                checked={modalParams?.debitFrom === '66299282'}
-                                                onChange={onCheckedChanged}
-                                            />
-                                            <Form.Radio
-                                                fluid
-                                                label='SBI'
-                                                size='small'
-                                                value='66299350'
-                                                name='debitFrom'
-                                                checked={modalParams?.debitFrom === '66299350'}
-                                                onChange={onCheckedChanged}
-                                            />
-                                            <Form.Radio
-                                                fluid
-                                                label='Other'
-                                                size='small'
-                                                value='other'
-                                                name='debitFrom'
-                                                checked={modalParams?.debitFrom === 'other'}
-                                                onChange={onCheckedChanged}
-                                            />
-                                        </div>
-                                    </Segment>
-                                    <Segment padded size='mini' className='radio-segment'>
-                                        <Label attached='top'>Manage Expense Amount</Label>
+                                        <Label attached='top'>Split Amount</Label>
                                         <div className='form-radio-container'>
                                             <Form.Radio
                                                 fluid
@@ -304,7 +276,7 @@ export const Expense: React.FC = () => {
                                                 size='small'
                                                 value='false'
                                                 name='shared'
-                                                checked={modalParams?.shared === 'false'}
+                                                checked={!modalParams?.shared}
                                                 onChange={onCheckedChanged}
                                             />
                                             <Form.Radio
@@ -313,7 +285,7 @@ export const Expense: React.FC = () => {
                                                 size='small'
                                                 value='true'
                                                 name='shared'
-                                                checked={modalParams?.shared === 'true'}
+                                                checked={modalParams?.shared}
                                                 onChange={onCheckedChanged}
                                             />
                                         </div>

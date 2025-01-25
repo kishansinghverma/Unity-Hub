@@ -1,8 +1,10 @@
-import { Table, Image, Placeholder, Input, DropdownProps, Icon, Menu, Dropdown, Loader, Dimmer, Divider } from "semantic-ui-react";
-import { CustomCardProps, IHeader, ITable, Pagination, RawExpense } from "./types";
-import React, { SyntheticEvent, useState } from "react";
+import { Table, Image, Placeholder, Input, DropdownProps, Icon, Menu, Dropdown, Loader, Dimmer, Divider, Card, Label } from "semantic-ui-react";
+import { CardInfoProps, GroupCardProps, IHeader, ITable, Pagination, RawExpense } from "./types";
+import React, { SyntheticEvent, useEffect, useState } from "react";
 import dayjs from "dayjs";
-import { getRandom } from "../operations/utils";
+import { getRandom, handleResponse } from "../operations/utils";
+import { SharingStatus, Url } from "./constants";
+import { updateGroupInfo } from "../operations/fetch";
 
 export const CustomForm: React.FC<React.PropsWithChildren> = ({ children }) => (
     <div className="custom-form"> {children} </div>
@@ -98,14 +100,51 @@ export const ExpenseItem: React.FC<React.PropsWithChildren & RawExpense> = ({ _i
             </div>
             <Divider />
             <div className="expense-card-action">
-                <Icon name="trash" title="Requeue" color="red" link onClick={() => { onDelete(_id) }} />
+                <Icon name="trash" title="Delete" color="red" link onClick={() => { onDelete(_id) }} />
             </div>
         </div>
     )
 };
 
-export const GroupCard: React.FC<React.PropsWithChildren & CustomCardProps> = ({ ImageSrc, Name, Info }) => {
+export const GroupCard: React.FC<React.PropsWithChildren & GroupCardProps> = (cardProps) => {
+    return (
+        <Card
+            raised
+            id={cardProps.id}
+            style={{ userSelect: 'none' }}
+            onDragLeave={cardProps.onDragLeave}
+            onDragOver={cardProps.onDragOver}
+            onDrop={cardProps.onDrop}
+            onClick={cardProps.onClick}
+        >
+            <CardInfo {...cardProps} />
+        </Card>
+    )
+}
+
+export const CardInfo: React.FC<React.PropsWithChildren & CardInfoProps> = ({ id, imageSrc, name, due }) => {
     const [isLoading, setLoading] = useState(true);
+    const [isUpdating, setUpdating] = useState(true);
+    const [isShared, setShared] = useState<SharingStatus>(SharingStatus.Unknown);
+
+    const onShareToggle = (id: number, name: string, isShared: SharingStatus) => {
+        const sharing = isShared === SharingStatus.NotShared || isShared === SharingStatus.Unknown;
+        setUpdating(true);
+        updateGroupInfo({ id, name, isShared: sharing })
+            .then(() => setShared(sharing ? SharingStatus.Shared : SharingStatus.NotShared))
+            .finally(() => setUpdating(false));
+    };
+
+    useEffect(() => {
+        fetch(`${Url.ExpenseGroups}/${id}/sharedStatus`)
+            .then(response => {
+                handleResponse(response, 'Group Details Not Available!');
+                return response.json();
+            })
+            .then(({ isShared }) => setShared(isShared ? SharingStatus.Shared : SharingStatus.NotShared))
+            .catch((e) => console.log(e.message))
+            .finally(() => setUpdating(false));
+    }, []);
 
     return (
         <>
@@ -120,19 +159,33 @@ export const GroupCard: React.FC<React.PropsWithChildren & CustomCardProps> = ({
                     </Placeholder>
                 </>
             }
-            <div style={{ padding: '5px 0px' }}>
+            <div style={{ padding: '5px 0px 0px' }}>
                 <Image
                     centered
                     circular
                     size='tiny'
-                    src={ImageSrc}
+                    src={imageSrc}
                     onLoad={() => setLoading(false)}
                     onDragStart={(e: React.DragEvent<HTMLDivElement>) => { e.preventDefault(); }}
                 />
                 {!isLoading &&
                     <>
-                        <div style={{ textAlign: 'center', fontWeight: 'bold', padding: '8px 4px 2px' }}>{Name}</div>
-                        <div style={{ textAlign: 'center', color: 'grey' }}>{Info}</div>
+                        <div className="group-name" id={`group-${id}`} data-is-shared={isShared}>{name}</div>
+                        <Label className="due-indicator" attached="bottom">
+                            <div>
+                                <Icon name='rupee sign' />
+                                <span>{due}</span>
+                            </div>
+                            {isUpdating && <Loader active inline size="mini" />}
+                            {!isUpdating && <Icon
+                                name="balance scale"
+                                color={isShared === SharingStatus.Shared ? 'green' : isShared === SharingStatus.NotShared ? 'red' : 'grey'}
+                                onClick={(e: React.MouseEvent) => {
+                                    onShareToggle(id, name, isShared);
+                                    e.stopPropagation();
+                                }}
+                            />}
+                        </Label>
                     </>
                 }
             </div>

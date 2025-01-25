@@ -60,12 +60,17 @@ const schemas: { [key: string]: any } = {
         print: joi.bool().required(),
         forceDownload: joi.bool().required(),
         driverMobile: joi.string().regex(/^(\d{10})?$/).empty(''),
+    },
+    "/api/expenses/groups": {
+        id: joi.number().required(),
+        name: joi.string().required(),
+        isShared: joi.bool().required()
     }
 }
 
 class Validator {
     public validateRequest = (request: Request) => {
-        const path = request.originalUrl;
+        const path = request.originalUrl.replace(/\/$/, '');
         const schema = schemas[path];
         if (schema) return joi.isSchema(schema) ? schema.validateAsync(request.body) : joi.object(schema).validateAsync(request.body);
         else return Promise.reject(new Throwable(constants.errors.schemaNotReady, 501));

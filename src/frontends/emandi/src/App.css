@@ -109,8 +109,29 @@ table.fixed {
   display: none;
 }
 
-.list-transactions {
-  padding-right: 32px !important;
+.container.list-scrollable {
+  margin-left: 0em !important;
+  margin-right: 0em !important;
+}
+
+.list-scrollable {
+  height: 80vh;
+  overflow: auto;
+  padding-right: 10px;
+}
+
+.list-scrollable::-webkit-scrollbar {
+  width: 6px;
+}
+
+.list-scrollable::-webkit-scrollbar-track {
+  background: #d6d6d6;
+  border-radius: 4px;
+}
+
+.list-scrollable::-webkit-scrollbar-thumb {
+  background: #acacac;
+  border-radius: 4px;
 }
 
 .list-groups {
@@ -162,6 +183,25 @@ table.fixed {
   padding-left: 1.5rem;
 }
 
+.group-name {
+  text-align: center;
+  font-weight: bold;
+  padding: 8px 4px 6px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.due-indicator {
+  position: relative !important;
+  display: flex !important;
+  justify-content: space-between;
+}
+
+.due-indicator .icon.balance {
+  margin: 0 !important;
+}
+
 @media (max-width: 660px) {
   .expense-card-header {
     flex-direction: column;
@@ -173,10 +213,6 @@ table.fixed {
 
   .expense-card-action {
     padding-left: 0;
-  }
-
-  .list-transactions {
-    padding-right: 1rem !important;
   }
 
   .list-groups {
