@@ -62,8 +62,7 @@ export type GroupExpenseRequest = {
     cost: string,
     date?: string,
     parties: Array<number>,
-    shared: boolean,
-    debitFrom?: string
+    shared: boolean
 }
 
 export type SelfPaidExpense = {
