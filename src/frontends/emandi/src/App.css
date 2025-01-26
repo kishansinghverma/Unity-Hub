@@ -114,22 +114,31 @@ table.fixed {
   margin-right: 0em !important;
 }
 
-.list-scrollable {
-  height: 80vh;
+.list-scrollable,
+.grid-scrollable {
+  max-height: 80vh;
   overflow: auto;
   padding-right: 10px;
 }
 
-.list-scrollable::-webkit-scrollbar {
+.grid-scrollable {
+  padding-bottom: 1rem;
+  overflow-x: clip;
+}
+
+.list-scrollable::-webkit-scrollbar, 
+.grid-scrollable::-webkit-scrollbar {
   width: 6px;
 }
 
-.list-scrollable::-webkit-scrollbar-track {
+.list-scrollable::-webkit-scrollbar-track,
+.grid-scrollable::-webkit-scrollbar-track {
   background: #d6d6d6;
   border-radius: 4px;
 }
 
-.list-scrollable::-webkit-scrollbar-thumb {
+.list-scrollable::-webkit-scrollbar-thumb,
+.grid-scrollable::-webkit-scrollbar-thumb {
   background: #acacac;
   border-radius: 4px;
 }
@@ -196,6 +205,12 @@ table.fixed {
   position: relative !important;
   display: flex !important;
   justify-content: space-between;
+}
+
+.due-amount {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .due-indicator .icon.balance {

@@ -172,7 +172,7 @@ export const CardInfo: React.FC<React.PropsWithChildren & CardInfoProps> = ({ id
                     <>
                         <div className="group-name" id={`group-${id}`} data-is-shared={isShared}>{name}</div>
                         <Label className="due-indicator" attached="bottom">
-                            <div>
+                            <div className="due-amount">
                                 <Icon name='rupee sign' />
                                 <span>{due}</span>
                             </div>

@@ -199,22 +199,24 @@ export const Expense: React.FC = () => {
                     <Grid.Column className='list-groups'>
                         <Header as='h2' textAlign='center'>Splitwise</Header>
                         {groupsLoading && <Loader active inline='centered' />}
-                        <Grid>
-                            {groups.map((item, index) => (
-                                <Grid.Column mobile={16} tablet={8} computer={4} key={`group-${index}`}>
-                                    <GroupCard
-                                        id={item.id}
-                                        imageSrc={item.avatar}
-                                        name={item.name}
-                                        due={item.due}
-                                        onDragLeave={handleDragLeave}
-                                        onDragOver={handleDragOver}
-                                        onDrop={handleDrop}
-                                        onClick={onGroupClick}
-                                    />
-                                </Grid.Column>
-                            ))}
-                        </Grid>
+                        <div className='grid-scrollable'>
+                            <Grid>
+                                {groups.map((item, index) => (
+                                    <Grid.Column mobile={16} tablet={8} computer={4} key={`group-${index}`}>
+                                        <GroupCard
+                                            id={item.id}
+                                            imageSrc={item.avatar}
+                                            name={item.name}
+                                            due={item.due}
+                                            onDragLeave={handleDragLeave}
+                                            onDragOver={handleDragOver}
+                                            onDrop={handleDrop}
+                                            onClick={onGroupClick}
+                                        />
+                                    </Grid.Column>
+                                ))}
+                            </Grid>
+                        </div>
                         <Divider horizontal section>
                             <Header as='h5'>
                                 <Icon name='time' />
