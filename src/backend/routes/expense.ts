@@ -1,7 +1,8 @@
-import express from 'express';
+import express, { response } from 'express';
 import { expenses } from '../operations/expense';
 import { replyError, replySuccess } from '../common/utils';
 import { validator } from '../common/validation';
+import { request } from 'http';
 
 const router = express.Router();
 
@@ -35,6 +36,18 @@ router.get('/descriptions', (request, response) => {
         .catch(replyError(response));
 });
 
+router.get('/statement/bank', (request, response) => {
+    expenses.getBankStatement()
+        .then(replySuccess(response))
+        .catch(replyError(response));
+});
+
+router.get('/statement/phonepe', (request, response) => {
+    expenses.getPhonePeStatement()
+        .then(replySuccess(response))
+        .catch(replyError(response));
+});
+
 router.post('/', (request, response) => {
     expenses.addTransaction(request.body)
         .then(replySuccess(response))
@@ -54,8 +67,22 @@ router.post('/groups', (request, response) => {
         .catch(replyError(response));
 });
 
-router.delete('/:id', (request, response) => {
-    expenses.deleteTransaction(request.params.id)
+router.post('/statement/bank', (request, response) => {
+    validator.validateRequest(request)
+        .then(values => expenses.updateBankStatement(values)
+            .then(replySuccess(response)))
+        .catch(replyError(response));
+});
+
+router.post('/statement/phonepe', (request, response) => {
+    validator.validateRequest(request)
+        .then(values => expenses.updatePhonePeStatement(values)
+            .then(replySuccess(response)))
+        .catch(replyError(response));
+});
+
+router.post('/finalize', (request, response) => {
+    expenses.finalizeTransaction(request.body)
         .then(replySuccess(response))
         .catch(replyError(response));
 });

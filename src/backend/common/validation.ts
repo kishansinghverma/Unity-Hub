@@ -65,7 +65,23 @@ const schemas: { [key: string]: any } = {
         id: joi.number().required(),
         name: joi.string().required(),
         isShared: joi.bool().required()
-    }
+    },
+    "/api/expenses/statement/bank": joi.array().items({
+        date: joi.date().iso().required(),
+        description: joi.string().trim().min(2).max(500).required(),
+        amount: joi.number().positive().precision(2).required(),
+        type: joi.string().valid("Debit", "Credit").required(),
+        bank: joi.string().trim().min(2).max(50).required()
+    }).min(1).required(),
+    "/api/expenses/statement/phonepe": joi.array().items({
+        date: joi.date().iso().required(),
+        recipient: joi.string().trim().min(2).max(500).required(),
+        transactionId: joi.string().trim().min(2).max(500).required(),
+        utr: joi.string().trim().min(2).max(500).required(),
+        amount: joi.number().positive().precision(2).required(),
+        type: joi.string().valid("Debit", "Credit").required(),
+        bank: joi.string().trim().min(2).max(50).required()
+    }).min(1).required()
 }
 
 class Validator {

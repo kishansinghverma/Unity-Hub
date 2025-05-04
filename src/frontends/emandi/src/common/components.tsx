@@ -1,13 +1,26 @@
-import { Table, Image, Placeholder, Input, DropdownProps, Icon, Menu, Dropdown, Loader, Dimmer, Divider, Card, Label } from "semantic-ui-react";
-import { CardInfoProps, GroupCardProps, IHeader, ITable, Pagination, RawExpense } from "./types";
-import React, { SyntheticEvent, useEffect, useState } from "react";
+import { Table, Image, Placeholder, Input, DropdownProps, Icon, Menu, Dropdown, Loader, Dimmer, Card, Label, Button } from "semantic-ui-react";
+import { BankEntry, CardInfoProps, DraftEntry, GroupCardProps, IHeader, ITable, Pagination, PhonePeEntry, WithId } from "./types";
+import React, { SyntheticEvent, useEffect, useRef, useState } from "react";
 import dayjs from "dayjs";
 import { getRandom, handleResponse } from "../operations/utils";
 import { SharingStatus, Url } from "./constants";
-import { updateGroupInfo } from "../operations/fetch";
+import { updateGroupInfo, uploadBankStatement, uploadPhonePeStatement } from "../operations/fetch";
+import { extractDataFromExcel, parsePhonePeStatement } from "../operations/parser";
+import { toast } from "react-toastify";
+
+import { ReactComponent as HdfcLogo } from '../static/hdfc.svg';
+import { ReactComponent as SbiLogo } from '../static/sbi.svg';
+const bankLogo: { [key: string]: JSX.Element } = {
+    HDFC: <HdfcLogo width={28} height={28} />,
+    SBI: <SbiLogo width={28} height={28} />
+}
 
 export const CustomForm: React.FC<React.PropsWithChildren> = ({ children }) => (
     <div className="custom-form"> {children} </div>
+);
+
+export const Div: React.FC<React.PropsWithChildren & React.HTMLAttributes<HTMLDivElement>> = ({ children, ...props }) => (
+    <div {...props}>{children}</div>
 );
 
 export const CustomSelect: React.FC<DropdownProps> = (props) => {
@@ -52,7 +65,7 @@ export const CustomTable: React.FC<React.PropsWithChildren & IHeader> = ({ child
                 <Icon name="refresh" title="Reload" size="large" color="red" link loading={isFetching} onClick={refresh}></Icon>
             </div>
         </div>
-        <div className="scrollable">
+        <div className="list-container">
             <Table celled fixed singleLine striped unstackable selectable compact color="red">{children}</Table>
         </div>
     </>
@@ -82,39 +95,63 @@ export const TablePagination: React.FC<Pagination> = ({ currentPage, pageCount, 
             </Menu>
         </Table.HeaderCell>
     </Table.Row>
-
 );
 
-export const ExpenseItem: React.FC<React.PropsWithChildren & RawExpense> = ({ _id, dateTime, location, coordinate, onDelete }) => {
-    return (
-        <div className="expense-card">
-            <div className="expense-card-body">
-                <div className="expense-card-header">
-                    <div style={{ marginBottom: '5px' }}>🗓️&nbsp;{dayjs(dateTime).format('DD/MM/YYYY')}</div>
-                    <div style={{ marginBottom: '5px' }}>🕒&nbsp;{dayjs(dateTime).format('hh:mm A')}</div>
-                </div>
-                <div className="expense-card-link">
-                    <div>🌎&nbsp;</div>
-                    <div><a target='_blank' rel="noreferrer" href={`https://www.google.com/maps?q=${coordinate}`}>{location.replaceAll('\n', ', ')}</a></div>
-                </div>
-            </div>
-            <Divider />
-            <div className="expense-card-action">
+export const BankItem: React.FC<React.PropsWithChildren & BankEntry> = ({ date, description, amount, type, bank }) => (
+    <Div className="expense-item">
+        <Div className="section-left">
+            <Div className="month">{dayjs(date).format('MMM')}</Div>
+            <Div className="date">{dayjs(date).format('DD')}</Div>
+        </Div>
+        <Div className="bank-logo"> {bankLogo[bank]} </Div>
+        <Div className="description"> {(description as string).toUpperCase()}</Div>
+        <Div className="section-right">
+            <Div>&nbsp;</Div>
+            <Div className={`text-${type.toLowerCase()}`}>₹{amount.toFixed(2)}</Div>
+        </Div>
+    </Div>
+);
+
+export const PhonePeItem: React.FC<React.PropsWithChildren & PhonePeEntry> = ({ date, recipient, amount, type, bank }) => (
+    <Div className="expense-item">
+        <Div className="section-left">
+            <Div className="month">{dayjs(date).format('MMM')}</Div>
+            <Div className="date">{dayjs(date).format('DD')}</Div>
+        </Div>
+        <Div className="bank-logo"> {bankLogo[bank]} </Div>
+        <Div className="description"> {(recipient as string).toUpperCase()}
+        </Div>
+        <Div className="section-right">
+            <Div className="time">{dayjs(date).format('hh:mm A')}</Div>
+            <Div className={`text-${type.toLowerCase()}`}>₹{amount.toFixed(2)}</Div>
+        </Div>
+    </Div>
+);
+
+export const ExpenseItem: React.FC<React.PropsWithChildren & WithId<DraftEntry>> = ({ _id, dateTime, location, coordinate, onDelete }) => (
+    <Div className="expense-item">
+        <Div className="section-left">
+            <Div className="month">{dayjs(dateTime).format('MMM')}</Div>
+            <Div className="date">{dayjs(dateTime).format('DD')}</Div>
+        </Div>
+        <Div className="description">
+            <a target='_blank' rel="noreferrer" href={`https://www.google.com/maps?q=${coordinate}`}>{location.replaceAll('\n', ', ')}</a>
+        </Div>
+        <Div className="section-right">
+            <Div className="time">{dayjs(dateTime).format('hh:mm A')}</Div>
+            <Div>
                 <Icon name="trash" title="Delete" color="red" link onClick={() => { onDelete(_id) }} />
-            </div>
-        </div>
-    )
-};
+            </Div>
+        </Div>
+    </Div>
+);
 
 export const GroupCard: React.FC<React.PropsWithChildren & GroupCardProps> = (cardProps) => {
     return (
         <Card
             raised
             id={cardProps.id}
-            style={{ userSelect: 'none' }}
-            onDragLeave={cardProps.onDragLeave}
-            onDragOver={cardProps.onDragOver}
-            onDrop={cardProps.onDrop}
+            style={{ userSelect: 'none', minWidth: '164px' }}
             onClick={cardProps.onClick}
         >
             <CardInfo {...cardProps} />
@@ -122,9 +159,9 @@ export const GroupCard: React.FC<React.PropsWithChildren & GroupCardProps> = (ca
     )
 }
 
-export const CardInfo: React.FC<React.PropsWithChildren & CardInfoProps> = ({ id, imageSrc, name, due }) => {
-    const [isLoading, setLoading] = useState(true);
-    const [isUpdating, setUpdating] = useState(true);
+export const CardInfo: React.FC<React.PropsWithChildren & CardInfoProps> = ({ id, imageSrc, name, due, getSharing }) => {
+    const [isLogoLoading, setLogoLoading] = useState(true);
+    const [isUpdating, setUpdating] = useState(getSharing && true);
     const [isShared, setShared] = useState<SharingStatus>(SharingStatus.Unknown);
 
     const onShareToggle = (id: number, name: string, isShared: SharingStatus) => {
@@ -136,19 +173,21 @@ export const CardInfo: React.FC<React.PropsWithChildren & CardInfoProps> = ({ id
     };
 
     useEffect(() => {
-        fetch(`${Url.ExpenseGroups}/${id}/sharedStatus`)
-            .then(response => {
-                handleResponse(response, 'Group Details Not Available!');
-                return response.json();
-            })
-            .then(({ isShared }) => setShared(isShared ? SharingStatus.Shared : SharingStatus.NotShared))
-            .catch((e) => console.log(e.message))
-            .finally(() => setUpdating(false));
+        if (getSharing) {
+            fetch(`${Url.ExpenseGroups}/${id}/sharedStatus`)
+                .then(response => {
+                    handleResponse(response, 'Group Details Not Available!');
+                    return response.json();
+                })
+                .then(({ isShared }) => setShared(isShared ? SharingStatus.Shared : SharingStatus.NotShared))
+                .catch((e) => console.log(e.message))
+                .finally(() => setUpdating(false));
+        }
     }, []);
 
     return (
         <>
-            {isLoading &&
+            {isLogoLoading &&
                 <>
                     <Placeholder style={{ height: '120px' }}>
                         <Placeholder.Image square />
@@ -165,19 +204,19 @@ export const CardInfo: React.FC<React.PropsWithChildren & CardInfoProps> = ({ id
                     circular
                     size='tiny'
                     src={imageSrc}
-                    onLoad={() => setLoading(false)}
+                    onLoad={() => setLogoLoading(false)}
                     onDragStart={(e: React.DragEvent<HTMLDivElement>) => { e.preventDefault(); }}
                 />
-                {!isLoading &&
+                {!isLogoLoading &&
                     <>
                         <div className="group-name" id={`group-${id}`} data-is-shared={isShared}>{name}</div>
                         <Label className="due-indicator" attached="bottom">
-                            <div className="due-amount">
+                            <Div className="due-amount">
                                 <Icon name='rupee sign' />
                                 <span>{due}</span>
-                            </div>
+                            </Div>
                             {isUpdating && <Loader active inline size="mini" />}
-                            {!isUpdating && <Icon
+                            {!isUpdating && getSharing && <Icon
                                 name="balance scale"
                                 color={isShared === SharingStatus.Shared ? 'green' : isShared === SharingStatus.NotShared ? 'red' : 'grey'}
                                 onClick={(e: React.MouseEvent) => {
@@ -193,3 +232,38 @@ export const CardInfo: React.FC<React.PropsWithChildren & CardInfoProps> = ({ id
     )
 }
 
+export const FileUpload: React.FC = () => {
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+    const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        if (file?.type === 'application/pdf') {
+            const response = parsePhonePeStatement(file).then(uploadPhonePeStatement)
+            toast.promise(response, {
+                pending: { render: () => ("Uploading PhonePe Statement...") },
+                success: { render: ({ data }) => (`Uploaded ${data.insertedCount}/${data.totalCount} records.`) },
+                error: { render: ({ data }: any) => (data.message) }
+            });
+        }
+        else if (file?.type === 'application/vnd.ms-excel') {
+            const response = extractDataFromExcel(file).then(uploadBankStatement);
+            toast.promise(response, {
+                pending: { render: () => ("Uploading Bank Statement...") },
+                success: { render: ({ data }) => (`Uploaded ${data.insertedCount}/${data.totalCount} records.`) },
+                error: { render: ({ data }: any) => (data.message) }
+            });
+        }
+        else {
+            toast.error("File type not supported.");
+        }
+    };
+
+    return (
+        <Div style={{ paddingRight: '12px' }}>
+            <input type="file" ref={fileInputRef} hidden onChange={handleFileChange} />
+            <Button color='red' icon='upload' circular onClick={() => fileInputRef.current?.click()} />
+        </Div>
+    );
+};

@@ -36,8 +36,8 @@ class Splitwise {
             const expense: SelfPaidExpense = {
                 date: transaction.date,
                 cost: transaction.cost,
-                description: transaction.description,
-                details: transaction.details,
+                description: transaction.description, // expense title
+                details: transaction.details, // expense comment
                 group_id: transaction.group_id,
                 users__0__user_id: this.constants.userId.Self,
                 users__0__paid_share: `${transaction.cost}`,

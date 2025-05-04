@@ -4,6 +4,7 @@ import { MongoDbService } from "../services/mongodb";
 import { String } from "../common/models";
 import { getErrorResponse, getHttpCode } from "../common/utils";
 import { whatsAppService } from "../services/whatsapp";
+import { createDecipheriv } from "crypto";
 
 class EMandi {
     private constants = invariants.emandi;
@@ -18,8 +19,6 @@ class EMandi {
     public getQueued = () => this.database.getDocuments(this.constants.collections.queued, {}, { sort: { createdOn: 1 } });
 
     public getProcessed = () => this.database.getDocuments(this.constants.collections.processed, {}, { sort: { createdOn: 1 } });
-
-    public getTransactions = () => this.database.getDocuments(this.constants.collections.transactions, {}, { sort: { createdOn: 1 } });
 
     public getParties = () => this.database.getDocuments(this.constants.collections.parties, {}, { sort: { name: 1 } });
 
@@ -59,12 +58,19 @@ class EMandi {
     };
 
     public initializeDatabase = async () => {
-        // Creates index on emandi party collection.
+        // Creates index on collections.
         const operation = async (collection: Collection) => {
             const index = await collection.createIndex({ name: 1, mandi: 1, state: 1 }, { unique: true });
             return { content: { actions: [{ index }] }, statusCode: 200 };
         }
 
+        const createIndex = async (collecion: Collection) => {
+            const index = await collecion.createIndex({ createdOn: 1 });
+            return { content: { actions: [{ index }] }, statusCode: 200 };
+        }
+
+        await this.database.executeOperationOnCollection(this.constants.collections.processed, createIndex);
+        await this.database.executeOperationOnCollection(this.constants.collections.queued, createIndex);
         return this.database.executeOperationOnCollection(this.constants.collections.parties, operation);
     }
 

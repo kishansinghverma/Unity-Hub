@@ -43,7 +43,7 @@ export const NewEntry: React.FC = () => {
     return (
         <CustomForm key={formKey.get()}>
             <Form onSubmit={handleSubmit} autoComplete="off" loading={isFormLoading.get()} noValidate>
-                <div className="header"> नया गेटपास बनाएं </div>
+                <div className="form-header"> नया गेटपास बनाएं </div>
                 <Form.Field>
                     <Input
                         required

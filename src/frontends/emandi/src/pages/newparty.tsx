@@ -69,7 +69,7 @@ export const NewParty: React.FC = () => {
     return (
         <CustomForm key={formKey.get()}>
             <Form onSubmit={handleSubmit} autoComplete="off" loading={isFormLoading.get()} noValidate>
-                <div className="header"> नई पार्टी जोड़ें </div>
+                <div className="form-header"> नई पार्टी जोड़ें </div>
                 <Form.Field>
                     <Input
                         required

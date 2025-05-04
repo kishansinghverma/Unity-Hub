@@ -1,4 +1,4 @@
-import { Collection, Db, Document, WithId } from "mongodb";
+import { Collection, Db } from "mongodb";
 
 export type CollectionOperation = (collection: Collection) => Promise<ExecutionResponse>;
 
@@ -23,7 +23,7 @@ export type MqttPacket = {
 export type ExecutionResponse = {
     content: any,
     statusCode: number
-}
+};
 
 export type CreatePdfRequest = {
     name: string,
@@ -49,21 +49,43 @@ export type IncomingMessage = {
     };
 };
 
+export type BankTransaction = {
+    date: Date,
+    description: string,
+    amount: number,
+    type: "Credit" | "Debit",
+    bank: "SBI" | "HDFC"
+};
+
+export type BankStatementRequest = Array<BankTransaction>;
+
+export type PhonePeTransaction = {
+    date: Date,
+    recipient: string,
+    transactionId: string,
+    utr: string,
+    bank: string | "SBI" | "HDFC"
+    type: string | "Credit" | "Debit",
+    amount: number
+}
+
+export type PhonePeStatementRequest = Array<PhonePeTransaction>;
+
 export type GroupInfoRequest = {
     id: number,
     name: string,
     isShared: boolean
-}
+};
 
 export type GroupExpenseRequest = {
-    group_id: number
+    group_id: number,
     details: string,
     description: string,
     cost: string,
     date?: string,
     parties: Array<number>,
     shared: boolean
-}
+};
 
 export type SelfPaidExpense = {
     date?: string;

@@ -80,7 +80,7 @@ export const Parties: React.FC = () => {
                 }
             </CustomTable>
             <Modal size="tiny" dimmer="blurring" centered={false} mountNode={document.querySelector('#root > div > div.content-container')} closeOnDimmerClick={false} open={isModalOpen.get()} onClose={() => isModalOpen.set(false)}>
-                <ModalHeader>पार्टी संशोधित करें</ModalHeader>
+                <ModalHeader className="form-header">पार्टी संशोधित करें</ModalHeader>
                 <ModalContent>
                     <EditPartyForm {...{ party: recordToEdit.get(), callbackFunction: postSuccess }} />
                 </ModalContent>

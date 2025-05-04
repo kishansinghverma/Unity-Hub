@@ -73,12 +73,51 @@ export type DistanceResponse = {
     statusCode: number;
 }
 
-export type RawExpense = {
-    _id: string
+export type DraftEntry = {
     dateTime: string,
     location: string,
-    coordinate: string
+    coordinate: string,
+    processed?: boolean,
     onDelete: Function
+}
+
+export type BankEntry = {
+    date: Date,
+    description: string,
+    amount: number,
+    processed?: boolean,
+    type: "Credit" | "Debit",
+    bank: "SBI" | "HDFC"
+}
+
+export type PhonePeEntry = {
+    date: Date,
+    recipient: string,
+    transactionId: string,
+    utr: string,
+    processed?: boolean,
+    bank: string | "SBI" | "HDFC"
+    type: string | "Credit" | "Debit",
+    amount: number
+}
+
+export type WithId<T> = { // replace with withId
+    _id: string
+} & T;
+
+export type ReviewModalParams = {
+    id?: string,
+    bankEntries: Array<WithId<BankEntry>>,
+    phonePeEntries: Array<WithId<PhonePeEntry>>,
+    draftEntries: Array<WithId<DraftEntry>>,
+    groups: Array<SplitwiseGroup>,
+    onCompletion: (completionParams: ReviewCompletionParams) => void
+}
+
+export type ReviewCompletionParams = {
+    bankTransactionId: string,
+    phonePeTransactionId: string,
+    draftTransactionId: string
 }
 
 export type GroupInfo = {
@@ -88,9 +127,6 @@ export type GroupInfo = {
 }
 
 export type GroupCardProps = {
-    onDragLeave: (e: React.DragEvent<HTMLDivElement>) => void,
-    onDragOver: (e: React.DragEvent<HTMLDivElement>) => void,
-    onDrop: (e: React.DragEvent<HTMLDivElement>) => void,
     onClick: (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => void
 } & CardInfoProps;
 
@@ -98,9 +134,10 @@ export type CardInfoProps = {
     id: number,
     imageSrc: string,
     name: string,
-    due: string
+    due: string,
+    getSharing: boolean
 }
-export interface Group {
+export type Group = {
     id: number;
     name: string;
     simplified_debts: Array<{
@@ -116,15 +153,15 @@ export interface Group {
     members: Array<Member>;
 }
 
-export interface Member {
+export type Member = {
     id: number;
     first_name: string;
     email: string;
 }
-export interface SplitwiseGroupResponse {
+export type SplitwiseGroupResponse = {
     group: Group;
 }
-export interface SplitwiseGroupsResponse {
+export type SplitwiseGroupsResponse = {
     groups: Array<Group>;
 }
 
@@ -136,7 +173,7 @@ export type SplitwiseGroup = {
     members: Array<Member>
 }
 
-export type ModalParams = {
+export type ExpenseModalParams = {
     groupId?: number,
     expenseId?: string,
     avatarLink?: string,
@@ -148,3 +185,5 @@ export type ModalParams = {
     shared?: boolean,
     parties?: Array<number>
 }
+
+export type Nullable<T> = T | undefined; 

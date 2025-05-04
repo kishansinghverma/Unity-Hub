@@ -4,15 +4,16 @@ export const constants = {
         collections: {
             queued: 'Queued',
             processed: 'Processed',
-            parties: 'Parties',
-            transactions: 'Transactions'
+            parties: 'Parties'
         }
     },
     expense: {
         database: 'Expense',
         collection: {
             draft: 'Draft',
-            meta: 'Meta'
+            meta: 'Meta',
+            statement: 'Statement',
+            phonepe: 'PhonePe'
         }
     },
     errors: {

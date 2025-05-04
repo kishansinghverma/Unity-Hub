@@ -5,6 +5,14 @@ import { BaseSyntheticEvent } from "react";
 import { InputOnChangeData, DropdownProps, CheckboxProps } from "semantic-ui-react";
 import { Party, Record, SplitwiseGroupResponse, SplitwiseGroupsResponse } from "../common/types";
 
+export class StringUtils {
+    public static empty = '';
+}
+
+export class FormUtils {
+    
+}
+
 export const handleError = (error: Error) => toast.error(error.message);
 
 export const trimInput = (e: BaseSyntheticEvent) => { e.currentTarget.value = e.target.value.trim() };
@@ -92,7 +100,7 @@ export const SplitwiseGroupMapper = ({ group }: SplitwiseGroupResponse) => ({
 
 export const SplitwiseGroupsMapper = (data: SplitwiseGroupsResponse) => {
     return data.groups.map(item => (SplitwiseGroupMapper({ group: item })));
-}
+};
 
 export const ReactState = <T>(value: T) => {
     const state = React.useState<T>(value);
@@ -100,7 +108,34 @@ export const ReactState = <T>(value: T) => {
         get: () => state[0],
         set: state[1]
     }
-}
+};
+
+export const ContentState = <T>(value: T, isLoading = true) => {
+    const contentState = ReactState(value);
+    const loadingState = ReactState(isLoading)
+
+    return {
+        content: contentState.get(),
+        isLoading: loadingState.get(),
+        setContent: (state: T) => contentState.set(state),
+        setLoading: (state: boolean) => loadingState.set(state),
+        startLoading: () => loadingState.set(true),
+        stopLoading: () => loadingState.set(false)
+    }
+};
+
+export const ModalState = <T>(modalParams: T, isOpen = false) => {
+    const openState = ReactState(isOpen);
+    const paramState = ReactState(modalParams);
+
+    return {
+        params: paramState.get(),
+        isOpen: openState.get(),
+        setParams: (state: T) => paramState.set(state),
+        open: () => openState.set(true),
+        close: () => openState.set(false)
+    }
+};
 
 export class TableRenderer<T> {
     private url: string;
