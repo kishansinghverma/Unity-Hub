@@ -79,7 +79,7 @@ const schemas: { [key: string]: any } = {
         transactionId: joi.string().trim().min(2).max(500).required(),
         utr: joi.string().trim().min(2).max(500).required(),
         amount: joi.number().positive().precision(2).required(),
-        type: joi.string().valid("Debit", "Credit").required(),
+        type: joi.string().valid("Debit", "Credit", "Unknown").required(),
         bank: joi.string().trim().min(2).max(50).required()
     }).min(1).required()
 }

@@ -105,8 +105,8 @@ export const parsePhonePeStatement = async (file: File) => {
                 recipient: tokens[index - 1].replace('Paid to', '').replace('Received from', '').replace('Bill paid -', '').trim(),
                 transactionId: tokens[index].split(':')[1].trim(),
                 utr: tokens[index + 1].split(':')[1].trim(),
-                bank: meta[tokens[index + 2].trim()].Account,
-                type: meta[tokens[index + 2].trim()].Type,
+                bank: meta[tokens[index + 2].trim()]?.Account ?? 'Unknown',
+                type: tokens[index + 2].trim().includes('Credit') ? 'Credit' : tokens[index + 2].trim().includes('Debit') ? 'Debit' : 'Unknown',
                 amount: Boolean(tokens[index + 4].replace('INR', '').trim()) ?
                     parseFloat(tokens[index + 4].replace('INR', '').trim()) : parseFloat(tokens[index + 5].trim())
             };
