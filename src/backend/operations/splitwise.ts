@@ -35,7 +35,7 @@ class Splitwise {
         else {
             const expense: SelfPaidExpense = {
                 date: transaction.date,
-                cost: transaction.cost,
+                cost: `${Math.floor(parseInt(transaction.cost))}`,
                 description: transaction.description, // expense title
                 details: transaction.details, // expense comment
                 group_id: transaction.group_id,
