@@ -108,3 +108,12 @@ export class MulterThrowable extends MulterError {
         this.message = message;
     }
 }
+
+export class SplitwiseThrowable extends Error {
+    public statusCode: number;
+    constructor(message: string, statusCode: number) {
+        super();
+        this.statusCode = statusCode;
+        this.message = message;
+    }
+}

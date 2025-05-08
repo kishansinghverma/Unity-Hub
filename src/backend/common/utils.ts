@@ -1,11 +1,10 @@
 import { MongoError } from "mongodb";
 import joi from 'joi';
-import { Throwable } from "./models";
+import { ObjectUtils, SplitwiseThrowable, Throwable } from "./models";
 import { OperationResponse, ExecutionResponse } from "./types";
 import { Response as ExpressResponse } from "express";
 import { constants, mongoErrorCodes } from "./constants";
 import { MulterError } from "multer";
-
 export const getHttpCode = (error: MongoError) => (mongoErrorCodes[error.code ?? 8] ?? 500);
 
 export const validateResponse = (response: Response) => {
@@ -16,6 +15,10 @@ export const validateResponse = (response: Response) => {
 export const getJsonResponse = async (response: Response): OperationResponse => {
     validateResponse(response);
     const json = await response.json();
+
+    // Validate Splitwise Response
+    if (!ObjectUtils.isEmpty(json.errors)) throw new SplitwiseThrowable(json.errors.base, 400);
+
     return { content: json, statusCode: response.status };
 }
 
@@ -37,7 +40,11 @@ export const getErrorResponse = (error: Error) => {
     else if (error instanceof MulterError) {
         errorCode = 400;
         errorType = constants.errors.multerError;
-    };
+    }
+    else if (error instanceof SplitwiseThrowable) {
+        errorCode = error.statusCode;
+        errorType = constants.errors.splitwiseError
+    }
 
     return { content: `[${errorType}] ${error.message}`, statusCode: errorCode };
 }

@@ -41,6 +41,7 @@ export const Url = {
     AddDescriptions: "/api/expenses/description",
     ExpenseGroups: "/api/expenses/groups",
     FinalizeExpense: "/api/expenses/finalize",
+    SettleExpense: "/api/splitwise/settlement",
     NotificationUrl: "/api/whatsapp/sendtext/unityhub",
     SplitWiseGroups: "/api/splitwise/groups",
     SplitWiseGroup: "/api/splitwise/group",

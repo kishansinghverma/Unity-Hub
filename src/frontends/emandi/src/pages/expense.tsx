@@ -444,7 +444,8 @@ const ModalContent: React.FC<React.PropsWithChildren & ReviewModalParams> = ({ i
     const reviewModalParam = ReactState<any>({
         amount: bankEntries.find(entry => entry._id === id)?.amount,
         phonePeTxn: null,
-        draftTxn: null
+        draftTxn: null,
+        description: bankEntry?.type === 'Credit' ? 'Settlement' : null
     });
 
     const onPhonepeChecked = (_: React.MouseEvent<HTMLInputElement>, data: CheckboxProps) => {
@@ -466,6 +467,7 @@ const ModalContent: React.FC<React.PropsWithChildren & ReviewModalParams> = ({ i
     }
 
     const descriptions = ContentState<Array<SelectOption>>([]);
+    
     const onAddItem = (data: DropdownProps) => {
         descriptions.setContent([...descriptions.content, {
             key: `desc-${descriptions.content.length}`,
@@ -495,9 +497,10 @@ const ModalContent: React.FC<React.PropsWithChildren & ReviewModalParams> = ({ i
             .then(({ isShared }) => { sharingStatus = isShared })
             .catch((e) => console.log(e.message));
 
-        const formData = {
-            ...PostParams,
-            body: JSON.stringify({
+        let payload = {};
+
+        if (bankEntry?.type === 'Debit') {
+            payload = {
                 group_id: groupId,
                 details: Object.entries({
                     Bank: `${bankEntry?.bank}`,
@@ -516,10 +519,27 @@ const ModalContent: React.FC<React.PropsWithChildren & ReviewModalParams> = ({ i
                 bankTxnId: bankEntry?._id,
                 phonePeTxnId: reviewModalParam.get().selectedPhonePe?._id,
                 draftTxnId: reviewModalParam.get().selectedDraft?._id
-            })
-        };
+            };
+        } else {
+            payload = {
+                group_id: groupId,
+                cost: reviewModalParam.get().amount,
+                date: reviewModalParam.get().date,
+                details: Object.entries({
+                    Bank: `${bankEntry?.bank}`,
+                    Description: `${bankEntry?.description}`,
+                    UTR: `${reviewModalParam.get().selectedPhonePe?.utr ?? 'N/A'}`,
+                    TransactionNo: `${reviewModalParam.get().selectedPhonePe?.transactionId ?? 'N/A'}`,
+                    Payer: `${reviewModalParam.get().selectedPhonePe?.recipient ?? 'N/A'}`
+                }).map(([k, v]) => `${k} : ${v}\n——————`).join('\n'),
+                parties: groups.find(t => t.id === groupId)?.members.map(m => m.id),
+                description: reviewModalParam.get().description
+            }
+        }
 
-        await fetch(Url.FinalizeExpense, formData)
+        const url = bankEntry?.type === 'Credit' ? Url.SettleExpense : Url.FinalizeExpense;
+
+        await fetch(url, { ...PostParams, body: JSON.stringify(payload) })
             .then(handleResponse)
             //.then(() => deleteDraftEntry(expenseModal.params?.expenseId))
             // .then(() => (fetch(`${Url.SplitWiseGroup}/${expenseModal.params?.groupId}`)
@@ -660,6 +680,7 @@ const ModalContent: React.FC<React.PropsWithChildren & ReviewModalParams> = ({ i
                                 placeholder='Description'
                                 options={descriptions.content}
                                 value={reviewModalParam.get().description}
+                                disabled={bankEntry?.type === 'Credit'}
                                 loading={descriptions.isLoading}
                                 selectOnBlur={false}
                                 onChange={(_, data) => reviewModalParam.set({ ...reviewModalParam.get(), description: data.value as string })}

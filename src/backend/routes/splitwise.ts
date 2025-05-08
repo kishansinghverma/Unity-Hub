@@ -22,4 +22,10 @@ router.post('/transactions', (request, response) => {
         .catch(replyError(response));
 });
 
+router.post('/settlement', (request, response) => {
+    splitwise.settleExpenses(request.body)
+        .then(replySuccess(response))
+        .catch(replyError(response));
+});
+
 export default router;

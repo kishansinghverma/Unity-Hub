@@ -30,6 +30,7 @@ export const constants = {
         schemaNotReady: 'Validation Schema Not Found',
         mqttNotReady: 'Mqtt Service Not Ready',
         timeLimitExceeded: "Max Wait Time Exceeded",
+        splitwiseError: "SplitwiseError"
     },
     message: {
         serviceOk: 'Service Ok',

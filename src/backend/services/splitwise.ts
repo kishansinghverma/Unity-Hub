@@ -1,5 +1,5 @@
 import { requestParams } from "../common/constants";
-import { SelfPaidExpense, SharedExpense } from "../common/types";
+import { SelfPaidExpense, SettlementExpense, SharedExpense } from "../common/types";
 import { getJsonResponse } from "../common/utils";
 
 class SplitwiseService {
@@ -22,7 +22,7 @@ class SplitwiseService {
 
     public getGroup = (groupId: string) => fetch(`${this.baseUrl}/get_group/${groupId}`, this.getRequestParams('get')).then(getJsonResponse);
 
-    public addExpense = (expense: SharedExpense | SelfPaidExpense) => (
+    public addExpense = (expense: SharedExpense | SelfPaidExpense | SettlementExpense) => (
         fetch(`${this.baseUrl}/create_expense`, this.getRequestParams('post', expense)).then(getJsonResponse)
     );
 }

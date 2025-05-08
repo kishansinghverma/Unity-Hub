@@ -87,6 +87,15 @@ export type GroupExpenseRequest = {
     shared: boolean
 };
 
+export type SettlementExpenseRequest = {
+    group_id: number
+    cost: string
+    date: string
+    parties: Array<number>
+    details: string
+    description: string
+}
+
 export type SelfPaidExpense = {
     date?: string;
     cost: string;
@@ -100,6 +109,27 @@ export type SelfPaidExpense = {
 } & {
     [key: `users__${number}__owed_share`]: string;
 };
+
+export type SettlementExpense = {
+    date: string;
+    cost: string;
+    group_id: number;
+    description: string;
+    category_id: '18';
+    payment: true;
+    transaction_method: 'offline';
+    creation_method: 'payment';
+    settle_all: true;
+    details: string;
+    currency_code: 'INR';
+} & {
+    [key: `users__${number}__user_id`]: number;
+} & {
+    [key: `users__${number}__paid_share`]: string;
+} & {
+    [key: `users__${number}__owed_share`]: string;
+};
+
 
 export type SharedExpense = {
     date?: string,
