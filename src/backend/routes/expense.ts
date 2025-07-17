@@ -24,12 +24,6 @@ router.get('/lastrefinement', (request, response) => {
         .catch(replyError(response));
 });
 
-router.get('/groups/:groupId/sharedstatus', (request, response) => {
-    expenses.getGroupSharing(parseInt(request.params.groupId))
-        .then(replySuccess(response))
-        .catch(replyError);
-});
-
 router.get('/descriptions', (request, response) => {
     expenses.getDescriptions()
         .then(replySuccess(response))
@@ -59,13 +53,6 @@ router.post('/description', (request, response) => {
         .then(replySuccess(response))
         .catch(replyError(response));
 })
-
-router.post('/groups', (request, response) => {
-    validator.validateRequest(request)
-        .then(values => expenses.updateGroupInfo(values)
-            .then(replySuccess(response)))
-        .catch(replyError(response));
-});
 
 router.post('/statement/bank', (request, response) => {
     validator.validateRequest(request)

@@ -73,7 +73,6 @@ export type PhonePeStatementRequest = Array<PhonePeTransaction>;
 
 export type GroupInfoRequest = {
     id: number,
-    name: string,
     isShared: boolean
 };
 

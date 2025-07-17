@@ -1,6 +1,7 @@
 import express from 'express';
 import { replyError, replySuccess } from '../common/utils';
 import { splitwise } from '../operations/splitwise';
+import { validator } from '../common/validation';
 
 const router = express.Router();
 
@@ -13,6 +14,19 @@ router.get('/group/:id', (request, response) => {
 router.get('/groups', (request, response) => {
     splitwise.listGroups()
         .then(replySuccess(response))
+        .catch(replyError(response));
+});
+
+router.get('/categories', (request, response) => {
+    splitwise.listCategories()
+        .then(replySuccess(response))
+        .catch(replyError(response));
+});
+
+router.patch('/groups', (request, response) => {
+    validator.validateRequest(request)
+        .then(values => splitwise.updateGroupInfo(values)
+            .then(replySuccess(response)))
         .catch(replyError(response));
 });
 

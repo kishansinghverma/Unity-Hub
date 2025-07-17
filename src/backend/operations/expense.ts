@@ -25,32 +25,6 @@ class Expenses {
 
     public getDescriptions = () => this.database.getDocument(this.constants.collection.meta, { name: 'Descriptions' }, {});
 
-    public getGroup = async (groupId: number) => {
-        const response = await this.database.getDocument(this.constants.collection.meta, { name: 'Groups' }, {
-            projection: { value: { $elemMatch: { id: groupId } }, _id: 0 }
-        });
-
-        return response?.content?.value ? { ...response, content: response.content.value[0] } : this.database.emptyResponse;
-    }
-
-    public getGroupSharing = async (groupId: number) => {
-        const response = await this.getGroup(groupId);
-        return ObjectUtils.isEmpty(response.content) ? response : { ...response, content: { isShared: response.content.isShared } };
-    }
-
-    public updateGroupInfo = async (groupInfo: GroupInfoRequest) => {
-        const groupResponse = await this.getGroup(groupInfo.id);
-        if (ObjectUtils.isEmptyResponse(groupResponse)) {
-            const query = { name: 'Groups' };
-            const patchData = { $addToSet: { value: groupInfo } };
-            return this.database.patchDocument(this.constants.collection.meta, patchData, query, {});
-        } else {
-            const query = { name: 'Groups', "value.id": groupInfo.id };
-            const patchData = { $set: { "value.$.isShared": groupInfo.isShared } }
-            return this.database.patchDocument(this.constants.collection.meta, patchData, query, {});
-        }
-    }
-
     public updateBankStatement = async (statement: BankStatementRequest) => {
         const statementResponse = await this.getBankStatement();
         const existingTransactions: Array<BankTransaction> = statementResponse.content ?? [];

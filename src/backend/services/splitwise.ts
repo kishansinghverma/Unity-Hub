@@ -20,6 +20,8 @@ class SplitwiseService {
 
     public listGroups = () => fetch(`${this.baseUrl}/get_groups`, this.getRequestParams('get')).then(getJsonResponse);
 
+    public listCategories = () => fetch(`${this.baseUrl}/get_categories`, this.getRequestParams('get')).then(getJsonResponse);
+
     public getGroup = (groupId: string) => fetch(`${this.baseUrl}/get_group/${groupId}`, this.getRequestParams('get')).then(getJsonResponse);
 
     public addExpense = (expense: SharedExpense | SelfPaidExpense | SettlementExpense) => (

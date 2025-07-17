@@ -4,7 +4,6 @@ import { MongoDbService } from "../services/mongodb";
 import { String } from "../common/models";
 import { getErrorResponse, getHttpCode } from "../common/utils";
 import { whatsAppService } from "../services/whatsapp";
-import { createDecipheriv } from "crypto";
 
 class EMandi {
     private constants = invariants.emandi;

@@ -61,9 +61,8 @@ const schemas: { [key: string]: any } = {
         forceDownload: joi.bool().required(),
         driverMobile: joi.string().regex(/^(\d{10})?$/).empty(''),
     },
-    "/api/expenses/groups": {
+    "/api/splitwise/groups": {
         id: joi.number().required(),
-        name: joi.string().required(),
         isShared: joi.bool().required()
     },
     "/api/expenses/statement/bank": joi.array().items({

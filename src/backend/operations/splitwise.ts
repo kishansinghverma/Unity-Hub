@@ -1,9 +1,13 @@
-import { SplitwiseThrowable } from "../common/models";
-import { GroupExpenseRequest, SelfPaidExpense, SettlementExpense, SettlementExpenseRequest, SharedExpense } from "../common/types";
+import { ObjectUtils, SplitwiseThrowable } from "../common/models";
+import { ExecutionResponse, GroupExpenseRequest, GroupInfoRequest, SelfPaidExpense, SettlementExpense, SettlementExpenseRequest, SharedExpense } from "../common/types";
+import { MongoDbService } from "../services/mongodb";
 import { splitwiseService } from "../services/splitwise";
+import { constants as globalConstants } from "../common/constants";
 
 class Splitwise {
     private constants;
+    private database: MongoDbService;
+    private globalConstants = globalConstants.expense;
 
     constructor() {
         this.constants = {
@@ -14,11 +18,62 @@ class Splitwise {
                 Papa: 65793540
             },
         };
+
+        this.database = new MongoDbService(this.globalConstants.database);
     }
 
-    public listGroups = () => splitwiseService.listGroups();
+    private getGroupsSharing = async () => {
+        const response = await this.database.getDocument(this.globalConstants.collection.meta, { name: 'Groups' }, {});
+        return response;
+    }
 
-    public getGroupDetails = (groupId: string) => splitwiseService.getGroup(groupId);
+    public listCategories = splitwiseService.listCategories;
+
+    public listGroups = async () => {
+        const sharingStatusResponse = await this.getGroupsSharing();
+        const splitwiseGroupsResponse = await splitwiseService.listGroups()
+
+        if (ObjectUtils.isEmptyResponse(splitwiseGroupsResponse))
+            return splitwiseGroupsResponse;
+
+        if (ObjectUtils.isEmptyResponse(sharingStatusResponse)) {
+            return {
+                statusCode: splitwiseGroupsResponse.statusCode,
+                content: splitwiseGroupsResponse.content.groups.map((group: any) => ({ ...group, sharing: false }))
+            } as ExecutionResponse;
+        }
+
+        return {
+            statusCode: splitwiseGroupsResponse.statusCode,
+            content: splitwiseGroupsResponse.content.groups.map((group: any) => {
+                const sharing = !!sharingStatusResponse.content[group.id];
+                return { ...group, sharing };
+            })
+        } as ExecutionResponse;
+    }
+
+    public getGroupDetails = async (groupId: string) => {
+        const splitwiseGroupResponse = await splitwiseService.getGroup(groupId);
+        const sharingStatusResponse = await this.getGroupsSharing();
+
+        if (ObjectUtils.isEmptyResponse(splitwiseGroupResponse))
+            return splitwiseGroupResponse;
+
+        if (ObjectUtils.isEmptyResponse(sharingStatusResponse)) {
+            splitwiseGroupResponse.content = { ...splitwiseGroupResponse.content.group, sharing: false }
+            return splitwiseGroupResponse;
+        }
+
+        const sharing = !!sharingStatusResponse.content[groupId];
+        splitwiseGroupResponse.content = { ...splitwiseGroupResponse.content.group, sharing: sharing }
+        return splitwiseGroupResponse;
+    }
+
+    public updateGroupInfo = async (groupInfo: GroupInfoRequest) => {
+        const query = { name: 'Groups' };
+        const patchData = { $set: { [groupInfo.id]: groupInfo.isShared } };
+        return this.database.patchDocument(this.globalConstants.collection.meta, patchData, query, { upsert: true })
+    }
 
     public settleExpenses = (transaction: SettlementExpenseRequest) => {
         const payerId = transaction.parties.find(id => id !== this.constants.userId.Self);
