@@ -74,4 +74,23 @@ router.post('/finalize', (request, response) => {
         .catch(replyError(response));
 });
 
+router.post('/process/bank/:id', (request, response) => {
+    expenses.processBankTransaction(request.params.id)
+        .then(replySuccess(response))
+        .catch(replyError(response));
+});
+
+router.post('/process/phonepe/:id', (request, response) => {
+    expenses.processPhonePeTransaction(request.params.id)
+        .then(replySuccess(response))
+        .catch(replyError(response));
+});
+
+router.post('/process/draft/:id', (request, response) => {
+    expenses.processDraftTransaction(request.params.id)
+        .then(replySuccess(response))
+        .catch(replyError(response));
+});
+
+
 export default router;

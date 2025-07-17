@@ -83,7 +83,8 @@ export type GroupExpenseRequest = {
     cost: string,
     date?: string,
     parties: Array<number>,
-    shared: boolean
+    shared: boolean,
+    category: number
 };
 
 export type SettlementExpenseRequest = {
@@ -101,6 +102,7 @@ export type SelfPaidExpense = {
     details: string;
     group_id: number;
     description: string;
+    category_id: number;
 } & {
     [key: `users__${number}__user_id`]: number;
 } & {
@@ -131,10 +133,11 @@ export type SettlementExpense = {
 
 
 export type SharedExpense = {
-    date?: string,
-    group_id: number,
-    details: string,
-    description: string,
-    cost: string,
+    date?: string;
+    group_id: number;
+    details: string;
+    description: string;
+    cost: string;
     split_equally: boolean
+    category_id: number;
 };

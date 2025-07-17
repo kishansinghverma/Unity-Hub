@@ -110,6 +110,7 @@ class Splitwise {
                 description: transaction.description,
                 details: transaction.details,
                 group_id: transaction.group_id,
+                category_id: transaction.category,
                 split_equally: true
             }
             return splitwiseService.addExpense(expense);
@@ -122,6 +123,7 @@ class Splitwise {
                 description: transaction.description, // expense title
                 details: transaction.details, // expense comment
                 group_id: transaction.group_id,
+                category_id: transaction.category,
                 users__0__user_id: this.constants.userId.Self,
                 users__0__paid_share: Math.floor(totalCost).toString(),
                 users__0__owed_share: "0"

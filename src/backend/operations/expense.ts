@@ -66,14 +66,24 @@ class Expenses {
     }
 
     public completeTransaction = (transactionId: string, collectionName: string) => {
-        this.database.updateDocumentById(collectionName, transactionId, { processed: true });
+        console.log(transactionId);
+        this.setLastRefinementDate();
+        return this.database.updateDocumentById(collectionName, transactionId, { processed: true });
     }
 
+    public processBankTransaction = (transactionId: string) => this.completeTransaction(transactionId, this.constants.collection.statement);
+
+    public processPhonePeTransaction = (transactionId: string) => this.completeTransaction(transactionId, this.constants.collection.phonepe);
+
+    public processDraftTransaction = (transactionId: string) => this.completeTransaction(transactionId, this.constants.collection.draft);
+
+    public setLastRefinementDate = () => this.database.patchDocument(this.constants.collection.meta, { $set: { value: new Date().getTime() } }, { name: 'Modified On' }, {});
+
     public finalizeTransaction = (transaction: any) => {
-        if (transaction.bankTxnId) this.completeTransaction(transaction.bankTxnId, this.constants.collection.statement);
-        if (transaction.phonePeTxnId) this.completeTransaction(transaction.phonePeTxnId, this.constants.collection.phonepe);
-        if (transaction.draftTxnId) this.completeTransaction(transaction.draftTxnId, this.constants.collection.draft);
-        this.database.patchDocument(this.constants.collection.meta, { $set: { value: new Date().getTime() } }, { name: 'Modified On' }, {});
+        if (transaction.bankTxnId) this.database.updateDocumentById(this.constants.collection.statement, transaction.bankTxnId, { processed: true });
+        if (transaction.phonePeTxnId) this.database.updateDocumentById(this.constants.collection.phonepe, transaction.phonePeTxnId, { processed: true });
+        if (transaction.draftTxnId) this.database.updateDocumentById(this.constants.collection.draft, transaction.draftTxnId, { processed: true });
+        this.setLastRefinementDate();
         return splitwise.addExpense(transaction);
     }
 
