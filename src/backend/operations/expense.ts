@@ -66,7 +66,6 @@ class Expenses {
     }
 
     public completeTransaction = (transactionId: string, collectionName: string) => {
-        console.log(transactionId);
         this.setLastRefinementDate();
         return this.database.updateDocumentById(collectionName, transactionId, { processed: true });
     }
