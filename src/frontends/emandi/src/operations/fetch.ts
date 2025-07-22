@@ -69,7 +69,6 @@ export const uploadPhonePeStatement = async (transactions: Array<PhonePeEntry>) 
         .then(handleJsonResponse);
 }
 
-
 export const notifyViaWhatsApp = async (message: string) => {
     fetch(Url.NotificationUrl, {
         ...PostParams,

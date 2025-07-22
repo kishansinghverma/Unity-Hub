@@ -94,6 +94,9 @@ export type SettlementExpenseRequest = {
     parties: Array<number>
     details: string
     description: string
+    bankTxnId?: string
+    phonePeTxnId?: string
+    draftTxnId?: string
 }
 
 export type SelfPaidExpense = {

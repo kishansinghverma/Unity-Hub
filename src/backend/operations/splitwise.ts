@@ -3,6 +3,7 @@ import { ExecutionResponse, GroupExpenseRequest, GroupInfoRequest, SelfPaidExpen
 import { MongoDbService } from "../services/mongodb";
 import { splitwiseService } from "../services/splitwise";
 import { constants as globalConstants } from "../common/constants";
+import { expenses } from "./expense";
 
 class Splitwise {
     private constants;
@@ -78,6 +79,11 @@ class Splitwise {
     public settleExpenses = (transaction: SettlementExpenseRequest) => {
         const payerId = transaction.parties.find(id => id !== this.constants.userId.Self);
         if (!payerId) throw new SplitwiseThrowable('Payer party not available!', 400);
+
+        if (transaction.bankTxnId) this.database.updateDocumentById(this.globalConstants.collection.statement, transaction.bankTxnId, { processed: true });
+        if (transaction.phonePeTxnId) this.database.updateDocumentById(this.globalConstants.collection.phonepe, transaction.phonePeTxnId, { processed: true });
+        if (transaction.draftTxnId) this.database.updateDocumentById(this.globalConstants.collection.draft, transaction.draftTxnId, { processed: true });
+        expenses.setLastRefinementDate();
 
         const expense: SettlementExpense = {
             cost: transaction.cost,
