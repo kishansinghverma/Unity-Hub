@@ -17,7 +17,7 @@ export const LiveAudioPlayer: React.FC = () => {
       const sourceBuffer = mediaSource.addSourceBuffer(mime);
       sourceBufferRef.current = sourceBuffer;
 
-      const ws = new WebSocket('ws://0.0.0.0:8080');
+      const ws = new WebSocket('ws://unity-hub.onrender.com:10000');
       ws.binaryType = 'arraybuffer';
 
       ws.onmessage = (event) => {

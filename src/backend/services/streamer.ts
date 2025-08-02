@@ -9,7 +9,7 @@ export const wsClients: Set<WebSocket> = new Set();
 
 class Streamer {
     private logger: Logger;
-    private UDP_PORT = 12345;
+    private UDP_PORT = 10000;
 
     constructor() {
         this.logger = new Logger(source.udp);
