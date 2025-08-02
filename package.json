@@ -25,18 +25,20 @@
     "@types/ejs": "^3.1.5",
     "@types/express": "^4.17.21",
     "@types/multer": "^1.4.11",
-    "@types/node": "^20.12.2",
+    "@types/node": "^20.19.9",
     "@types/node-cron": "^3.0.11",
+    "@types/ws": "^8.18.1",
     "concurrently": "^7.6.0",
     "ncp": "^2.0.0",
     "nodemon": "^2.0.22",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.4.3"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
   },
   "dependencies": {
     "body-parser": "^1.20.2",
     "chalk": "4.1.2",
     "cors": "^2.8.5",
+    "dgram": "^1.0.1",
     "dotenv": "^16.4.5",
     "ejs": "^3.1.10",
     "express": "^4.19.2",
@@ -45,7 +47,7 @@
     "mqtt": "^5.5.4",
     "multer": "^1.4.5-lts.1",
     "node-cron": "^3.0.3",
-    "nodejs-assistant": "^0.8.0",
-    "puppeteer": "^22.6.5"
+    "puppeteer": "^22.6.5",
+    "ws": "^8.18.3"
   }
 }

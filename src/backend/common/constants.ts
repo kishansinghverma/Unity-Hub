@@ -69,7 +69,8 @@ export enum source {
     cronjob = 'CronJob',
     assistant = 'GoogleAssistant',
     smarthome = 'SmartHome',
-    whatsapp = 'WhatsApp'
+    whatsapp = 'WhatsApp',
+    udp = 'UdpServer'
 }
 
 export const mimeType: { [key: string]: string } = {
