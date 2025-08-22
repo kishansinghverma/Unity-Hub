@@ -13,7 +13,6 @@ import { Logger } from '../common/models';
 import { source } from '../common/constants';
 import { WebSocketServer } from 'ws';
 import http from 'http';
-import { wsClients } from './streamer';
 
 class ExpressServer {
     private logger: Logger;
@@ -55,24 +54,10 @@ class ExpressServer {
         this.router.all("*", (req, res) => res.status(404).end());
     }
 
-    private registerWebSocket = () => {
-        const wss = new WebSocketServer({ server: this.server });
-
-        wss.on('connection', (ws) => {
-            wsClients.add(ws);
-            console.log(`Client connected. Total: ${wsClients.size}`);
-
-            ws.on('close', () => wsClients.delete(ws));
-
-            ws.on('message', (msg) => console.log('Message from client:', msg.toString()));
-        });
-    }
-
     public initialize = () => {
         this.registerMiddleWares();
         this.registerStaticServer();
         this.registerRoutes();
-        this, this.registerWebSocket();
         this.server.listen(this.port, this.address, () => this.logger.success(`Unity server is live on ${this.port}! 🎉`));
     }
 }
