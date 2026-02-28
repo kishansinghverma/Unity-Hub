@@ -99,9 +99,9 @@ class Splitwise {
             details: transaction.details,
             users__0__user_id: this.constants.userId.Self,
             users__0__paid_share: '0.00',
-            users__0__owed_share: transaction.cost,
+            users__0__owed_share: transaction.cost.toString(),
             users__1__user_id: payerId,
-            users__1__paid_share: transaction.cost,
+            users__1__paid_share: transaction.cost.toString(),
             users__1__owed_share: '0.00',
         }
 

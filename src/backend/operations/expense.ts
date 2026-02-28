@@ -13,7 +13,7 @@ class Expenses {
         this.database = new MongoDbService(this.constants.database);
     }
 
-    public getTransactions = () => this.database.getDocuments(this.constants.collection.draft, {}, {});
+    public getTransactions = () => this.database.getDocuments(this.constants.collection.draft, {}, { sort: {dateTime: 1} });
 
     public getBankStatement = () => this.database.getDocuments(this.constants.collection.statement, {}, { sort: { date: 1 } });
 

@@ -6,15 +6,15 @@ import { source } from '../common/constants';
 class GoogleAssistant {
     private logger: Logger = new Logger(source.assistant);
     // private assistant: Assistant;
-    // private assistantConfig = {
-    //     token: process.env.GA_TOKEN,
-    //     refresh_token: process.env.GA_REFRESH_TOKEN,
-    //     client_id: process.env.GA_CLIENT_ID,
-    //     client_secret: process.env.GA_CLIENT_SECRET,
-    //     type: "authorized_user",
-    //     scopes: ["https://www.googleapis.com/auth/assistant-sdk-prototype"],
-    //     token_uri: "https://oauth2.googleapis.com/token"
-    // }
+    private assistantConfig = {
+        token: process.env.GA_TOKEN,
+        refresh_token: process.env.GA_REFRESH_TOKEN,
+        client_id: process.env.GA_CLIENT_ID,
+        client_secret: process.env.GA_CLIENT_SECRET,
+        type: "authorized_user",
+        scopes: ["https://www.googleapis.com/auth/assistant-sdk-prototype"],
+        token_uri: "https://oauth2.googleapis.com/token"
+    }
 
     // private assistantOptions = {
     //     locale: AssistantLanguage.ENGLISH,
@@ -27,10 +27,10 @@ class GoogleAssistant {
     //     this.logger = new Logger(source.assistant);
     // }
 
-    public initialize = () => {
-        this.logger.warning("Dummy Assistant Initailized");
-        // this.ask('Ping').then(response => this.logger.info(response));
-    }
+    // public initialize = () => {
+    //     this.logger.warning("Dummy Assistant Initailized");
+    //     this.ask('Ping').then(response => this.logger.info(response));
+    // }
 
     // public ask = (query: string) => this.assistant.query(query).then(response => (response.text ?? 'Command Executed'));
 

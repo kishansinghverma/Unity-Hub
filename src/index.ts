@@ -5,7 +5,7 @@ import { httpServer } from './backend/services/express';
 import { assistantService } from './backend/services/assistance';
 import { smartHomeService } from './backend/services/smarthome';
 
-assistantService.initialize();
+// assistantService.initialize();
 // mqttService.initialize();
 smartHomeService.initialize();
 cronJobs.initialize();
