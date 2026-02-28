@@ -8,7 +8,6 @@ import { ProcessedPage } from "./processed";
 import { QueuedPage } from "./queued";
 import { Button, Header, HeaderContent, Icon } from "semantic-ui-react";
 import { pages } from "../common/constants";
-import { LiveAudioPlayer } from "./player";
 
 export const RouterPage = () => (
     <Routes>
@@ -20,7 +19,6 @@ export const RouterPage = () => (
             <Route path="addparty" element={<NewParty />} />
             <Route path="parties" element={<Parties />} />
             <Route path="expenses" element={<Expense />} />
-            <Route path="player" element={<LiveAudioPlayer />} />
             <Route path="*" element={<NoMatch />} />
         </Route>
     </Routes>
