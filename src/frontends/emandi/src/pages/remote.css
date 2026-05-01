@@ -227,21 +227,26 @@
 }
 /* Mobile Adjustments */
 @media (max-width: 480px) {
-    .remote-page {
-        padding: 1rem 0.5rem;
+    .remote-page.remote-page-bg {
+        padding: 0.5rem 0.25rem !important;
     }
     
     .remote-devices-container.ui.segment {
-        padding: 1.5rem 1rem !important;
-        border-radius: 24px !important;
+        padding: 1rem 0.75rem !important;
+        border-radius: 16px !important;
     }
 
     .remote-command-grid {
-        grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-        gap: 0.75rem;
+        grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+        gap: 0.5rem;
     }
 
     .remote-command-button.ui.button {
-        min-height: 94px !important;
+        min-height: 88px !important;
+        padding: 0.6rem 0.25rem !important;
+    }
+
+    .remote-page-title.ui.header {
+        font-size: 1.3rem !important;
     }
 }
