@@ -1,0 +1,247 @@
+.remote-page.remote-page-bg {
+    max-width: 1000px !important;
+    padding: 2rem 1rem 5rem;
+    min-height: 100vh;
+    font-family: 'Inter', system-ui, sans-serif;
+}
+
+/* Liquid Glass Container */
+.remote-devices-container.ui.segment {
+    background: rgba(255, 255, 255, 0.4) !important;
+    backdrop-filter: blur(30px) saturate(180%);
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
+    border-radius: 32px !important;
+    border: 1px solid rgba(255, 255, 255, 0.7) !important;
+    box-shadow: 
+        0 10px 40px rgba(0, 0, 0, 0.05),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.3) !important;
+    padding: 2.5rem !important;
+    color: #1e293b;
+}
+
+.remote-devices {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+}
+
+/* Airy Header - Dark Text for Light Background */
+.remote-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    margin-bottom: 1rem;
+    background: transparent !important;
+}
+
+.remote-page-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+}
+
+.remote-title-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0ea5e9;
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.remote-page-title.ui.header {
+    margin: 0 !important;
+    color: #0f172a !important;
+    font-size: 1.6rem !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.03em;
+}
+
+.remote-page-title.ui.header .sub.header {
+    margin-top: 0.2rem !important;
+    color: #64748b !important;
+    font-size: 0.85rem !important;
+    font-weight: 500;
+}
+
+/* Crystal Status */
+.stat-value {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.6);
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.stat-value::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: #10b981;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+    animation: crystal-pulse 2s infinite;
+}
+
+@keyframes crystal-pulse {
+    0% { transform: scale(0.9); opacity: 0.7; }
+    50% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(0.9); opacity: 0.7; }
+}
+
+/* Device Section */
+.remote-device-title-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.remote-device-title.ui.header {
+    display: flex !important;
+    align-items: center;
+    gap: 0.7rem;
+    margin: 0 !important;
+    color: #334155 !important;
+    font-size: 0.9rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+}
+
+.remote-device-fallback-lucide {
+    width: 20px;
+    height: 20px;
+    color: #0ea5e9;
+    stroke-width: 2.5;
+}
+
+.remote-device-title-line {
+    height: 1px;
+    flex-grow: 1;
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.05) 0%, transparent 100%);
+}
+
+/* Glass Grid */
+.remote-command-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+}
+
+/* Liquid Button Design */
+.remote-command-button.ui.button {
+    margin: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 0.6rem !important;
+    min-height: 100px !important;
+    border-radius: 20px !important;
+    border: 1px solid rgba(255, 255, 255, 0.9) !important;
+    background: rgba(255, 255, 255, 0.4) !important; /* Increased opacity for more substance */
+    backdrop-filter: blur(15px);
+    color: #1e293b !important;
+    padding: 0.5rem !important;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    box-shadow: 
+        0 4px 6px -1px rgba(0, 0, 0, 0.05), 
+        0 10px 15px -3px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5) !important; /* Internal highlight */
+}
+
+.remote-command-button.ui.button:hover {
+    background: rgba(255, 255, 255, 0.6) !important;
+    border-color: #ffffff !important;
+    transform: translateY(-8px) scale(1.02); /* More aggressive lift */
+    box-shadow: 
+        0 20px 25px -5px rgba(0, 0, 0, 0.1), 
+        0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+    color: #0f172a !important;
+}
+
+.remote-command-button.ui.button.pressed {
+    background: rgba(255, 255, 255, 0.8) !important;
+    transform: translateY(2px) scale(0.94); /* More pronounced press */
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+    transition: all 0.1s ease;
+}
+
+/* Icon Container */
+.remote-command-icon-wrap {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px; /* Slightly increased radius for better look */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    border: 1.5px solid #e2e8f0 !important; /* More distinct border than white */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04) !important;
+    transition: all 0.3s ease;
+}
+
+.remote-command-button.ui.button:hover .remote-command-icon-wrap {
+    border-color: #74d3ff !important; /* Subtle blue highlight on hover */
+    background: #f0f9ff;
+    box-shadow: 0 0 12px rgba(14, 165, 233, 0.15) !important;
+    transform: scale(1.05);
+}
+
+.remote-command-image {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    opacity: 1;
+}
+
+.remote-command-fallback-icon.icon {
+    margin: 0 !important;
+    font-size: 1.25rem !important;
+    color: #64748b;
+}
+
+.remote-command-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.2;
+    color: inherit;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+}
+/* Mobile Adjustments */
+@media (max-width: 480px) {
+    .remote-page {
+        padding: 1rem 0.5rem;
+    }
+    
+    .remote-devices-container.ui.segment {
+        padding: 1.5rem 1rem !important;
+        border-radius: 24px !important;
+    }
+
+    .remote-command-grid {
+        grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+        gap: 0.75rem;
+    }
+
+    .remote-command-button.ui.button {
+        min-height: 94px !important;
+    }
+}

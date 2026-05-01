@@ -3,6 +3,7 @@ import { AirVent, Cpu, HouseWifi, LucideIcon, Projector, Speaker, Tv } from "luc
 import { Button, Container, Header, HeaderSubheader, Icon, Segment } from "semantic-ui-react";
 import { toast } from "react-toastify";
 import commandsData from "../static/commands.json";
+import "./remote.css";
 
 type RemoteCommand = {
     Id: number;
@@ -66,21 +67,26 @@ export const RemotePage = () => {
     };
 
     return (
-        <Container className="remote-page">
+        <Container className="remote-page remote-page-bg">
             <Segment className="remote-devices-container">
                 <div className="remote-devices">
                     <div className="remote-page-header">
                         <div className="remote-page-title-wrap">
-                            <span className="remote-title-icon">
-                                <HouseWifi size={24} />
-                            </span>
+                            <div className="remote-title-icon">
+                                <HouseWifi size={28} strokeWidth={1.5} />
+                            </div>
                             <div className="remote-page-title-block">
                                 <Header as="h2" className="remote-page-title">
-                                    Smart Switch Dashboard
+                                    Smart Remote
                                     <HeaderSubheader>
-                                        One place to control all your devices.
+                                        {devices.length} Devices Connected
                                     </HeaderSubheader>
                                 </Header>
+                            </div>
+                        </div>
+                        <div className="remote-header-stats">
+                            <div className="stat-item">
+                                <span className="stat-value">Active</span>
                             </div>
                         </div>
                     </div>
@@ -138,7 +144,7 @@ export const RemotePage = () => {
                                             {command.ImagePath && !brokenImages[imageKey] ? (
                                                 <img
                                                     className="remote-command-image"
-                                                    src={new URL(command.ImagePath, IR_COMMAND_BASE_URL).toString()}
+                                                    src={new URL(command.ImagePath.replace(/^\//, ""), IR_COMMAND_BASE_URL).toString()}
                                                     alt={command.Name}
                                                     loading="lazy"
                                                     onError={(event) => {
