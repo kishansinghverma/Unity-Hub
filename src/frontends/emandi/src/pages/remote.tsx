@@ -9,7 +9,6 @@ type RemoteCommand = {
     Id: number;
     Name: string;
     ImagePath: string;
-    IRCommand: string;
 };
 
 type RemoteDevice = {
@@ -20,7 +19,6 @@ type RemoteDevice = {
 
 type CommandResponse = {
     Response: RemoteDevice[];
-    Status: boolean;
 };
 
 type DeviceCategory = "airconditioner" | "speaker" | "projector" | "tv" | "generic";
@@ -67,7 +65,7 @@ export const RemotePage = () => {
     };
 
     return (
-        <Container className="remote-page remote-page-bg">
+        <Container className="remote-page">
             <Segment className="remote-devices-container">
                 <div className="remote-devices">
                     <div className="remote-page-header">
@@ -75,26 +73,20 @@ export const RemotePage = () => {
                             <div className="remote-title-icon">
                                 <HouseWifi size={28} strokeWidth={1.5} />
                             </div>
-                            <div className="remote-page-title-block">
-                                <Header as="h2" className="remote-page-title">
-                                    Smart Remote
-                                    <HeaderSubheader>
-                                        {devices.length} Devices Connected
-                                    </HeaderSubheader>
-                                </Header>
-                            </div>
+                            <Header as="h2" className="remote-page-title">
+                                Smart Remote
+                                <HeaderSubheader>
+                                    {devices.length} Devices Connected
+                                </HeaderSubheader>
+                            </Header>
                         </div>
-                        <div className="remote-header-stats">
-                            <div className="stat-item">
-                                <span className="stat-value">Active</span>
-                            </div>
-                        </div>
+                        <span className="stat-value">Active</span>
                     </div>
-                    {devices.map((device, index) => {
+                    {devices.map((device) => {
                         const deviceCategory = getDeviceCategory(device.Name);
                         const DeviceFallbackIcon = DEVICE_ICONS[deviceCategory];
                         return (
-                        <div key={device.Id} className="remote-device-section">
+                        <div key={device.Id}>
                             <div className="remote-device-title-row">
                                 <Header as="h3" className="remote-device-title">
                                     <DeviceFallbackIcon className="remote-device-fallback-lucide" aria-hidden />
@@ -161,8 +153,6 @@ export const RemotePage = () => {
                                     );
                                 })}
                             </div>
-
-                            {index < devices.length - 1 && <div className="remote-device-section-gap" />}
                         </div>
                         );
                     })}

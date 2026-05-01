@@ -1,4 +1,4 @@
-.remote-page.remote-page-bg {
+.remote-page {
     max-width: 1000px !important;
     padding: 2rem 1rem 5rem;
     min-height: 100vh;
@@ -227,7 +227,7 @@
 }
 /* Mobile Adjustments */
 @media (max-width: 480px) {
-    .remote-page.remote-page-bg {
+    .remote-page {
         padding: 0.5rem 0.25rem !important;
     }
     
