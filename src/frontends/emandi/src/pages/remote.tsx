@@ -1,7 +1,6 @@
 import { KeyboardEvent, MouseEvent, useMemo, useState } from "react";
 import { AirVent, Cpu, HouseWifi, LucideIcon, Projector, Speaker, Tv } from "lucide-react";
 import { Button, Container, Header, HeaderSubheader, Icon, Segment } from "semantic-ui-react";
-import { toast } from "react-toastify";
 import commandsData from "../static/commands.json";
 import "./remote.css";
 
@@ -51,10 +50,13 @@ export const RemotePage = () => {
         const response = commandsData as CommandResponse;
         return response.Response ?? [];
     }, []);
+
     const press = (commandKey: string) => setPressedCommandKey(commandKey);
+
     const release = (commandKey: string) => {
         setPressedCommandKey((current) => (current === commandKey ? null : current));
     };
+
     const getDeviceCategory = (deviceName: string): DeviceCategory => {
         const normalizedName = deviceName.toLowerCase();
         const matchedRule = DEVICE_CLASSIFICATION_RULES.find((rule) =>
@@ -62,6 +64,10 @@ export const RemotePage = () => {
         );
 
         return matchedRule?.category ?? "generic";
+    };
+
+    const issueCommand = (commandId: number, remoteId: number) => {
+        
     };
 
     return (
@@ -125,10 +131,7 @@ export const RemotePage = () => {
                                                 (event.currentTarget as HTMLButtonElement).blur();
                                             }
 
-                                            toast.info(`Command "${command.Name}" is UI-only for now.`, {
-                                                toastId: `remote-preview-${commandKey}`,
-                                                autoClose: 900
-                                            });
+                                            issueCommand(command.Id, device.Id);
                                         }}
                                         aria-label={`${device.Name} - ${command.Name}`}
                                     >
