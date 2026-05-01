@@ -69,6 +69,7 @@ export enum source {
     cronjob = 'CronJob',
     assistant = 'GoogleAssistant',
     smarthome = 'SmartHome',
+    oakterremote = 'OakterRemote',
     whatsapp = 'WhatsApp',
     udp = 'UdpServer'
 }

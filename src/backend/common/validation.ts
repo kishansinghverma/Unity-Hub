@@ -80,7 +80,17 @@ const schemas: { [key: string]: any } = {
         amount: joi.number().positive().precision(2).required(),
         type: joi.string().valid("Debit", "Credit", "Unknown").required(),
         bank: joi.string().trim().min(2).max(50).required()
-    }).min(1).required()
+    }).min(1).required(),
+    "/api/oakterremote/command": {
+        commandId: joi.alternatives().try(
+            joi.number().integer().positive(),
+            joi.string().trim().regex(/^[1-9]\d*$/)
+        ).required(),
+        remoteId: joi.alternatives().try(
+            joi.number().integer().positive(),
+            joi.string().trim().regex(/^[1-9]\d*$/)
+        ).required()
+    }
 }
 
 class Validator {

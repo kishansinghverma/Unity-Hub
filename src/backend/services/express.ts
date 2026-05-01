@@ -9,9 +9,9 @@ import whatsappRoute from '../routes/whatsapp';
 import fileRoute from '../routes/files';
 import mqttRoute from '../routes/mqtt';
 import expenseRoute from '../routes/expense';
+import oakterRemoteRoute from '../routes/oakterremote';
 import { Logger } from '../common/models';
 import { source } from '../common/constants';
-import { WebSocketServer } from 'ws';
 import http from 'http';
 
 class ExpressServer {
@@ -49,6 +49,7 @@ class ExpressServer {
         this.router.use('/api/expenses', expenseRoute);
         this.router.use('/api/files', fileRoute);
         this.router.use('/api/mqtt', mqttRoute);
+        this.router.use('/api/oakterremote', oakterRemoteRoute);
         this.router.use('/api/splitwise', splitwiseRoute);
         this.router.use('/api/whatsapp', whatsappRoute);
         this.router.all("*", (req, res) => res.status(404).end());
