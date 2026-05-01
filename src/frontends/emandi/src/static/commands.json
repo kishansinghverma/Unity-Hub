@@ -1,0 +1,156 @@
+{
+    "Response": [
+        {
+            "Id": 505972,
+            "Name": "Voltas AC",
+            "DeviceTypeId": 2,
+            "ImagePath": "/Resources/RemoteImage/UserDefined/0e0a60/505972.jpeg",
+            "RemoteType": "UserDefined",
+            "LastOperated": "2026-05-01T05:46:54.497",
+            "IsReLearn": false,
+            "ModelId": 0,
+            "Version": "1.2",
+            "CommandList": [
+                {
+                    "Id": 2,
+                    "Name": "OFF",
+                    "ImagePath": "/Resources/CommandButtonImage/IconImage/off.png",
+                    "IsAlexaEnabled": true,
+                    "IRCommand": "c0026a198e02740ebe026a198e024419ba0248199c028a0ebc02720ebc024219bc026a1990027c0ebe023619ba024219bc026e0eba024419b8024219ba024019bc02700ebe026e0eba024219ba024019b8027c0eba023a199c025e19bc029a0e8e024219ba023e19be024219ba02700ebc029c0e90024419bc024219ba027e0ebc02"
+                },
+                {
+                    "Id": 1,
+                    "Name": "ON",
+                    "ImagePath": "/Resources/CommandButtonImage/IconImage/on.png",
+                    "IsAlexaEnabled": true,
+                    "IRCommand": "ba026c199002720eba024219bc024019ba024419b8029c0e8e02740eba024019bc024019bc027e0ebc023619bc025219a802760eb8024219ba026e1990024019bc02720eba02700ebc024219ba026c1990027e0ebc023819b8024419bc02700ebc024019ba023e19bc024019ba02720eba02740eba023e19bc023e19bc027c0ebc02"
+                },
+                {
+                    "Id": 3,
+                    "Name": "TEMP UP",
+                    "ImagePath": "/Resources/CommandButtonImage/IconImage/temp_up.png",
+                    "IsAlexaEnabled": true,
+                    "IRCommand": "74025a19ba02720eba0244199e025e19a0025a19bc02720eba0246199c028e0eba026c198e02a60e9202780e9e025a19ba02a20e72025a199e025c199e025c19bc026e0ebc0244199c02900e9c025e19a002960eb802a40e72028e1970028c0ebc023e19bc024619a0025e199e02be0e6e025e199e02900eba023e19bc02dc0e4002"
+                },
+                {
+                    "Id": 4,
+                    "Name": "TEMP DOWN",
+                    "ImagePath": "/Resources/CommandButtonImage/IconImage/temp_down.png",
+                    "IsAlexaEnabled": true,
+                    "IRCommand": "ba024219ba02720ebc024219bc024219ba024019bc02700ebc02740e9e028c0eba024219b802aa0e8e02700ebc026c198e02720ebc024219bc024419b802681990029c0e8e02760eba02700ebc024019ba02780ebc029a0e90024219ba02720eba024219ba024419ba024019bc029a0e8e02720ebc02720eb8024819b8027c0ebc02"
+                }
+            ]
+        },
+        {
+            "Id": 505973,
+            "Name": "Boat Speaker",
+            "DeviceTypeId": 4,
+            "ImagePath": "",
+            "RemoteType": "UserDefined",
+            "LastOperated": "2026-03-08T09:15:23.52",
+            "IsReLearn": false,
+            "ModelId": 0,
+            "Version": "1.2",
+            "CommandList": [
+                {
+                    "Id": 14,
+                    "Name": "OFF",
+                    "ImagePath": "/Resources/CommandButtonImage/IconImage/off.png",
+                    "IsAlexaEnabled": true,
+                    "IRCommand": "dc22a8113a02b0060e0286063a0224023c0222023c022202380252020a022a023a0288063a022402380282060802e206e8014c023802b0060c02b2060c0252020c028e063402b20608022c023a028206380286063c024e020e0226023a0284063a0228023a024e020e0286063c024c02100224023a0284063c0284063a0222023c0282063c026a9d0823dc084002"
+                },
+                {
+                    "Id": 13,
+                    "Name": "ON",
+                    "ImagePath": "/Resources/CommandButtonImage/IconImage/on.png",
+                    "IsAlexaEnabled": true,
+                    "IRCommand": "0623d211da01ba060402e206de01580204028402da01580206028402da0158020602bc0606025a020402b8060802e206dc0158020802b8060602b806080256020602be060602ba06060256020802b8060602b80606025a0206025a020602b80604025e02040258020602ba0604028202dc0158020602b6060802e006dc018202dc01e606da01a69d0c23dc080602"
+                },
+                {
+                    "Id": 17,
+                    "Name": "VOLUME UP",
+                    "ImagePath": "/Resources/CommandButtonImage/IconImage/vol_up.png",
+                    "IsAlexaEnabled": true,
+                    "IRCommand": "0423a6110602bc060202ba0604025a020602580204025c0204025802060258020602bc06080256020602b6060802b80606025a020202b8060402b806080256020602ba060602b8060602b806060258020602b8060602580206028602d8018402da015c0206028602d80158020602b806060258020602b6060802b8060402e206de01b8060402aa9d0623de08060264780623da080802"
+                },
+                {
+                    "Id": 18,
+                    "Name": "VOLUME DOWN",
+                    "ImagePath": "/Resources/CommandButtonImage/IconImage/vol_down.png",
+                    "IsAlexaEnabled": true,
+                    "IRCommand": "0a23a6110802b8060802b8060602580204025a020402580206025a02040258020602bc0606025a020402b8060602b806060258020602b8060602b80604025a020802e406da018602da01b8060402b8060802b80604025a02060258020602580206025c020602ba060402580206028402dc0158020602b8060602b8060602bc060202ba060602"
+                },
+                {
+                    "Id": 20,
+                    "Name": "MUTE",
+                    "ImagePath": "/Resources/CommandButtonImage/IconImage/mute.png",
+                    "IsAlexaEnabled": true,
+                    "IRCommand": "0623a8110802b6060602e406dc015602060258020402580206025a0204025a020602bc06040258020802b6060602b80606027e02de01ba060602ba0602025a020602ba060602b8060602b6060802580206025c0204025802040258020602ba0604025e0206025602060258020402b8060402ba060802b6060602ba06060256020602b8060602dc9ddc22da080602"
+                },
+                {
+                    "Id": 43,
+                    "Name": "PLAY",
+                    "ImagePath": "/Resources/CommandButtonImage/IconImage/play.png",
+                    "IsAlexaEnabled": true,
+                    "IRCommand": "0623aa110402e406da01b80604025a0206025a0202025a0206025802040258020602bc06060258020602b6060802ba0602025a020602e206dc01b606080258020602bc060402b806060258020602b8060602e206dc015a0206025802040258020602600202025c020402b60608025802060256020602b8060802e206da01b8060802b8060602"
+                },
+                {
+                    "Id": 48,
+                    "Name": "PREVIOUS",
+                    "ImagePath": "/Resources/CommandButtonImage/IconImage/prev.png",
+                    "IsAlexaEnabled": true,
+                    "IRCommand": "0623a8110602b8060602b80606025802060258020602580206025802060256020602e806dc0158020602b8060602b80604025a020202e806d801b80606025a020202bc0606025a0204025a020602580204028a02d401d406ec0158020402580206025c020602b6060602b8060602b8060602bc0604028602d801b6060602ba060402ba060602a49d0823da080602"
+                },
+                {
+                    "Id": 45,
+                    "Name": "NEXT",
+                    "ImagePath": "/Resources/CommandButtonImage/IconImage/next.png",
+                    "IsAlexaEnabled": true,
+                    "IRCommand": "dc22aa113c0284063c0280063e024a02100224023a022402360252020e02240236028c063a022e02300284063a0284063a02260234028a060602ba0602025a020402e806da01b806060258020602580204025a020402b80606025a020402580206025c02060258020602ba060602b8060602b80604025a020402ba060602b8060402bc060602b29d3e23aa080602"
+                }
+            ]
+        },
+        {
+            "Id": 507609,
+            "Name": "GoVo Speaker",
+            "DeviceTypeId": 4,
+            "ImagePath": "",
+            "RemoteType": "UserDefined",
+            "LastOperated": "2026-05-01T18:52:43.95",
+            "IsReLearn": false,
+            "ModelId": 0,
+            "Version": "1.2",
+            "CommandList": [
+                {
+                    "Id": 13,
+                    "Name": "ON",
+                    "ImagePath": "/Resources/CommandButtonImage/IconImage/on.png",
+                    "IsAlexaEnabled": true,
+                    "IRCommand": "482392113c02900640024002400242023a0244023e024202400268021402420240024202400240023a02920642028c064202b80616028c0642028c06420290063a029406420242023a02440242023e0224025a0230029e0624025c023a024402400242022202aa0640028e063c02c006f601b00636027002f601aa063c029006420290061e02a6984223d0084002"
+                },
+                {
+                    "Id": 14,
+                    "Name": "OFF",
+                    "ImagePath": "/Resources/CommandButtonImage/IconImage/off.png",
+                    "IsAlexaEnabled": true,
+                    "IRCommand": "4823be11fa01ae06200260023802440224025c02220260023c0244021c028a02140244023e024002400290062402aa062402aa0640028c0642028e0640028c06420292063e02420224025a0240023e02400240023e028e064002400232024e023e0248021e02ac0640028e063e0296061e02ae0620025e0240028c0640028e0642028c0626029e984023d2084202"
+                },
+                {
+                    "Id": 17,
+                    "Name": "VOLUME UP",
+                    "ImagePath": "/Resources/CommandButtonImage/IconImage/vol_up.png",
+                    "IsAlexaEnabled": true,
+                    "IRCommand": "4223921142028c064002400224025c0220025e02200264021a02660218028a02f60160023c0244022202ac062202b2061c02b0061e02aa0640028c0642028e062202b4061e02aa063e024002400242023a02420240028e063c0242023c024202400242023c0246022002aa0640028c062402aa0624025c0240028c062402d40618028c063e027c984623d0084202"
+                },
+                {
+                    "Id": 18,
+                    "Name": "VOLUME DOWN",
+                    "ImagePath": "/Resources/CommandButtonImage/IconImage/vol_down.png",
+                    "IsAlexaEnabled": true,
+                    "IRCommand": "402394114002900622025c023e026a02160240023c0244023c026c02140260021e026e021202420240028e062602a6063c0292063c028e062402ac063c0294061c02b00622025e02220262021a0260023e02b80616023e024002400222025c023a0246023e02900640028c062402aa0640023e023c0292063e028e062002ac062202ac063c0278984623ca084202"
+                }
+            ]
+        }
+    ],
+    "Status": true
+}

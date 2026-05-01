@@ -6,11 +6,13 @@ import { NewParty } from "./newparty";
 import { Parties } from "./parties";
 import { ProcessedPage } from "./processed";
 import { QueuedPage } from "./queued";
+import { RemotePage } from "./remote";
 import { Button, Header, HeaderContent, Icon } from "semantic-ui-react";
 import { pages } from "../common/constants";
 
 export const RouterPage = () => (
     <Routes>
+        <Route path="/remote" element={<RemotePage />} />
         <Route path="/emandi" element={<MainPage />}>
             <Route index element={<NewEntry />} />
             <Route path="new" element={<NewEntry />} />
