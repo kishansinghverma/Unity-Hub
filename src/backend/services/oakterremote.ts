@@ -1,16 +1,17 @@
 import "dotenv/config";
 import { source } from "../common/constants";
-import { Logger, Throwable } from "../common/models";
-import { ExecutionResponse } from "../common/types";
+import { Logger } from "../common/models";
 import { requestParams } from "../common/constants";
-import { getJsonResponse } from "../common/utils";
+import { getJsonResponse, validateResponse } from "../common/utils";
 
 class OakterRemoteService {
     private logger: Logger;
     private remoteBaseUrl = process.env.OAKTER_REMOTE_BASE_URL;
+    private renewSessionUrl = process.env.OAKTER_RENEW_SESSION_URL;
     private username = process.env.OAKTER_USERNAME;
     private sessionId = process.env.OAKTER_SESSION_ID;
-    private oakRemoteId = process.env.OAKTER_OAK_REMOTE_ID;
+    private oakRemoteId = process.env.OAKTER_REMOTE_ID;
+    private oakRemoteAuthToken = process.env.OAKTER_AUTH_TOKEN;
 
     constructor() {
         this.logger = new Logger(source.oakterremote);
@@ -26,7 +27,7 @@ class OakterRemoteService {
         SessionId: this.sessionId,
     });
 
-    public issueCommand = async (commandId: string | number, remoteId: string | number): Promise<ExecutionResponse> => {
+    public issueCommand = (commandId: string | number, remoteId: string | number) => {
         const payload = {
             Header: this.getHeader(),
             RemoteId: remoteId,
@@ -38,24 +39,35 @@ class OakterRemoteService {
         return fetch(`${this.remoteBaseUrl}/api/ir/send`, fetchParams).then(getJsonResponse);
     };
 
-    public isConnected = (): Promise<ExecutionResponse> => {
-        return Promise.resolve({
-            content: {
-                connected: true,
-                message: "isConnected scaffold invoked"
-            },
-            statusCode: 200
-        });
+    public isConnected = () => {
+        const payload = {
+            ...this.getHeader(),
+            User: { Token: this.oakRemoteAuthToken },
+        };
+
+        const fetchParams = {
+            ...requestParams.post,
+            body: JSON.stringify(payload)
+        };
+
+        return fetch(`${this.renewSessionUrl}`, fetchParams)
+            .then(validateResponse)
+            .then(res => res.json())
+            .then(content => (content.RenewSessionResult.ESPDevices[0].Connected));
     };
 
-    public getDevices = (): Promise<ExecutionResponse> => {
-        return Promise.resolve({
-            content: {
-                devices: [],
-                message: "getDevices scaffold invoked"
-            },
-            statusCode: 200
-        });
+    public getDevices = () => {
+        const payload = {
+            Header: this.getHeader(),
+            OakRemoteId: this.oakRemoteId,
+        };
+
+        const fetchParams = {
+            ...requestParams.post,
+            body: JSON.stringify(payload)
+        };
+
+        return fetch(`${this.remoteBaseUrl}/api/ir/remotes/v2`, fetchParams).then(getJsonResponse);
     };
 
     public initialize = () => {

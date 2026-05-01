@@ -2,8 +2,9 @@ import { ExecutionResponse } from "../common/types";
 import { oakterRemoteService } from "../services/oakterremote";
 
 class OakterRemote {
-    public isConnected = (): Promise<ExecutionResponse> => {
-        return oakterRemoteService.isConnected();
+    public isConnected = async (): Promise<ExecutionResponse> => {
+        const isConnected = await oakterRemoteService.isConnected();
+        return { content: isConnected, statusCode: 200 };
     };
 
     public getDevices = (): Promise<ExecutionResponse> => {
