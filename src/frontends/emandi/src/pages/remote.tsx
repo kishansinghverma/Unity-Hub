@@ -1,6 +1,8 @@
 import { KeyboardEvent, MouseEvent, useMemo, useState } from "react";
 import { AirVent, Cpu, HouseWifi, LucideIcon, Projector, Speaker, Tv } from "lucide-react";
 import { Button, Container, Header, HeaderSubheader, Icon, Segment } from "semantic-ui-react";
+import { PostParams, Url } from "../common/constants";
+import { handleError, handleJsonResponse } from "../operations/utils";
 import commandsData from "../static/commands.json";
 import "./remote.css";
 
@@ -67,7 +69,10 @@ export const RemotePage = () => {
     };
 
     const issueCommand = (commandId: number, remoteId: number) => {
-        
+        fetch(Url.OakterRemoteCommand, { ...PostParams, body: JSON.stringify({ commandId, remoteId }) })
+            .then(handleJsonResponse)
+            .then(json => { if (!json.Status) throw new Error(json.Response) })
+            .catch(handleError);
     };
 
     return (
@@ -92,71 +97,71 @@ export const RemotePage = () => {
                         const deviceCategory = getDeviceCategory(device.Name);
                         const DeviceFallbackIcon = DEVICE_ICONS[deviceCategory];
                         return (
-                        <div key={device.Id}>
-                            <div className="remote-device-title-row">
-                                <Header as="h3" className="remote-device-title">
-                                    <DeviceFallbackIcon className="remote-device-fallback-lucide" aria-hidden />
-                                    <Header.Content>{device.Name}</Header.Content>
-                                </Header>
-                                <div className="remote-device-title-line" />
-                            </div>
+                            <div key={device.Id}>
+                                <div className="remote-device-title-row">
+                                    <Header as="h3" className="remote-device-title">
+                                        <DeviceFallbackIcon className="remote-device-fallback-lucide" aria-hidden />
+                                        <Header.Content>{device.Name}</Header.Content>
+                                    </Header>
+                                    <div className="remote-device-title-line" />
+                                </div>
 
-                            <div className="remote-command-grid">
-                                {device.CommandList.map((command) => {
-                                    const commandKey = `${device.Id}-${command.Id}`;
-                                    const imageKey = `${device.Id}-${command.Id}`;
-                                    return (
-                                    <Button
-                                        key={command.Id}
-                                        basic
-                                        className={`remote-command-button${pressedCommandKey === commandKey ? " pressed" : ""}`}
-                                        onPointerDown={() => press(commandKey)}
-                                        onPointerUp={() => release(commandKey)}
-                                        onPointerLeave={() => release(commandKey)}
-                                        onPointerCancel={() => release(commandKey)}
-                                        onBlur={() => release(commandKey)}
-                                        onKeyDown={(event: KeyboardEvent<HTMLButtonElement>) => {
-                                            if (event.key === " " || event.key === "Enter") {
-                                                press(commandKey);
-                                            }
-                                        }}
-                                        onKeyUp={(event: KeyboardEvent<HTMLButtonElement>) => {
-                                            if (event.key === " " || event.key === "Enter") {
-                                                release(commandKey);
-                                            }
-                                        }}
-                                        onClick={(event: MouseEvent<HTMLButtonElement>) => {
-                                            // Keep focus for keyboard users, blur only for pointer clicks.
-                                            if (event.detail > 0) {
-                                                (event.currentTarget as HTMLButtonElement).blur();
-                                            }
+                                <div className="remote-command-grid">
+                                    {device.CommandList.map((command) => {
+                                        const commandKey = `${device.Id}-${command.Id}`;
+                                        const imageKey = `${device.Id}-${command.Id}`;
+                                        return (
+                                            <Button
+                                                key={command.Id}
+                                                basic
+                                                className={`remote-command-button${pressedCommandKey === commandKey ? " pressed" : ""}`}
+                                                onPointerDown={() => press(commandKey)}
+                                                onPointerUp={() => release(commandKey)}
+                                                onPointerLeave={() => release(commandKey)}
+                                                onPointerCancel={() => release(commandKey)}
+                                                onBlur={() => release(commandKey)}
+                                                onKeyDown={(event: KeyboardEvent<HTMLButtonElement>) => {
+                                                    if (event.key === " " || event.key === "Enter") {
+                                                        press(commandKey);
+                                                    }
+                                                }}
+                                                onKeyUp={(event: KeyboardEvent<HTMLButtonElement>) => {
+                                                    if (event.key === " " || event.key === "Enter") {
+                                                        release(commandKey);
+                                                    }
+                                                }}
+                                                onClick={(event: MouseEvent<HTMLButtonElement>) => {
+                                                    // Keep focus for keyboard users, blur only for pointer clicks.
+                                                    if (event.detail > 0) {
+                                                        (event.currentTarget as HTMLButtonElement).blur();
+                                                    }
 
-                                            issueCommand(command.Id, device.Id);
-                                        }}
-                                        aria-label={`${device.Name} - ${command.Name}`}
-                                    >
-                                        <span className="remote-command-icon-wrap">
-                                            {command.ImagePath && !brokenImages[imageKey] ? (
-                                                <img
-                                                    className="remote-command-image"
-                                                    src={new URL(command.ImagePath.replace(/^\//, ""), IR_COMMAND_BASE_URL).toString()}
-                                                    alt={command.Name}
-                                                    loading="lazy"
-                                                    onError={(event) => {
-                                                        event.currentTarget.style.display = "none";
-                                                        setBrokenImages((current) => ({ ...current, [imageKey]: true }));
-                                                    }}
-                                                />
-                                            ) : (
-                                                <Icon name="dot circle outline" className="remote-command-fallback-icon" />
-                                            )}
-                                        </span>
-                                        <span className="remote-command-label">{command.Name}</span>
-                                    </Button>
-                                    );
-                                })}
+                                                    issueCommand(command.Id, device.Id);
+                                                }}
+                                                aria-label={`${device.Name} - ${command.Name}`}
+                                            >
+                                                <span className="remote-command-icon-wrap">
+                                                    {command.ImagePath && !brokenImages[imageKey] ? (
+                                                        <img
+                                                            className="remote-command-image"
+                                                            src={new URL(command.ImagePath.replace(/^\//, ""), IR_COMMAND_BASE_URL).toString()}
+                                                            alt={command.Name}
+                                                            loading="lazy"
+                                                            onError={(event) => {
+                                                                event.currentTarget.style.display = "none";
+                                                                setBrokenImages((current) => ({ ...current, [imageKey]: true }));
+                                                            }}
+                                                        />
+                                                    ) : (
+                                                        <Icon name="dot circle outline" className="remote-command-fallback-icon" />
+                                                    )}
+                                                </span>
+                                                <span className="remote-command-label">{command.Name}</span>
+                                            </Button>
+                                        );
+                                    })}
+                                </div>
                             </div>
-                        </div>
                         );
                     })}
                 </div>

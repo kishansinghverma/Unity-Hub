@@ -9,10 +9,6 @@ export class StringUtils {
     public static empty = '';
 }
 
-export class FormUtils {
-    
-}
-
 export const handleError = (error: Error) => toast.error(error.message);
 
 export const trimInput = (e: BaseSyntheticEvent) => { e.currentTarget.value = e.target.value.trim() };

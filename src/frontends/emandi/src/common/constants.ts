@@ -48,6 +48,7 @@ export const Url = {
     SplitWiseExpenses: "/api/splitwise/transactions",
     BankStatement: "/api/expenses/statement/bank",
     PhonePeStatement: "/api/expenses/statement/phonepe",
+    OakterRemoteCommand: "/api/oakterremote/command",
     Distance: "https://dev.virtualearth.net/REST/V1/Routes/Driving?o=json&wp.0=sadabad&key=AhWAWkHKZZ0JtpBDWvq2_vZqrtmAgf3prbe31w7FbepXyGzvHoWzvpetsQIA7DpL&wp.1"
 }
 
