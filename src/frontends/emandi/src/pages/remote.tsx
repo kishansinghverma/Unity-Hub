@@ -122,7 +122,7 @@ export const RemotePage = () => {
                         const deviceCategory = getDeviceCategory(device.Name);
                         const DeviceFallbackIcon = DEVICE_ICONS[deviceCategory];
                         return (
-                            <div key={device.Id}>
+                            <div key={device.Id} className="remote-device-section">
                                 <div className="remote-device-title-row">
                                     <Header as="h3" className="remote-device-title">
                                         <DeviceFallbackIcon className="remote-device-fallback-lucide" aria-hidden />
