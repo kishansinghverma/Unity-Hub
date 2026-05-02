@@ -53,7 +53,7 @@ class OakterRemoteService {
         return fetch(`${this.renewSessionUrl}`, fetchParams)
             .then(validateResponse)
             .then(res => res.json())
-            .then(content => (content.RenewSessionResult.ESPDevices[0].Connected));
+            .then(content => content.RenewSessionResult.ESPDevices[0].Connected);
     };
 
     public getDevices = () => {
