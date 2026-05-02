@@ -176,14 +176,16 @@
         inset 0 1px 0 rgba(255, 255, 255, 0.5) !important; /* Internal highlight */
 }
 
-.remote-command-button.ui.button:hover {
-    background: rgba(255, 255, 255, 0.6) !important;
-    border-color: #ffffff !important;
-    transform: translateY(-8px) scale(1.02); /* More aggressive lift */
-    box-shadow: 
-        0 20px 25px -5px rgba(0, 0, 0, 0.1), 
-        0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
-    color: #0f172a !important;
+@media (hover: hover) and (pointer: fine) {
+    .remote-command-button.ui.button:hover {
+        background: rgba(255, 255, 255, 0.6) !important;
+        border-color: #ffffff !important;
+        transform: translateY(-8px) scale(1.02); /* More aggressive lift */
+        box-shadow:
+            0 20px 25px -5px rgba(0, 0, 0, 0.1),
+            0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+        color: #0f172a !important;
+    }
 }
 
 .remote-command-button.ui.button.pressed {
@@ -207,11 +209,13 @@
     transition: all 0.3s ease;
 }
 
-.remote-command-button.ui.button:hover .remote-command-icon-wrap {
-    border-color: #74d3ff !important; /* Subtle blue highlight on hover */
-    background: #f0f9ff;
-    box-shadow: 0 0 12px rgba(14, 165, 233, 0.15) !important;
-    transform: scale(1.05);
+@media (hover: hover) and (pointer: fine) {
+    .remote-command-button.ui.button:hover .remote-command-icon-wrap {
+        border-color: #74d3ff !important; /* Subtle blue highlight on hover */
+        background: #f0f9ff;
+        box-shadow: 0 0 12px rgba(14, 165, 233, 0.15) !important;
+        transform: scale(1.05);
+    }
 }
 
 .remote-command-image {
