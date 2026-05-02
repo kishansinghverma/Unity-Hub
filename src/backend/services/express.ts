@@ -40,6 +40,9 @@ class ExpressServer {
     private registerStaticServer = () => {
         this.router.use("/emandi", express.static(path.resolve('dist/frontends/emandi')));
         this.router.get('/emandi/*', (req, res) => { res.sendFile(path.join(path.resolve('dist/frontends/emandi'), 'index.html')) });
+
+        this.router.use("/remote", express.static(path.resolve('dist/frontends/emandi')));
+        this.router.get('/remote*', (req, res) => { res.sendFile(path.join(path.resolve('dist/frontends/emandi'), 'index.html')) });
     }
 
     private registerRoutes = () => {
