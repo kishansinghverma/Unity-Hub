@@ -1,6 +1,30 @@
 import { KeyboardEvent, MouseEvent, useEffect, useMemo, useState } from "react";
-import { AirVent, Cpu, HouseWifi, LucideIcon, Projector, Speaker, Tv } from "lucide-react";
-import { Button, Container, Header, HeaderSubheader, Icon, Segment } from "semantic-ui-react";
+import {
+    AirVent,
+    ArrowDown,
+    ArrowLeft,
+    ArrowRight,
+    ArrowUp,
+    CircleDot,
+    Cpu,
+    Focus,
+    HouseWifi,
+    Import,
+    LucideIcon,
+    Play,
+    Power,
+    PowerOff,
+    Projector,
+    SkipBack,
+    SkipForward,
+    Speaker,
+    Tv,
+    Undo2,
+    Volume1,
+    Volume2,
+    VolumeX
+} from "lucide-react";
+import { Button, Container, Header, HeaderSubheader, Segment } from "semantic-ui-react";
 import { PostParams, Url } from "../common/constants";
 import { handleError, handleJsonResponse } from "../operations/utils";
 import commandsData from "../static/commands.json";
@@ -29,7 +53,6 @@ type DeviceClassificationRule = {
     keywords: string[];
 };
 
-const IR_COMMAND_BASE_URL = process.env.REACT_APP_IR_COMMAND_BASE_URL ?? "http://oakter.co:64807/";
 const DEVICE_CLASSIFICATION_RULES: DeviceClassificationRule[] = [
     { category: "airconditioner", keywords: ["ac", "air conditioner", "airconditioner", "cooler"] },
     { category: "speaker", keywords: ["speaker", "soundbar", "audio", "boat", "govo"] },
@@ -45,7 +68,6 @@ const DEVICE_ICONS: Record<DeviceCategory, LucideIcon> = {
 };
 
 export const RemotePage = () => {
-    const [brokenImages, setBrokenImages] = useState<{ [key: string]: boolean }>({});
     const [pressedCommandKey, setPressedCommandKey] = useState<string | null>(null);
     const [connectionStatus, setConnectionStatus] = useState<"checking" | "connected" | "disconnected">("checking");
 
@@ -68,6 +90,69 @@ export const RemotePage = () => {
 
         return matchedRule?.category ?? "generic";
     };
+
+    const commandIconMap = useMemo(() => {
+        const explicitMap: Record<string, LucideIcon> = {
+            on: Power,
+            off: PowerOff,
+            mute: VolumeX,
+            play: Play,
+            next: SkipForward,
+            previous: SkipBack,
+            up: ArrowUp,
+            down: ArrowDown,
+            left: ArrowLeft,
+            right: ArrowRight,
+            back: Undo2,
+            focus: Focus,
+            input: Import,
+            "temp up": ArrowUp,
+            "temp down": ArrowDown,
+            "volume up": Volume2,
+            "volume down": Volume1
+        };
+
+        const keywordRules: Array<{ keywords: string[]; icon: LucideIcon }> = [
+            { keywords: ["power off", "off"], icon: PowerOff },
+            { keywords: ["power on", "on"], icon: Power },
+            { keywords: ["mute"], icon: VolumeX },
+            { keywords: ["volume up", "vol up"], icon: Volume2 },
+            { keywords: ["volume down", "vol down"], icon: Volume1 },
+            { keywords: ["temp up"], icon: ArrowUp },
+            { keywords: ["temp down"], icon: ArrowDown },
+            { keywords: ["previous", "prev"], icon: SkipBack },
+            { keywords: ["next"], icon: SkipForward },
+            { keywords: ["play"], icon: Play },
+            { keywords: ["left"], icon: ArrowLeft },
+            { keywords: ["right"], icon: ArrowRight },
+            { keywords: ["up"], icon: ArrowUp },
+            { keywords: ["down"], icon: ArrowDown },
+            { keywords: ["back"], icon: Undo2 },
+            { keywords: ["focus"], icon: Focus },
+            { keywords: ["input"], icon: Cpu }
+        ];
+
+        const map: Record<string, LucideIcon> = {};
+        for (const device of devices) {
+            for (const command of device.CommandList) {
+                const normalizedName = command.Name.trim().toLowerCase();
+                if (map[normalizedName]) continue;
+
+                const explicit = explicitMap[normalizedName];
+                if (explicit) {
+                    map[normalizedName] = explicit;
+                    continue;
+                }
+
+                const matchedRule = keywordRules.find((rule) =>
+                    rule.keywords.some((keyword) => normalizedName.includes(keyword))
+                );
+                map[normalizedName] = matchedRule?.icon ?? CircleDot;
+            }
+        }
+
+        return map;
+    }, [devices]);
 
     const issueCommand = (commandId: number, remoteId: number) => {
         fetch(Url.OakterRemoteCommand, { ...PostParams, body: JSON.stringify({ commandId, remoteId }) })
@@ -134,7 +219,7 @@ export const RemotePage = () => {
                                 <div className="remote-command-grid">
                                     {device.CommandList.map((command) => {
                                         const commandKey = `${device.Id}-${command.Id}`;
-                                        const imageKey = `${device.Id}-${command.Id}`;
+                                        const CommandIcon = commandIconMap[command.Name.trim().toLowerCase()] ?? CircleDot;
                                         return (
                                             <Button
                                                 key={command.Id}
@@ -166,20 +251,7 @@ export const RemotePage = () => {
                                                 aria-label={`${device.Name} - ${command.Name}`}
                                             >
                                                 <span className="remote-command-icon-wrap">
-                                                    {command.ImagePath && !brokenImages[imageKey] ? (
-                                                        <img
-                                                            className="remote-command-image"
-                                                            src={new URL(command.ImagePath.replace(/^\//, ""), IR_COMMAND_BASE_URL).toString()}
-                                                            alt={command.Name}
-                                                            loading="lazy"
-                                                            onError={(event) => {
-                                                                event.currentTarget.style.display = "none";
-                                                                setBrokenImages((current) => ({ ...current, [imageKey]: true }));
-                                                            }}
-                                                        />
-                                                    ) : (
-                                                        <Icon name="dot circle outline" className="remote-command-fallback-icon" />
-                                                    )}
+                                                    <CommandIcon className="remote-command-fallback-icon" aria-hidden />
                                                 </span>
                                                 <span className="remote-command-label">{command.Name}</span>
                                             </Button>

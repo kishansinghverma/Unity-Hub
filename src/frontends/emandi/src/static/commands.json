@@ -6,7 +6,7 @@
             "DeviceTypeId": 2,
             "ImagePath": "/Resources/RemoteImage/UserDefined/0e0a60/505972.jpeg",
             "RemoteType": "UserDefined",
-            "LastOperated": "2026-05-01T05:46:54.497",
+            "LastOperated": "2026-05-02T07:53:09.12",
             "IsReLearn": false,
             "ModelId": 0,
             "Version": "1.2",
@@ -47,7 +47,7 @@
             "DeviceTypeId": 4,
             "ImagePath": "",
             "RemoteType": "UserDefined",
-            "LastOperated": "2026-03-08T09:15:23.52",
+            "LastOperated": "2026-05-02T08:45:08.227",
             "IsReLearn": false,
             "ModelId": 0,
             "Version": "1.2",
@@ -116,7 +116,7 @@
             "DeviceTypeId": 4,
             "ImagePath": "",
             "RemoteType": "UserDefined",
-            "LastOperated": "2026-05-01T18:52:43.95",
+            "LastOperated": "2026-05-02T08:48:44.423",
             "IsReLearn": false,
             "ModelId": 0,
             "Version": "1.2",
@@ -148,6 +148,131 @@
                     "ImagePath": "/Resources/CommandButtonImage/IconImage/vol_down.png",
                     "IsAlexaEnabled": true,
                     "IRCommand": "402394114002900622025c023e026a02160240023c0244023c026c02140260021e026e021202420240028e062602a6063c0292063c028e062402ac063c0294061c02b00622025e02220262021a0260023e02b80616023e024002400222025c023a0246023e02900640028c062402aa0640023e023c0292063e028e062002ac062202ac063c0278984623ca084202"
+                },
+                {
+                    "Id": 45,
+                    "Name": "NEXT",
+                    "ImagePath": "/Resources/CommandButtonImage/IconImage/next.png",
+                    "IsAlexaEnabled": true,
+                    "IRCommand": "28238e111c02aa06200262021a025e0220025a023c02440220028e02ec015e021c0260023a0242023e028c06380294062002a6063e028a063e0292061802aa063e028c06400244021a0262021c02ac061c025e022002ac06180262021e025a0238024c021c02aa061e02dc06ec0162021c02a8061e025e021e02aa061e02a6063e028e0620024a982623ce082402"
+                },
+                {
+                    "Id": 48,
+                    "Name": "PREVIOUS",
+                    "ImagePath": "/Resources/CommandButtonImage/IconImage/prev.png",
+                    "IsAlexaEnabled": true,
+                    "IRCommand": "28238c113c02c406ea0164021a025e023c023e023e023e023a024a02180262021c0268021c025e021c02ae061c02ae061c02ac061c02ae061c02aa062002ac061802ae063a028c063e027602ee0162021802ac061e02620216026602160260021c026002200260021a02ac061e02ac061e025e021a02ac061c02aa063c0290061e02ac061c024c9824230209f001"
+                },
+                {
+                    "Id": 43,
+                    "Name": "PLAY",
+                    "ImagePath": "/Resources/CommandButtonImage/IconImage/play.png",
+                    "IsAlexaEnabled": true,
+                    "IRCommand": "28238a112202ac06180264021802600222025c02200260021a029202e80162021e0260023c0240022002a8062002ae061c02aa062002ac061a02de06ea01ae061c02e006ec0162021c02aa061e02aa062202a8062002a6063c0240023a0296061c029402e801ae06180262021e029002e8019402e80164021a02aa061c0266021602ac061e0252982a23d2081c02"
+                }
+            ]
+        },
+        {
+            "Id": 510266,
+            "Name": "PixPaq Projector",
+            "DeviceTypeId": 4,
+            "ImagePath": "",
+            "RemoteType": "UserDefined",
+            "LastOperated": "2026-05-02T09:02:54.543",
+            "IsReLearn": false,
+            "ModelId": 0,
+            "Version": "1.2",
+            "CommandList": [
+                {
+                    "Id": 13,
+                    "Name": "ON",
+                    "ImagePath": "/Resources/CommandButtonImage/IconImage/on.png",
+                    "IsAlexaEnabled": true,
+                    "IRCommand": "5623a0113a0232023e022e023e0230023a0234023a0232023e0230023c0230023c0230023c02ca0610029c0640029c063c02a0062002bc063a029c063c029e063e0232022002b8063e0230023a02a0063c025e0212029c063c0230023a0232023c0232023c0232023c029c063c0232023c029c063c0232023a02a0063c029e063a029e063c02d49e5623e2083c02"
+                },
+                {
+                    "Id": 14,
+                    "Name": "OFF",
+                    "ImagePath": "/Resources/CommandButtonImage/IconImage/off.png",
+                    "IsAlexaEnabled": true,
+                    "IRCommand": "2223a2113e026602ea0152021c024a023c0230023a0234023c0230023a026602ee0150023a02a0061e02b8063c02a0062202ec06ee01ba063c02a2061e02b8063a0232023c029e063e0232021e02be061a0256021c02ec06ea018202ee0150021c024e023c0232022002b6063c0232024002d006ec018402ec01b8063a02a0063c029a064202be9e6a231209f201"
+                },
+                {
+                    "Id": 17,
+                    "Name": "VOLUME UP",
+                    "ImagePath": "/Resources/CommandButtonImage/IconImage/vol_up.png",
+                    "IsAlexaEnabled": true,
+                    "IRCommand": "2823ce11f20154021a024e0238025402fe018402ea018402ea0156021c024e023c0230023e02a0061e02ee06ec01ba063c02a0061e02ba063a029e063e02d406ea0152022002e806f001be0620024e021e02b8063e02fc06c00150021c028402e8018a02e40152021e024a023a02d606ea0154021c028202e801bc063c029e063802a2061e022c9f1e231809ec01"
+                },
+                {
+                    "Id": 18,
+                    "Name": "VOLUME DOWN",
+                    "ImagePath": "/Resources/CommandButtonImage/IconImage/vol_down.png",
+                    "IsAlexaEnabled": true,
+                    "IRCommand": "4823ac11320214025e021202580212025a0214025a0214025a0214025c0212025a0214025e027c065e027c065a028406580280065c027e065a028206580282065c02120258021402580282065c0210025a027e065c0280065c0210025c02100258021402580280065e0210025c0280065a0212025a0212025a028006580282065e027c065802c29e6e23c2085c02"
+                },
+                {
+                    "Id": 43,
+                    "Name": "PLAY",
+                    "ImagePath": "/Resources/CommandButtonImage/IconImage/play.png",
+                    "IsAlexaEnabled": true,
+                    "IRCommand": "fa22d411ee01b402b801b402bc01b202bc01b202b801be02b201b002bc01b402b801b602b8012007bc01f606e4011e07be010607d601f206e4012007c0011c07be01b202b801b602ba01b002ba019802d201b402ba012007bc018c02e0019a02d4019c02d4011c07bc011e07bc011e07ba010607d401b402ba012007ba012007be011e07ba01289f2a233e09c401"
+                },
+                {
+                    "Id": 20,
+                    "Name": "MUTE",
+                    "ImagePath": "/Resources/CommandButtonImage/IconImage/mute.png",
+                    "IsAlexaEnabled": true,
+                    "IRCommand": "58239e113c0234023a0238021e0250021c0250021a0278020e025e02100232023c0232023a02c8061202a2061e02be061c02be062202b4063c029e063a02a2063c0230023a0232023c029e063c02a0063e022e023c029e063c023202400230023e022e023c029c06400230023a0234021e02ba063a02300242029a0640029c063c029e064002dc9e5223de084202"
+                },
+                {
+                    "Id": 100,
+                    "Name": "Up",
+                    "ImagePath": "",
+                    "IsAlexaEnabled": false,
+                    "IRCommand": "1c23a4112e027202f0014c023a0236021c024e023c026402ea0156021a024c023a0230023a02d606ec01f006ea01f006ec01f006ec01bc061e02bc061e02bc0620027e02ee014e023a0234021a02be061e02b8063c026802ea0154021e024c02380238022002bc061c02bc061e028202e60152022002bc061a02c0061c02b80640029e0620022a9f1e231609ea01"
+                },
+                {
+                    "Id": 101,
+                    "Name": "Down",
+                    "ImagePath": "",
+                    "IsAlexaEnabled": false,
+                    "IRCommand": "2023d811ec0150021e024e02360234023c0232023a0230023c0236021c024e02380232023a02a2062202ee06ea01be061a02ba063c02a2061e02ba063c029e063c023a021802f206f0014e021a02ba063c029e063c0232023e0230023e022e023a0232023e0230022202bc061e0250023a022e023a02d406ea01bc063a02a0063e029e061e02"
+                },
+                {
+                    "Id": 102,
+                    "Name": "Left",
+                    "ImagePath": "",
+                    "IsAlexaEnabled": false,
+                    "IRCommand": "f822d411f00152021c028402e80150021e024e023a0232023a0232023c0232023c0230023c02d806e801f006ee01b8063a02d406f401e806ec01bc0632020807c00150021e021a07be01ba063a02a2062002ec06ec0150023a0236021c024c023a026802ea01520238026802ec018602e60152021e02b6063a02a6061a02ba063a02d406ec012e9f1e231409ea01"
+                },
+                {
+                    "Id": 103,
+                    "Name": "Right",
+                    "ImagePath": "",
+                    "IsAlexaEnabled": false,
+                    "IRCommand": "54239e113c0236021e027602100232023e0230023c024c02040250023a0230023c0234023a029e063c02a0062202b6063e029c063c029c063e02a0062002b6063c0234023c0230023e029c064002d006ec01ba063a0236021e0250023802360220024e023602ca06100232023c0230023e0232023c02a0063802a0063a029e063c029e063e02"
+                },
+                {
+                    "Id": 104,
+                    "Name": "Input",
+                    "ImagePath": "",
+                    "IsAlexaEnabled": false,
+                    "IRCommand": "58239c113e0232023e0232023c022e023c0232023c0232023a0232023a025e02100234023a02a0063a02cc060e02a0063a029e063e02a2063a029e063c029e063e025c0212022e024002980642022e023c0232023a029c063e0232023c0230023e025a0210029e063e0230023c029e0640029a063e0232023e02c6061002a0063c029e063c02da9e5423e2083c02"
+                },
+                {
+                    "Id": 105,
+                    "Name": "Back",
+                    "ImagePath": "",
+                    "IsAlexaEnabled": false,
+                    "IRCommand": "1e23da11e8018e02e001b402ba01b602ba018202e801b402bc019c02d0018802e201b602b801f606e601f406e6010407d601f406e801f006e801f806e2012007be01b402ba01f406e4012007ba01bc02b001b402bc011e07ba019e02d201b202b801b602b8018a02e601b202ba01f406e8010607d6018802e0012007bc01f606e6011c07be012c9f1e234209c201"
+                },
+                {
+                    "Id": 106,
+                    "Name": "Focus",
+                    "ImagePath": "",
+                    "IsAlexaEnabled": false,
+                    "IRCommand": "5623a0113e0230023e0230023e022e02400230023c0230023c025c0210025e0210025c021002ac062e02a0063c029e063c02a0063e029c063e029c063e029e063c025a02100236023a0232023c029e063e02c806100232023c0234023c029e063a0230023e029e063e029e063c025e020e0234023a029e063c029e063e0232023c029e063c02de9e5423e2083c02"
                 }
             ]
         }
