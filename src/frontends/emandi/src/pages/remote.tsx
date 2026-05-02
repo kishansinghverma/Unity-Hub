@@ -1,4 +1,4 @@
-import { KeyboardEvent, MouseEvent, useMemo, useState } from "react";
+import { KeyboardEvent, MouseEvent, useEffect, useMemo, useState } from "react";
 import { AirVent, Cpu, HouseWifi, LucideIcon, Projector, Speaker, Tv } from "lucide-react";
 import { Button, Container, Header, HeaderSubheader, Icon, Segment } from "semantic-ui-react";
 import { PostParams, Url } from "../common/constants";
@@ -47,6 +47,7 @@ const DEVICE_ICONS: Record<DeviceCategory, LucideIcon> = {
 export const RemotePage = () => {
     const [brokenImages, setBrokenImages] = useState<{ [key: string]: boolean }>({});
     const [pressedCommandKey, setPressedCommandKey] = useState<string | null>(null);
+    const [connectionStatus, setConnectionStatus] = useState<"checking" | "connected" | "disconnected">("checking");
 
     const devices = useMemo(() => {
         const response = commandsData as CommandResponse;
@@ -75,6 +76,28 @@ export const RemotePage = () => {
             .catch(handleError);
     };
 
+    useEffect(() => {
+        let isMounted = true;
+        const checkConnection = () => {
+            fetch(Url.OakterRemoteIsConnected)
+                .then(handleJsonResponse)
+                .then((json) => {
+                    const isConnected = Boolean(json?.isConnected);
+                    if (isMounted) setConnectionStatus(isConnected ? "connected" : "disconnected");
+                })
+                .catch(() => {
+                    if (isMounted) setConnectionStatus("disconnected");
+                });
+        };
+
+        checkConnection();
+        const timerId = window.setInterval(checkConnection, 10000);
+        return () => {
+            isMounted = false;
+            window.clearInterval(timerId);
+        };
+    }, []);
+
     return (
         <Container className="remote-page">
             <Segment className="remote-devices-container">
@@ -91,7 +114,9 @@ export const RemotePage = () => {
                                 </HeaderSubheader>
                             </Header>
                         </div>
-                        <span className="stat-value">Active</span>
+                        <span className={`stat-value ${connectionStatus}`}>
+                            {connectionStatus === "checking" ? "Checking" : connectionStatus === "connected" ? "Connected" : "Disconnected"}
+                        </span>
                     </div>
                     {devices.map((device) => {
                         const deviceCategory = getDeviceCategory(device.Name);
