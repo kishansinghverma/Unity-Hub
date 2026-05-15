@@ -71,6 +71,30 @@ export type PhonePeTransaction = {
 
 export type PhonePeStatementRequest = Array<PhonePeTransaction>;
 
+export type PredictionSource = "bank_modal" | "payment_app_modal";
+
+export type PredictionBankInput = {
+    description: string;
+};
+
+export type PredictionPaymentAppInput = {
+    recipient: string;
+};
+
+export type PredictionOutput = {
+    description: string;
+    category: number;
+    group: number;
+};
+
+export type PredictionRequest = {
+    signature: string;
+    source: PredictionSource;
+    bank?: PredictionBankInput;
+    paymentApp?: PredictionPaymentAppInput;
+    output: PredictionOutput;
+};
+
 export type GroupInfoRequest = {
     id: number,
     isShared: boolean

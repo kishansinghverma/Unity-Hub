@@ -12,6 +12,7 @@ export const constants = {
         collection: {
             draft: 'Draft',
             meta: 'Meta',
+            prediction: 'Prediction',
             statement: 'Statement',
             phonepe: 'PhonePe'
         }

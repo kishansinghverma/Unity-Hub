@@ -1,8 +1,7 @@
 import { Collection, Document } from "mongodb";
 import { constants as invariants } from "../common/constants";
 import { MongoDbService } from "../services/mongodb";
-import { ObjectUtils } from "../common/models";
-import { BankStatementRequest, BankTransaction, ExecutionResponse, GroupInfoRequest, PhonePeStatementRequest, PhonePeTransaction } from "../common/types";
+import { BankStatementRequest, BankTransaction, PhonePeStatementRequest, PhonePeTransaction, PredictionRequest } from "../common/types";
 import { splitwise } from "./splitwise";
 
 class Expenses {
@@ -19,7 +18,27 @@ class Expenses {
 
     public getPhonePeStatement = () => this.database.getDocuments(this.constants.collection.phonepe, {}, { sort: { date: 1 } });
 
+    public getPredictions = () => this.database.getDocuments(this.constants.collection.prediction, {}, { sort: { updatedAt: -1 }, limit: 500 });
+
     public addTransaction = (transaction: Document) => this.database.insertDocument(this.constants.collection.draft, transaction);
+
+    public addPrediction = (prediction: PredictionRequest) => {
+        const now = new Date();
+        const query = { signature: prediction.signature };
+        const patchData = {
+            $set: {
+                source: prediction.source,
+                bank: prediction.bank ?? null,
+                paymentApp: prediction.paymentApp ?? null,
+                output: prediction.output,
+                signature: prediction.signature,
+                updatedAt: now
+            },
+            $setOnInsert: { createdAt: now }
+        };
+
+        return this.database.patchDocument(this.constants.collection.prediction, patchData, query, { upsert: true });
+    }
 
     public getLastRefinementDate = () => this.database.getDocument(this.constants.collection.meta, { name: 'Modified On' }, {});
 
@@ -87,12 +106,20 @@ class Expenses {
     }
 
     public initializeDatabase = async () => {
-        const createIndex = async (collection: Collection) => {
+        const createDateIndex = async (collection: Collection) => {
             const index = await collection.createIndex({ date: 1 });
             return { content: { actions: [{ index }] }, statusCode: 200 };
         }
 
-        await this.database.executeOperationOnCollection(this.constants.collection.statement, createIndex);
+        await this.database.executeOperationOnCollection(this.constants.collection.statement, createDateIndex);
+
+        const createPredictionIndexes = async (collection: Collection) => {
+            const signatureIndex = await collection.createIndex({ signature: 1 }, { unique: true });
+            const updatedAtIndex = await collection.createIndex({ updatedAt: -1 });
+            return { content: { actions: [{ signatureIndex }, { updatedAtIndex }] }, statusCode: 200 };
+        }
+
+        await this.database.executeOperationOnCollection(this.constants.collection.prediction, createPredictionIndexes);
 
         const operation = async (collection: Collection) => {
             const actions = [];

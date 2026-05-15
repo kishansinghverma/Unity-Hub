@@ -1,8 +1,7 @@
-import express, { response } from 'express';
+import express from 'express';
 import { expenses } from '../operations/expense';
 import { replyError, replySuccess } from '../common/utils';
 import { validator } from '../common/validation';
-import { request } from 'http';
 
 const router = express.Router();
 
@@ -20,6 +19,12 @@ router.get('/init', (request, response) => {
 
 router.get('/lastrefinement', (request, response) => {
     expenses.getLastRefinementDate()
+        .then(replySuccess(response))
+        .catch(replyError(response));
+});
+
+router.get('/predictions', (request, response) => {
+    expenses.getPredictions()
         .then(replySuccess(response))
         .catch(replyError(response));
 });
@@ -53,6 +58,13 @@ router.post('/description', (request, response) => {
         .then(replySuccess(response))
         .catch(replyError(response));
 })
+
+router.post('/predictions', (request, response) => {
+    validator.validateRequest(request)
+        .then(values => expenses.addPrediction(values)
+            .then(replySuccess(response)))
+        .catch(replyError(response));
+});
 
 router.post('/statement/bank', (request, response) => {
     validator.validateRequest(request)

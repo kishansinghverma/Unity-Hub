@@ -81,6 +81,21 @@ const schemas: { [key: string]: any } = {
         type: joi.string().valid("Debit", "Credit", "Unknown").required(),
         bank: joi.string().trim().min(2).max(50).required()
     }).min(1).required(),
+    "/api/expenses/predictions": joi.object({
+        signature: joi.string().trim().min(8).max(128).required(),
+        source: joi.string().valid("bank_modal", "payment_app_modal").required(),
+        bank: joi.object({
+            description: joi.string().trim().min(2).max(500).required(),
+        }).optional(),
+        paymentApp: joi.object({
+            recipient: joi.string().trim().min(2).max(500).required(),
+        }).optional(),
+        output: joi.object({
+            description: joi.string().trim().min(2).max(500).required(),
+            category: joi.number().integer().required(),
+            group: joi.number().integer().required(),
+        }).required()
+    }).or('bank', 'paymentApp'),
     "/api/oakterremote/command": {
         commandId: joi.alternatives().try(
             joi.number().integer().positive(),
