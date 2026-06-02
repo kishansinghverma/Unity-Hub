@@ -83,7 +83,7 @@ class Splitwise {
         if (transaction.bankTxnId) this.database.updateDocumentById(this.globalConstants.collection.statement, transaction.bankTxnId, { processed: true });
         if (transaction.phonePeTxnId) this.database.updateDocumentById(this.globalConstants.collection.phonepe, transaction.phonePeTxnId, { processed: true });
         if (transaction.draftTxnId) this.database.updateDocumentById(this.globalConstants.collection.draft, transaction.draftTxnId, { processed: true });
-        expenses.setLastRefinementDate();
+        expenses.setReviewedOnDate();
 
         const expense: SettlementExpense = {
             cost: transaction.cost,

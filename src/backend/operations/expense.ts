@@ -40,7 +40,7 @@ class Expenses {
         return this.database.patchDocument(this.constants.collection.prediction, patchData, query, { upsert: true });
     }
 
-    public getLastRefinementDate = () => this.database.getDocument(this.constants.collection.meta, { name: 'Modified On' }, {});
+    public getReviewedOnDate = () => this.database.getDocument(this.constants.collection.meta, { name: 'Modified On' }, {});
 
     public getDescriptions = () => this.database.getDocument(this.constants.collection.meta, { name: 'Descriptions' }, {});
 
@@ -85,7 +85,7 @@ class Expenses {
     }
 
     public completeTransaction = (transactionId: string, collectionName: string) => {
-        this.setLastRefinementDate();
+        this.setReviewedOnDate();
         return this.database.updateDocumentById(collectionName, transactionId, { processed: true });
     }
 
@@ -95,13 +95,13 @@ class Expenses {
 
     public processDraftTransaction = (transactionId: string) => this.completeTransaction(transactionId, this.constants.collection.draft);
 
-    public setLastRefinementDate = () => this.database.patchDocument(this.constants.collection.meta, { $set: { value: new Date().getTime() } }, { name: 'Modified On' }, {});
+    public setReviewedOnDate = () => this.database.patchDocument(this.constants.collection.meta, { $set: { value: new Date().getTime() } }, { name: 'Modified On' }, {});
 
     public finalizeTransaction = (transaction: any) => {
         if (transaction.bankTxnId) this.database.updateDocumentById(this.constants.collection.statement, transaction.bankTxnId, { processed: true });
         if (transaction.phonePeTxnId) this.database.updateDocumentById(this.constants.collection.phonepe, transaction.phonePeTxnId, { processed: true });
         if (transaction.draftTxnId) this.database.updateDocumentById(this.constants.collection.draft, transaction.draftTxnId, { processed: true });
-        this.setLastRefinementDate();
+        this.setReviewedOnDate();
         return splitwise.addExpense(transaction);
     }
 
@@ -125,10 +125,10 @@ class Expenses {
             const actions = [];
             const options = { upsert: true, returnOriginal: false };
 
-            // Initialize Last Refinement Date Document
+            // Initialize reviewed on date document
             const patchData = { $setOnInsert: { value: new Date().getTime() } };
             const response = await collection.findOneAndUpdate({ name: 'Modified On' }, patchData, options);
-            actions.push({ lastRefinement: { insertedId: response?._id }, statusCode: 200 });
+            actions.push({ reviewedOn: { insertedId: response?._id }, statusCode: 200 });
 
             // Initialize Description Array
             const descPatchData = { $setOnInsert: { value: [] } };

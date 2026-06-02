@@ -17,8 +17,8 @@ router.get('/init', (request, response) => {
         .catch(replyError(response));
 });
 
-router.get('/lastrefinement', (request, response) => {
-    expenses.getLastRefinementDate()
+router.get('/reviewedon', (request, response) => {
+    expenses.getReviewedOnDate()
         .then(replySuccess(response))
         .catch(replyError(response));
 });
