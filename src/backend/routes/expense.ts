@@ -5,8 +5,8 @@ import { validator } from '../common/validation';
 
 const router = express.Router();
 
-router.get('/', (request, response) => {
-    expenses.getTransactions()
+router.get('/locations', (request, response) => {
+    expenses.getLocations()
         .then(replySuccess(response))
         .catch(replyError(response));
 });
@@ -41,14 +41,14 @@ router.get('/statement/bank', (request, response) => {
         .catch(replyError(response));
 });
 
-router.get('/statement/phonepe', (request, response) => {
-    expenses.getPhonePeStatement()
+router.get('/statement/paymentapp', (request, response) => {
+    expenses.getPaymentAppStatement()
         .then(replySuccess(response))
         .catch(replyError(response));
 });
 
-router.post('/', (request, response) => {
-    expenses.addTransaction(request.body)
+router.post('/locations', (request, response) => {
+    expenses.addLocation(request.body)
         .then(replySuccess(response))
         .catch(replyError(response));
 });
@@ -73,9 +73,9 @@ router.post('/statement/bank', (request, response) => {
         .catch(replyError(response));
 });
 
-router.post('/statement/phonepe', (request, response) => {
+router.post('/statement/paymentapp', (request, response) => {
     validator.validateRequest(request)
-        .then(values => expenses.updatePhonePeStatement(values)
+        .then(values => expenses.updatePaymentAppStatement(values)
             .then(replySuccess(response)))
         .catch(replyError(response));
 });
@@ -92,14 +92,14 @@ router.post('/process/bank/:id', (request, response) => {
         .catch(replyError(response));
 });
 
-router.post('/process/phonepe/:id', (request, response) => {
-    expenses.processPhonePeTransaction(request.params.id)
+router.post('/process/paymentapp/:id', (request, response) => {
+    expenses.processPaymentAppTransaction(request.params.id)
         .then(replySuccess(response))
         .catch(replyError(response));
 });
 
-router.post('/process/draft/:id', (request, response) => {
-    expenses.processDraftTransaction(request.params.id)
+router.post('/process/location/:id', (request, response) => {
+    expenses.processLocationTransaction(request.params.id)
         .then(replySuccess(response))
         .catch(replyError(response));
 });

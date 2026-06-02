@@ -10,11 +10,11 @@ export const constants = {
     expense: {
         database: 'Expense',
         collection: {
-            draft: 'Draft',
+            location: 'Location',
             meta: 'Meta',
             prediction: 'Prediction',
-            statement: 'Statement',
-            phonepe: 'PhonePe'
+            bankStatement: 'BankStatement',
+            appStatement: 'AppStatement'
         }
     },
     errors: {

@@ -59,7 +59,7 @@ export type BankTransaction = {
 
 export type BankStatementRequest = Array<BankTransaction>;
 
-export type PhonePeTransaction = {
+export type PaymentAppTransaction = {
     date: Date,
     recipient: string,
     transactionId: string,
@@ -69,7 +69,7 @@ export type PhonePeTransaction = {
     amount: number
 }
 
-export type PhonePeStatementRequest = Array<PhonePeTransaction>;
+export type PaymentAppStatementRequest = Array<PaymentAppTransaction>;
 
 export type PredictionSource = "bank_modal" | "payment_app_modal";
 
@@ -119,8 +119,8 @@ export type SettlementExpenseRequest = {
     details: string
     description: string
     bankTxnId?: string
-    phonePeTxnId?: string
-    draftTxnId?: string
+    appTxnId?: string
+    locationTxnId?: string
 }
 
 export type SelfPaidExpense = {

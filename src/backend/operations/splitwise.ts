@@ -80,9 +80,9 @@ class Splitwise {
         const payerId = transaction.parties.find(id => id !== this.constants.userId.Self);
         if (!payerId) throw new SplitwiseThrowable('Payer party not available!', 400);
 
-        if (transaction.bankTxnId) this.database.updateDocumentById(this.globalConstants.collection.statement, transaction.bankTxnId, { processed: true });
-        if (transaction.phonePeTxnId) this.database.updateDocumentById(this.globalConstants.collection.phonepe, transaction.phonePeTxnId, { processed: true });
-        if (transaction.draftTxnId) this.database.updateDocumentById(this.globalConstants.collection.draft, transaction.draftTxnId, { processed: true });
+        if (transaction.bankTxnId) this.database.updateDocumentById(this.globalConstants.collection.bankStatement, transaction.bankTxnId, { processed: true });
+        if (transaction.appTxnId) this.database.updateDocumentById(this.globalConstants.collection.appStatement, transaction.appTxnId, { processed: true });
+        if (transaction.locationTxnId) this.database.updateDocumentById(this.globalConstants.collection.location, transaction.locationTxnId, { processed: true });
         expenses.setReviewedOnDate();
 
         const expense: SettlementExpense = {

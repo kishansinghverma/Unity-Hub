@@ -72,7 +72,7 @@ const schemas: { [key: string]: any } = {
         type: joi.string().valid("Debit", "Credit").required(),
         bank: joi.string().trim().min(2).max(50).required()
     }).min(1).required(),
-    "/api/expenses/statement/phonepe": joi.array().items({
+    "/api/expenses/statement/paymentapp": joi.array().items({
         date: joi.date().iso().required(),
         recipient: joi.string().trim().min(2).max(500).required(),
         transactionId: joi.string().trim().min(2).max(500).required(),

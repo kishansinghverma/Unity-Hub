@@ -1,7 +1,7 @@
 import { Collection, Document } from "mongodb";
 import { constants as invariants } from "../common/constants";
 import { MongoDbService } from "../services/mongodb";
-import { BankStatementRequest, BankTransaction, PhonePeStatementRequest, PhonePeTransaction, PredictionRequest } from "../common/types";
+import { BankStatementRequest, BankTransaction, PaymentAppStatementRequest, PaymentAppTransaction, PredictionRequest } from "../common/types";
 import { splitwise } from "./splitwise";
 
 class Expenses {
@@ -12,15 +12,15 @@ class Expenses {
         this.database = new MongoDbService(this.constants.database);
     }
 
-    public getTransactions = () => this.database.getDocuments(this.constants.collection.draft, {}, { sort: {dateTime: 1} });
+    public getLocations = () => this.database.getDocuments(this.constants.collection.location, {}, { sort: {dateTime: 1} });
 
-    public getBankStatement = () => this.database.getDocuments(this.constants.collection.statement, {}, { sort: { date: 1 } });
+    public getBankStatement = () => this.database.getDocuments(this.constants.collection.bankStatement, {}, { sort: { date: 1 } });
 
-    public getPhonePeStatement = () => this.database.getDocuments(this.constants.collection.phonepe, {}, { sort: { date: 1 } });
+    public getPaymentAppStatement = () => this.database.getDocuments(this.constants.collection.appStatement, {}, { sort: { date: 1 } });
 
     public getPredictions = () => this.database.getDocuments(this.constants.collection.prediction, {}, { sort: { updatedAt: -1 }, limit: 500 });
 
-    public addTransaction = (transaction: Document) => this.database.insertDocument(this.constants.collection.draft, transaction);
+    public addLocation = (location: Document) => this.database.insertDocument(this.constants.collection.location, location);
 
     public addPrediction = (prediction: PredictionRequest) => {
         const now = new Date();
@@ -58,12 +58,12 @@ class Expenses {
             return { content: { ...result, ...response }, statusCode: 200 };
         }
 
-        return this.database.executeOperationOnCollection(this.constants.collection.statement, operation);
+        return this.database.executeOperationOnCollection(this.constants.collection.bankStatement, operation);
     }
 
-    public updatePhonePeStatement = async (statement: PhonePeStatementRequest) => {
-        const statementResponse = await this.getPhonePeStatement();
-        const existingTransactions: Array<PhonePeTransaction> = statementResponse.content ?? [];
+    public updatePaymentAppStatement = async (statement: PaymentAppStatementRequest) => {
+        const statementResponse = await this.getPaymentAppStatement();
+        const existingTransactions: Array<PaymentAppTransaction> = statementResponse.content ?? [];
         const records = existingTransactions.map(txn => (txn.utr));
         const insertables = statement.filter(txn => !(records.includes(txn.utr)));
 
@@ -75,7 +75,7 @@ class Expenses {
             return { content: { ...result, ...response }, statusCode: 200 };
         }
 
-        return this.database.executeOperationOnCollection(this.constants.collection.phonepe, operation);
+        return this.database.executeOperationOnCollection(this.constants.collection.appStatement, operation);
     }
 
     public addDescription = (item: string) => {
@@ -89,18 +89,18 @@ class Expenses {
         return this.database.updateDocumentById(collectionName, transactionId, { processed: true });
     }
 
-    public processBankTransaction = (transactionId: string) => this.completeTransaction(transactionId, this.constants.collection.statement);
+    public processBankTransaction = (transactionId: string) => this.completeTransaction(transactionId, this.constants.collection.bankStatement);
 
-    public processPhonePeTransaction = (transactionId: string) => this.completeTransaction(transactionId, this.constants.collection.phonepe);
+    public processPaymentAppTransaction = (transactionId: string) => this.completeTransaction(transactionId, this.constants.collection.appStatement);
 
-    public processDraftTransaction = (transactionId: string) => this.completeTransaction(transactionId, this.constants.collection.draft);
+    public processLocationTransaction = (transactionId: string) => this.completeTransaction(transactionId, this.constants.collection.location);
 
     public setReviewedOnDate = () => this.database.patchDocument(this.constants.collection.meta, { $set: { value: new Date().getTime() } }, { name: 'Modified On' }, {});
 
     public finalizeTransaction = (transaction: any) => {
-        if (transaction.bankTxnId) this.database.updateDocumentById(this.constants.collection.statement, transaction.bankTxnId, { processed: true });
-        if (transaction.phonePeTxnId) this.database.updateDocumentById(this.constants.collection.phonepe, transaction.phonePeTxnId, { processed: true });
-        if (transaction.draftTxnId) this.database.updateDocumentById(this.constants.collection.draft, transaction.draftTxnId, { processed: true });
+        if (transaction.bankTxnId) this.database.updateDocumentById(this.constants.collection.bankStatement, transaction.bankTxnId, { processed: true });
+        if (transaction.appTxnId) this.database.updateDocumentById(this.constants.collection.appStatement, transaction.appTxnId, { processed: true });
+        if (transaction.locationTxnId) this.database.updateDocumentById(this.constants.collection.location, transaction.locationTxnId, { processed: true });
         this.setReviewedOnDate();
         return splitwise.addExpense(transaction);
     }
@@ -111,7 +111,7 @@ class Expenses {
             return { content: { actions: [{ index }] }, statusCode: 200 };
         }
 
-        await this.database.executeOperationOnCollection(this.constants.collection.statement, createDateIndex);
+        await this.database.executeOperationOnCollection(this.constants.collection.bankStatement, createDateIndex);
 
         const createPredictionIndexes = async (collection: Collection) => {
             const signatureIndex = await collection.createIndex({ signature: 1 }, { unique: true });
