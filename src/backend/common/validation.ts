@@ -79,7 +79,8 @@ const schemas: { [key: string]: any } = {
         utr: joi.string().trim().min(2).max(500).required(),
         amount: joi.number().positive().precision(2).required(),
         type: joi.string().valid("Debit", "Credit", "Unknown").required(),
-        bank: joi.string().trim().min(2).max(50).required()
+        bank: joi.string().trim().min(2).max(50).required(),
+        app: joi.string().valid("phonepe", "paytm").required()
     }).min(1).required(),
     "/api/expenses/predictions": joi.object({
         signature: joi.string().trim().min(8).max(128).required(),
