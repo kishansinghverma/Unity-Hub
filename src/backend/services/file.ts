@@ -19,8 +19,12 @@ class Files {
                 args: [
                     '--no-sandbox', 
                     '--disable-setuid-sandbox',
-                    '--disable-dev-shm-usage', // Recommended for Linux servers
-                    '--disable-gpu'
+                    '--disable-dev-shm-usage',
+                    '--disable-gpu',
+                    '--no-zygote',
+                    '--disable-accelerated-2d-canvas',
+                    '--disable-extensions',
+                    '--disable-background-networking'
                 ]
             });
         }
