@@ -4,20 +4,26 @@ import fs from "fs";
 import multer, { FileFilterCallback } from "multer";
 import path from "path";
 import { chromium, Browser } from "playwright-chromium";
-import { constants } from "../common/constants";
-import { MulterThrowable, String } from "../common/models";
+import { constants, source } from "../common/constants";
+import { Logger, MulterThrowable, String } from "../common/models";
 import { Request, Response } from "express";
 import { CreatePdfRequest, OperationResponse } from "../common/types";
 
 class Files {
+    private logger: Logger;
+
+    constructor() {
+        this.logger = new Logger(source.file);
+    }
+
     private browserInstance: Browser | null = null;
 
     private initBrowser = async () => {
         if (!this.browserInstance) {
-            this.browserInstance = await chromium.launch({ 
+            this.browserInstance = await chromium.launch({
                 headless: true,
                 args: [
-                    '--no-sandbox', 
+                    '--no-sandbox',
                     '--disable-setuid-sandbox',
                     '--disable-dev-shm-usage',
                     '--disable-gpu',
@@ -27,6 +33,8 @@ class Files {
                     '--disable-background-networking'
                 ]
             });
+
+            this.logger.success("Chromium instance created succesfully.")
         }
     };
 
@@ -74,11 +82,11 @@ class Files {
         const filePath = `${dirPath}/${fileName}`;
 
         const htmlContent = await this.renderPdf(content);
-        
+
         await this.initBrowser();
         const context = await this.browserInstance!.newContext();
         const page = await context.newPage();
-        
+
         try {
             await page.setContent(htmlContent as string);
             const pdfContent = await page.pdf({ format: 'A4', landscape: true });

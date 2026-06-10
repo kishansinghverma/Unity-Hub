@@ -72,7 +72,8 @@ export enum source {
     smarthome = 'SmartHome',
     oakterremote = 'OakterRemote',
     whatsapp = 'WhatsApp',
-    udp = 'UdpServer'
+    udp = 'UdpServer',
+    file = 'FileHandler'
 }
 
 export const mimeType: { [key: string]: string } = {
