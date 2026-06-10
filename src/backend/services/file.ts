@@ -3,7 +3,7 @@ import crypto from "crypto";
 import fs from "fs";
 import multer, { FileFilterCallback } from "multer";
 import path from "path";
-import { chromium, Browser } from "playwright-chromium";
+import puppeteer, { Browser } from "puppeteer";
 import { constants } from "../common/constants";
 import { MulterThrowable, String } from "../common/models";
 import { Request, Response } from "express";
@@ -14,7 +14,7 @@ class Files {
 
     private initBrowser = async () => {
         if (!this.browserInstance) {
-            this.browserInstance = await chromium.launch({ 
+            this.browserInstance = await puppeteer.launch({ 
                 headless: true,
                 args: [
                     '--no-sandbox', 
@@ -76,16 +76,17 @@ class Files {
         const htmlContent = await this.renderPdf(content);
         
         await this.initBrowser();
-        const context = await this.browserInstance!.newContext();
-        const page = await context.newPage();
+        const page = await this.browserInstance!.newPage();
         
         try {
-            await page.setContent(htmlContent as string);
+            await page.setJavaScriptEnabled(false);
+            await page.setOfflineMode(true);
+            await page.setContent(htmlContent as string, { waitUntil: 'domcontentloaded' });
             const pdfContent = await page.pdf({ format: 'A4', landscape: true });
             fs.writeFileSync(filePath, pdfContent);
             return fileName;
         } finally {
-            await context.close();
+            await page.close();
         }
     }
 }
