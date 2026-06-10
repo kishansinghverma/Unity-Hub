@@ -17,25 +17,32 @@ class Files {
     }
 
     private browserInstance: Browser | null = null;
+    private browserInitPromise: Promise<void> | null = null;
 
-    private initBrowser = async () => {
-        if (!this.browserInstance) {
-            this.browserInstance = await chromium.launch({
-                headless: true,
-                args: [
-                    '--no-sandbox',
-                    '--disable-setuid-sandbox',
-                    '--disable-dev-shm-usage',
-                    '--disable-gpu',
-                    '--no-zygote',
-                    '--disable-accelerated-2d-canvas',
-                    '--disable-extensions',
-                    '--disable-background-networking'
-                ]
-            });
+    private initializeBrowser = async () => {
+        if (this.browserInstance) return;
 
-            this.logger.success("Chromium instance created succesfully.")
-        }
+        this.browserInitPromise ??= chromium.launch({
+            headless: true,
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-gpu',
+                '--no-zygote',
+                '--disable-accelerated-2d-canvas',
+                '--disable-extensions',
+                '--disable-background-networking'
+            ]
+        }).then(browser => {
+            this.browserInstance = browser;
+            this.logger.success("Chromium instance created succesfully.");
+        }).catch(err => {
+            this.browserInitPromise = null;
+            throw err;
+        });
+
+        await this.browserInitPromise;
     };
 
     private storage = multer.diskStorage({
@@ -83,7 +90,7 @@ class Files {
 
         const htmlContent = await this.renderPdf(content);
 
-        await this.initBrowser();
+        await this.initializeBrowser();
         const context = await this.browserInstance!.newContext();
         const page = await context.newPage();
 
