@@ -3,13 +3,29 @@ import crypto from "crypto";
 import fs from "fs";
 import multer, { FileFilterCallback } from "multer";
 import path from "path";
-import puppeteer from "puppeteer";
+import { chromium, Browser } from "playwright-chromium";
 import { constants } from "../common/constants";
 import { MulterThrowable, String } from "../common/models";
 import { Request, Response } from "express";
 import { CreatePdfRequest, OperationResponse } from "../common/types";
 
 class Files {
+    private browserInstance: Browser | null = null;
+
+    private initBrowser = async () => {
+        if (!this.browserInstance) {
+            this.browserInstance = await chromium.launch({ 
+                headless: true,
+                args: [
+                    '--no-sandbox', 
+                    '--disable-setuid-sandbox',
+                    '--disable-dev-shm-usage', // Recommended for Linux servers
+                    '--disable-gpu'
+                ]
+            });
+        }
+    };
+
     private storage = multer.diskStorage({
         destination: (req, file, cb) => cb(null, path.join(__dirname, '../static')),
         filename: (req, file, cb) => cb(null, `${String.generateId()}${path.extname(file.originalname).toLowerCase()}`),
@@ -32,7 +48,7 @@ class Files {
         });
     };
 
-    private fileUpload = multer({ storage: this.storage, fileFilter: this.fileFilter });
+    public fileUpload = multer({ storage: this.storage, fileFilter: this.fileFilter });
 
     public saveIncomingFile = (request: Request, response: Response): OperationResponse => {
         const executeUpload = fileService.fileUpload.single('file');
@@ -54,14 +70,19 @@ class Files {
         const filePath = `${dirPath}/${fileName}`;
 
         const htmlContent = await this.renderPdf(content);
-        const browser = await puppeteer.launch();
-        const page = await browser.newPage();
-        await page.setContent(htmlContent as string);
-        const pdfContent = await page.pdf({ format: 'A4', landscape: true });
-        await browser.close();
-
-        fs.writeFileSync(filePath, pdfContent);
-        return fileName;
+        
+        await this.initBrowser();
+        const context = await this.browserInstance!.newContext();
+        const page = await context.newPage();
+        
+        try {
+            await page.setContent(htmlContent as string);
+            const pdfContent = await page.pdf({ format: 'A4', landscape: true });
+            fs.writeFileSync(filePath, pdfContent);
+            return fileName;
+        } finally {
+            await context.close();
+        }
     }
 }
 
