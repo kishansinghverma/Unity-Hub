@@ -1,12 +1,13 @@
 import { useEffect } from "react";
-import { Icon, Table } from "semantic-ui-react";
+import { Table } from "semantic-ui-react";
 import { CustomTable, EmptyTable, TablePagination } from "../common/components";
 import { ProcessedEntry, Record } from "../common/types";
 import { TableRenderer, getDate, handleError, handleJsonResponse } from "../operations/utils";
 import { Url } from "../common/constants";
+import { Upload } from "lucide-react";
 
 export const ProcessedPage: React.FC = () => {
-    const { records, getPaginated, pageCount, isFetching, currentPage, render } = new TableRenderer<ProcessedEntry>(Url.Processed, 8, true);
+    const { records, getPaginated, pageCount, isFetching, currentPage, render } = new TableRenderer<ProcessedEntry>(Url.Processed, 15, true);
 
     const filterRecords = (response: Record<ProcessedEntry>) => {
         const filteredRecords = records.get().filter(record => record._id !== response._id);
@@ -56,7 +57,17 @@ export const ProcessedPage: React.FC = () => {
                                 <Table.Cell>{record.rate ? Math.ceil(record.rate * parseInt(record.weight) * 1.5 / 100) : 'N/A'}</Table.Cell>
                                 <Table.Cell>{record.paymentMode ?? 'Postpaid'}</Table.Cell>
                                 <Table.Cell textAlign="center">
-                                    {(record._id && record.date === getDate()) && <Icon name="upload" title="Requeue" color="green" link onClick={() => { requeue(record._id) }} />}
+                                    {(record._id && record.date === getDate()) && (
+                                        <div className="action-cell-container">
+                                            <div
+                                                className="action-icon-btn requeue"
+                                                title="Requeue Entry"
+                                                onClick={() => requeue(record._id)}
+                                            >
+                                                <Upload size={14} />
+                                            </div>
+                                        </div>
+                                    )}
                                 </Table.Cell>
                             </Table.Row>
                         ))}

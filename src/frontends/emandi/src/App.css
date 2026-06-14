@@ -88,6 +88,20 @@ table.fixed {
   box-shadow: rgba(0, 0, 0, 0.45) 0px 25px 20px -20px !important;
 }
 
+/* Force compact rows on Semantic UI tables */
+.ui.table.fixed > tbody > tr > td,
+.ui.table.fixed > thead > tr > th {
+  padding: 0.3em 0.8em !important;
+  line-height: 1.2 !important;
+  font-size: 14px !important;
+  height: 38px !important; /* Force identical height */
+}
+
+.ui.table.fixed > thead > tr > th {
+  padding-top: 0.3em !important;
+  padding-bottom: 0.3em !important;
+}
+
 .header-container {
   display: flex;
   flex-direction: column;
@@ -107,6 +121,50 @@ table.fixed {
   padding-top: 16px;
   font-family: 'Source Sans Pro', sans-serif;
   font-size: 15px;
+}
+
+/* Modern Action UI - Floating Mini-Cards */
+.action-cell-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.action-icon-btn {
+  width: 26px;
+  height: 26px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px -1px rgba(0,0,0,0.1);
+  color: #64748b;
+  transition: all 0.2s;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+
+.action-icon-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 10px -2px rgba(0,0,0,0.1);
+}
+
+.action-icon-btn.edit:hover {
+  color: #059669; /* Emerald 600 */
+  border-color: #059669;
+}
+
+.action-icon-btn.delete:hover {
+  color: #dc2626; /* Red 600 */
+  border-color: #dc2626;
+}
+
+.action-icon-btn.requeue:hover {
+  color: #2563eb; /* Blue 600 */
+  border-color: #2563eb;
 }
 
 /* Used for 404 page styling */

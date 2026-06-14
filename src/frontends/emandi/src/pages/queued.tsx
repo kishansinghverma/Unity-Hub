@@ -1,12 +1,13 @@
 import { useEffect } from "react";
-import { Icon, Table } from "semantic-ui-react";
+import { Table } from "semantic-ui-react";
 import { CustomTable, EmptyTable, TablePagination } from "../common/components";
 import { QueuedEntry, Record } from "../common/types";
 import { DeleteParams, Url, vehicleType } from "../common/constants";
 import { handleJsonResponse, handleError, TableRenderer } from "../operations/utils";
+import { Trash2 } from "lucide-react";
 
 export const QueuedPage: React.FC = () => {
-    const { records, pageCount, getPaginated, currentPage, isFetching, render } = new TableRenderer<QueuedEntry>(Url.Queued, 10);
+    const { records, pageCount, getPaginated, currentPage, isFetching, render } = new TableRenderer<QueuedEntry>(Url.Queued, 15);
 
     const filterRecords = (response: Record<QueuedEntry>) => {
         const filteredRecords = records.get().filter(record => record._id !== response._id);
@@ -52,7 +53,15 @@ export const QueuedPage: React.FC = () => {
                                 <Table.Cell>{record.bags}</Table.Cell>
                                 <Table.Cell>{record.weight}</Table.Cell>
                                 <Table.Cell textAlign="center">
-                                    <Icon name="trash" color="red" link onClick={() => { deleteRecord(record._id) }} />
+                                    <div className="action-cell-container">
+                                        <div
+                                            className="action-icon-btn delete"
+                                            title="Delete Entry"
+                                            onClick={() => deleteRecord(record._id)}
+                                        >
+                                            <Trash2 size={14} />
+                                        </div>
+                                    </div>
                                 </Table.Cell>
                             </Table.Row>
                         ))}

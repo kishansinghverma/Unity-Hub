@@ -54,7 +54,7 @@ export const CustomTable: React.FC<React.PropsWithChildren & IHeader> = ({ child
             </div>
         </div>
         <div className="list-container">
-            <Table celled fixed singleLine striped unstackable selectable compact color="red">{children}</Table>
+            <Table celled fixed singleLine striped unstackable selectable compact="very" color="red" className="fixed">{children}</Table>
         </div>
     </>
 );

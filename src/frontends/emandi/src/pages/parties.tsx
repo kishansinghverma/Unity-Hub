@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Icon, Modal, ModalActions, ModalContent, ModalHeader, Table } from "semantic-ui-react"
+import { Button, Modal, ModalActions, ModalContent, ModalHeader, Table } from "semantic-ui-react"
 import { CustomTable, EmptyTable, TablePagination } from "../common/components"
 import { ReactState, TableRenderer, handleError, handleJsonResponse } from "../operations/utils"
 import { Party, Record } from "../common/types"
@@ -6,9 +6,10 @@ import { useEffect } from "react"
 import { DeleteParams, Url } from "../common/constants"
 import { EditPartyForm } from "./editparty"
 import { toast } from "react-toastify"
+import { Pencil, Trash2 } from "lucide-react"
 
 export const Parties: React.FC = () => {
-    const { records, render, getPaginated, pageCount, currentPage, isFetching } = new TableRenderer<Party>(Url.Parties, 8);
+    const { records, render, getPaginated, pageCount, currentPage, isFetching } = new TableRenderer<Party>(Url.Parties, 15);
     const isModalOpen = ReactState(false);
     const recordToEdit = ReactState<Record<Party>>(records.get()[0]);
 
@@ -65,10 +66,22 @@ export const Parties: React.FC = () => {
                                     <Table.Cell>{record.distance}</Table.Cell>
                                     <Table.Cell>{record.licenceNumber}</Table.Cell>
                                     <Table.Cell textAlign="center">
-                                        <ButtonGroup basic compact size="tiny">
-                                            <Button title="Edit" onClick={() => editParty(record)}><Icon name="edit" link color="green" /></Button>
-                                            <Button title="Delete" onClick={() => { deleteParty(record._id) }}><Icon name="trash" link color="red" /></Button>
-                                        </ButtonGroup>
+                                        <div className="action-cell-container">
+                                            <div
+                                                className="action-icon-btn edit"
+                                                title="Edit Party"
+                                                onClick={() => editParty(record)}
+                                            >
+                                                <Pencil size={14} />
+                                            </div>
+                                            <div
+                                                className="action-icon-btn delete"
+                                                title="Delete Party"
+                                                onClick={() => deleteParty(record._id)}
+                                            >
+                                                <Trash2 size={14} />
+                                            </div>
+                                        </div>
                                     </Table.Cell>
                                 </Table.Row>
                             ))}
