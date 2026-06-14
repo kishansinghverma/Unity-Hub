@@ -61,7 +61,7 @@ export const ProcessedPage: React.FC = () => {
                                         <div className="action-cell-container">
                                             <div
                                                 className="action-icon-btn requeue"
-                                                title="Requeue Entry"
+                                                title="Re-Queue"
                                                 onClick={() => requeue(record._id)}
                                             >
                                                 <Undo2 size={14} />
