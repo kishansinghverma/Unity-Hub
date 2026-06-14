@@ -1,6 +1,5 @@
-import { capitalize, getDate, handleError, handleJsonResponse } from "./utils";
+import { capitalize, getDate, handleError } from "./utils";
 import { PatchParams, PostParams, States, Url } from "../common/constants";
-import { BankEntry, GroupInfo, PhonePeEntry } from "../common/types";
 
 export const createNewEntry = (formData: any) => {
     return fetch(Url.Push, {
@@ -48,25 +47,8 @@ export const updateParty = (formData: any) => {
     };
 }
 
-export const updateGroupInfo = (groupInfo: GroupInfo) => {
-    return fetch(`${Url.ExpenseGroups}`, {
-        ...PostParams,
-        body: JSON.stringify(groupInfo)
-    }).catch(handleError);
-}
-
 export const getDistance = (destination: string) => {
     return fetch(`${Url.Distance}=${destination}`);
-}
-
-export const uploadBankStatement = async (transactions: Array<BankEntry>) => {
-    return fetch(`${Url.BankStatement}`, { ...PostParams, body: JSON.stringify(transactions) })
-        .then(handleJsonResponse);
-}
-
-export const uploadPhonePeStatement = async (transactions: Array<PhonePeEntry>) => {
-    return fetch(`${Url.PhonePeStatement}`, { ...PostParams, body: JSON.stringify(transactions) })
-        .then(handleJsonResponse);
 }
 
 export const notifyViaWhatsApp = async (message: string) => {

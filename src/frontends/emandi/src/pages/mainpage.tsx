@@ -17,7 +17,6 @@ export const MainPage = () => {
                         <DropdownMenu>
                             <Menu.Item icon='user plus' name={pages.addParty.label} active={isActive(pages.addParty.route)} as={Link} to={pages.addParty.route} />
                             <Menu.Item icon='users' name={pages.parties.label} active={isActive(pages.parties.route)} as={Link} to={pages.parties.route} />
-                            <Menu.Item icon='pie chart' name={pages.expenses.label} active={isActive(pages.expenses.route)} as={Link} to={pages.expenses.route} />
                         </DropdownMenu>
                     </Dropdown>
                 </Menu>

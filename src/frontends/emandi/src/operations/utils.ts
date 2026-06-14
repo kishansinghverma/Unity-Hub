@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import { HttpStatusCode } from "../common/constants";
 import { BaseSyntheticEvent } from "react";
 import { InputOnChangeData, DropdownProps, CheckboxProps } from "semantic-ui-react";
-import { Party, Record, SplitwiseGroupResponse, SplitwiseGroupsResponse } from "../common/types";
+import { Party, Record } from "../common/types";
 
 export class StringUtils {
     public static empty = '';
@@ -85,18 +85,6 @@ export const MandiOptionsMapper = (party: Record<Party>) => {
         text: `${party.name}, ${party.mandi}`
     }
 }
-
-export const SplitwiseGroupMapper = ({ group }: SplitwiseGroupResponse) => ({
-    id: group.id,
-    name: group.name,
-    avatar: group.avatar.large,
-    due: group.simplified_debts.find(item => (item.to === 62039516))?.amount ?? '0',
-    members: group.members
-});
-
-export const SplitwiseGroupsMapper = (data: SplitwiseGroupsResponse) => {
-    return data.groups.map(item => (SplitwiseGroupMapper({ group: item })));
-};
 
 export const ReactState = <T>(value: T) => {
     const state = React.useState<T>(value);

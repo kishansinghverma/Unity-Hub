@@ -1,5 +1,4 @@
 import { Routes, Route, Link } from "react-router-dom";
-import { Expense } from "./expense";
 import { MainPage } from "./mainpage";
 import { NewEntry } from "./newentry";
 import { NewParty } from "./newparty";
@@ -20,7 +19,6 @@ export const RouterPage = () => (
             <Route path="processed" element={<ProcessedPage />} />
             <Route path="addparty" element={<NewParty />} />
             <Route path="parties" element={<Parties />} />
-            <Route path="expenses" element={<Expense />} />
             <Route path="*" element={<NoMatch />} />
         </Route>
     </Routes>
