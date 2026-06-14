@@ -9,7 +9,7 @@ import { toast } from "react-toastify"
 import { Pencil, Trash2 } from "lucide-react"
 
 export const Parties: React.FC = () => {
-    const { records, render, getPaginated, pageCount, currentPage, isFetching } = new TableRenderer<Party>(Url.Parties, 15);
+    const { records, render, getPaginated, pageCount, currentPage, isFetching } = new TableRenderer<Party>(Url.Parties, 10);
     const isModalOpen = ReactState(false);
     const recordToEdit = ReactState<Record<Party>>(records.get()[0]);
 

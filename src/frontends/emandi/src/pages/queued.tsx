@@ -7,7 +7,7 @@ import { handleJsonResponse, handleError, TableRenderer } from "../operations/ut
 import { Trash2 } from "lucide-react";
 
 export const QueuedPage: React.FC = () => {
-    const { records, pageCount, getPaginated, currentPage, isFetching, render } = new TableRenderer<QueuedEntry>(Url.Queued, 15);
+    const { records, pageCount, getPaginated, currentPage, isFetching, render } = new TableRenderer<QueuedEntry>(Url.Queued, 10);
 
     const filterRecords = (response: Record<QueuedEntry>) => {
         const filteredRecords = records.get().filter(record => record._id !== response._id);

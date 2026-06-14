@@ -4,10 +4,10 @@ import { CustomTable, EmptyTable, TablePagination } from "../common/components";
 import { ProcessedEntry, Record } from "../common/types";
 import { TableRenderer, getDate, handleError, handleJsonResponse } from "../operations/utils";
 import { Url } from "../common/constants";
-import { Upload } from "lucide-react";
+import { Undo2 } from "lucide-react";
 
 export const ProcessedPage: React.FC = () => {
-    const { records, getPaginated, pageCount, isFetching, currentPage, render } = new TableRenderer<ProcessedEntry>(Url.Processed, 15, true);
+    const { records, getPaginated, pageCount, isFetching, currentPage, render } = new TableRenderer<ProcessedEntry>(Url.Processed, 10, true);
 
     const filterRecords = (response: Record<ProcessedEntry>) => {
         const filteredRecords = records.get().filter(record => record._id !== response._id);
@@ -64,7 +64,7 @@ export const ProcessedPage: React.FC = () => {
                                                 title="Requeue Entry"
                                                 onClick={() => requeue(record._id)}
                                             >
-                                                <Upload size={14} />
+                                                <Undo2 size={14} />
                                             </div>
                                         </div>
                                     )}
