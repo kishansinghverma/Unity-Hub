@@ -1,4 +1,4 @@
-import { KeyboardEvent, MouseEvent, useEffect, useMemo, useState } from "react";
+import { KeyboardEvent, MouseEvent, useEffect, useMemo, useRef, useState } from "react";
 import {
     AirVent,
     ArrowDown,
@@ -70,17 +70,45 @@ const DEVICE_ICONS: Record<DeviceCategory, LucideIcon> = {
 export const RemotePage = () => {
     const [pressedCommandKey, setPressedCommandKey] = useState<string | null>(null);
     const [connectionStatus, setConnectionStatus] = useState<"checking" | "connected" | "disconnected">("checking");
+    const repeatIntervalRef = useRef<number | null>(null);
 
     const devices = useMemo(() => {
         const response = commandsData as CommandResponse;
         return response.Response ?? [];
     }, []);
 
-    const press = (commandKey: string) => setPressedCommandKey(commandKey);
+    const issueCommand = (commandId: number, remoteId: number) => {
+        fetch(Url.OakterRemoteCommand, { ...PostParams, body: JSON.stringify({ commandId, remoteId }) })
+            .then(handleJsonResponse)
+            .then(json => { if (!json.Status) throw new Error(json.Response) })
+            .catch(handleError);
+    };
+
+    const stopCommandRepeat = () => {
+        if (repeatIntervalRef.current !== null) {
+            window.clearInterval(repeatIntervalRef.current);
+            repeatIntervalRef.current = null;
+        }
+    };
+
+    const press = (commandKey: string, commandId: number, remoteId: number) => {
+        setPressedCommandKey(commandKey);
+        
+        issueCommand(commandId, remoteId);
+        
+        stopCommandRepeat();
+        repeatIntervalRef.current = window.setInterval(() => {
+            issueCommand(commandId, remoteId);
+        }, 500); // 0.5 seconds
+    };
 
     const release = (commandKey: string) => {
         setPressedCommandKey((current) => (current === commandKey ? null : current));
+        stopCommandRepeat();
     };
+
+    // Cleanup interval on unmount
+    useEffect(() => stopCommandRepeat, []);
 
     const getDeviceCategory = (deviceName: string): DeviceCategory => {
         const normalizedName = deviceName.toLowerCase();
@@ -154,13 +182,6 @@ export const RemotePage = () => {
         return map;
     }, [devices]);
 
-    const issueCommand = (commandId: number, remoteId: number) => {
-        fetch(Url.OakterRemoteCommand, { ...PostParams, body: JSON.stringify({ commandId, remoteId }) })
-            .then(handleJsonResponse)
-            .then(json => { if (!json.Status) throw new Error(json.Response) })
-            .catch(handleError);
-    };
-
     useEffect(() => {
         let isMounted = true;
         const checkConnection = () => {
@@ -225,14 +246,15 @@ export const RemotePage = () => {
                                                 key={command.Id}
                                                 basic
                                                 className={`remote-command-button${pressedCommandKey === commandKey ? " pressed" : ""}`}
-                                                onPointerDown={() => press(commandKey)}
+                                                onPointerDown={() => press(commandKey, command.Id, device.Id)}
                                                 onPointerUp={() => release(commandKey)}
                                                 onPointerLeave={() => release(commandKey)}
                                                 onPointerCancel={() => release(commandKey)}
                                                 onBlur={() => release(commandKey)}
                                                 onKeyDown={(event: KeyboardEvent<HTMLButtonElement>) => {
+                                                    if (event.repeat) return;
                                                     if (event.key === " " || event.key === "Enter") {
-                                                        press(commandKey);
+                                                        press(commandKey, command.Id, device.Id);
                                                     }
                                                 }}
                                                 onKeyUp={(event: KeyboardEvent<HTMLButtonElement>) => {
@@ -245,8 +267,6 @@ export const RemotePage = () => {
                                                     if (event.detail > 0) {
                                                         (event.currentTarget as HTMLButtonElement).blur();
                                                     }
-
-                                                    issueCommand(command.Id, device.Id);
                                                 }}
                                                 aria-label={`${device.Name} - ${command.Name}`}
                                             >
