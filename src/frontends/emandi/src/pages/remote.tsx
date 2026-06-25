@@ -148,7 +148,7 @@ export const RemotePage = () => {
         stopCommandRepeat();
         repeatIntervalRef.current = window.setInterval(() => {
             issueCommand(commandId, remoteId);
-        }, 250); // 0.25 seconds
+        }, 500);
     };
 
     const release = (commandKey: string) => {
