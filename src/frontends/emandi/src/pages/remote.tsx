@@ -67,6 +67,54 @@ const DEVICE_ICONS: Record<DeviceCategory, LucideIcon> = {
     generic: Cpu
 };
 
+let audioCtx: AudioContext | null = null;
+
+const playFeedback = () => {
+    if (typeof navigator !== "undefined" && navigator.vibrate) {
+        navigator.vibrate(50);
+    }
+    
+    try {
+        if (!audioCtx) {
+            const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+            if (AudioContextClass) {
+                audioCtx = new AudioContextClass();
+            }
+        }
+        
+        if (audioCtx) {
+            if (audioCtx.state === "suspended") {
+                audioCtx.resume();
+            }
+
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+
+            // Fire TV-like navigation click (soft, low-pitched percussive "thock")
+            osc.type = "sine";
+            
+            const now = audioCtx.currentTime;
+            
+            // Rapid pitch drop for percussive transient
+            osc.frequency.setValueAtTime(300, now);
+            osc.frequency.exponentialRampToValueAtTime(50, now + 0.03);
+
+            // Very short, punchy amplitude envelope
+            gainNode.gain.setValueAtTime(0, now);
+            gainNode.gain.linearRampToValueAtTime(0.4, now + 0.005); // quick attack
+            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.04); // quick decay
+
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            osc.start(now);
+            osc.stop(now + 0.05);
+        }
+    } catch (e) {
+        console.warn("Audio feedback failed", e);
+    }
+};
+
 export const RemotePage = () => {
     const [pressedCommandKey, setPressedCommandKey] = useState<string | null>(null);
     const [connectionStatus, setConnectionStatus] = useState<"checking" | "connected" | "disconnected">("checking");
@@ -78,6 +126,7 @@ export const RemotePage = () => {
     }, []);
 
     const issueCommand = (commandId: number, remoteId: number) => {
+        playFeedback();
         fetch(Url.OakterRemoteCommand, { ...PostParams, body: JSON.stringify({ commandId, remoteId }) })
             .then(handleJsonResponse)
             .then(json => { if (!json.Status) throw new Error(json.Response) })
@@ -99,7 +148,7 @@ export const RemotePage = () => {
         stopCommandRepeat();
         repeatIntervalRef.current = window.setInterval(() => {
             issueCommand(commandId, remoteId);
-        }, 500); // 0.5 seconds
+        }, 250); // 0.25 seconds
     };
 
     const release = (commandKey: string) => {
