@@ -87,28 +87,29 @@ const playFeedback = () => {
                 audioCtx.resume();
             }
 
-            const osc = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
-
-            // Fire TV-like navigation click (soft, low-pitched percussive "thock")
-            osc.type = "sine";
-            
             const now = audioCtx.currentTime;
             
-            // Rapid pitch drop for percussive transient
-            osc.frequency.setValueAtTime(300, now);
-            osc.frequency.exponentialRampToValueAtTime(50, now + 0.03);
-
-            // Very short, punchy amplitude envelope
-            gainNode.gain.setValueAtTime(0, now);
-            gainNode.gain.linearRampToValueAtTime(0.4, now + 0.005); // quick attack
-            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.04); // quick decay
-
-            osc.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-
+            // Clean, sharp UI tick (like Fire TV)
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            // Sine wave for a clean sound without buzziness
+            osc.type = "sine";
+            
+            // Extremely rapid pitch drop to simulate a physical "click" transient
+            osc.frequency.setValueAtTime(1500, now);
+            osc.frequency.exponentialRampToValueAtTime(100, now + 0.015);
+            
+            // Very tight volume envelope
+            gain.gain.setValueAtTime(0, now);
+            gain.gain.linearRampToValueAtTime(0.5, now + 0.002); // fast 2ms attack
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.02); // fast 20ms decay
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
             osc.start(now);
-            osc.stop(now + 0.05);
+            osc.stop(now + 0.03); // 30ms total duration
         }
     } catch (e) {
         console.warn("Audio feedback failed", e);
