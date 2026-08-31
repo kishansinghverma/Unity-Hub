@@ -284,7 +284,7 @@ export const RemotePage = () => {
                             <Header as="h2" className="remote-page-title">
                                 Smart Remote
                                 <HeaderSubheader>
-                                    {devices.length} Devices Connected
+                                    Control center · {devices.length} devices
                                 </HeaderSubheader>
                             </Header>
                         </div>
@@ -299,7 +299,7 @@ export const RemotePage = () => {
                                 <RefreshCw size={16} aria-hidden />
                                 Refresh Devices
                             </Button>
-                            <span className={`stat-value ${connectionStatus}`}>
+                            <span className={`stat-value ${connectionStatus}`} aria-live="polite">
                                 {connectionStatus === "checking" ? "Checking" : connectionStatus === "connected" ? "Connected" : "Disconnected"}
                             </span>
                         </div>
@@ -308,13 +308,17 @@ export const RemotePage = () => {
                         const deviceCategory = getDeviceCategory(device.Name);
                         const DeviceFallbackIcon = DEVICE_ICONS[deviceCategory];
                         return (
-                            <div key={device.Id} className="remote-device-section">
+                            <section key={device.Id} className={`remote-device-section remote-device-${deviceCategory}`}>
                                 <div className="remote-device-title-row">
                                     <Header as="h3" className="remote-device-title">
-                                        <DeviceFallbackIcon className="remote-device-fallback-lucide" aria-hidden />
-                                        <Header.Content>{device.Name}</Header.Content>
+                                        <span className="remote-device-icon">
+                                            <DeviceFallbackIcon className="remote-device-fallback-lucide" aria-hidden />
+                                        </span>
+                                        <Header.Content>
+                                            {device.Name}
+                                            <HeaderSubheader>{device.CommandList.length} controls</HeaderSubheader>
+                                        </Header.Content>
                                     </Header>
-                                    <div className="remote-device-title-line" />
                                 </div>
 
                                 <div className="remote-command-grid">
@@ -358,7 +362,7 @@ export const RemotePage = () => {
                                         );
                                     })}
                                 </div>
-                            </div>
+                            </section>
                         );
                     })}
                 </div>
