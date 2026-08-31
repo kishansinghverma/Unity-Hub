@@ -73,18 +73,35 @@
     opacity: 0.8;
 }
 
-/* Crystal Status */
+.remote-page-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.remote-refresh-button.ui.button,
 .stat-value {
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: #1e293b;
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    background: rgba(255, 255, 255, 0.6);
-    padding: 6px 14px;
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.8);
+    margin: 0 !important;
+    min-height: 36px;
+    padding: 8px 14px !important;
+    border-radius: 20px !important;
+    background: rgba(255, 255, 255, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.8) !important;
+    font-size: 0.8rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.remote-refresh-button.ui.button {
+    color: #0369a1 !important;
+}
+
+/* Crystal Status */
+.stat-value {
+    color: #1e293b;
 }
 
 .stat-value::before {
@@ -218,13 +235,6 @@
     }
 }
 
-.remote-command-image {
-    width: 32px;
-    height: 32px;
-    object-fit: contain;
-    opacity: 1;
-}
-
 .remote-command-fallback-icon {
     width: 24px;
     height: 24px;
@@ -266,5 +276,16 @@
 
     .remote-page-title.ui.header {
         font-size: 1.3rem !important;
+    }
+
+    .remote-page-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .remote-page-actions {
+        justify-content: space-between;
+        width: 100%;
     }
 }

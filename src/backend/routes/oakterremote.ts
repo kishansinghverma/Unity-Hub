@@ -17,6 +17,12 @@ router.get("/devices", (request, response) => {
         .catch(replyError(response));
 });
 
+router.post("/syncdevices", (request, response) => {
+    oakterRemote.syncDevices()
+        .then(replySuccess(response))
+        .catch(replyError(response));
+});
+
 router.post("/command", (request, response) => {
     validator.validateRequest(request)
         .then(({ commandId, remoteId }) => oakterRemote.issueCommand(commandId, remoteId)

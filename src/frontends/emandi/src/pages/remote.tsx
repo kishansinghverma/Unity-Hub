@@ -15,6 +15,7 @@ import {
     Power,
     PowerOff,
     Projector,
+    RefreshCw,
     SkipBack,
     SkipForward,
     Speaker,
@@ -25,6 +26,7 @@ import {
     VolumeX
 } from "lucide-react";
 import { Button, Container, Header, HeaderSubheader, Segment } from "semantic-ui-react";
+import { toast } from "react-toastify";
 import { PostParams, Url } from "../common/constants";
 import { handleError, handleJsonResponse } from "../operations/utils";
 import commandsData from "../static/commands.json";
@@ -33,7 +35,6 @@ import "./remote.css";
 type RemoteCommand = {
     Id: number;
     Name: string;
-    ImagePath: string;
 };
 
 type RemoteDevice = {
@@ -119,12 +120,29 @@ const playFeedback = () => {
 export const RemotePage = () => {
     const [pressedCommandKey, setPressedCommandKey] = useState<string | null>(null);
     const [connectionStatus, setConnectionStatus] = useState<"checking" | "connected" | "disconnected">("checking");
-    const repeatIntervalRef = useRef<number | null>(null);
-
-    const devices = useMemo(() => {
+    const [devices, setDevices] = useState<RemoteDevice[]>(() => {
         const response = commandsData as CommandResponse;
         return response.Response ?? [];
-    }, []);
+    });
+    const [isRefreshingDevices, setIsRefreshingDevices] = useState(false);
+    const repeatIntervalRef = useRef<number | null>(null);
+
+    const updateDevices = (response: CommandResponse) => {
+        if (!Array.isArray(response.Response)) throw new Error("Invalid device catalog received from server");
+        setDevices(response.Response);
+    };
+
+    const refreshDevices = () => {
+        setIsRefreshingDevices(true);
+        fetch(Url.OakterRemoteSyncDevices, PostParams)
+            .then(handleJsonResponse)
+            .then((json: CommandResponse) => {
+                updateDevices(json);
+                toast.success("Devices refreshed");
+            })
+            .catch(handleError)
+            .finally(() => setIsRefreshingDevices(false));
+    };
 
     const issueCommand = (commandId: number, remoteId: number) => {
         playFeedback();
@@ -270,9 +288,21 @@ export const RemotePage = () => {
                                 </HeaderSubheader>
                             </Header>
                         </div>
-                        <span className={`stat-value ${connectionStatus}`}>
-                            {connectionStatus === "checking" ? "Checking" : connectionStatus === "connected" ? "Connected" : "Disconnected"}
-                        </span>
+                        <div className="remote-page-actions">
+                            <Button
+                                basic
+                                className="remote-refresh-button"
+                                disabled={isRefreshingDevices}
+                                loading={isRefreshingDevices}
+                                onClick={refreshDevices}
+                            >
+                                <RefreshCw size={16} aria-hidden />
+                                Refresh Devices
+                            </Button>
+                            <span className={`stat-value ${connectionStatus}`}>
+                                {connectionStatus === "checking" ? "Checking" : connectionStatus === "connected" ? "Connected" : "Disconnected"}
+                            </span>
+                        </div>
                     </div>
                     {devices.map((device) => {
                         const deviceCategory = getDeviceCategory(device.Name);

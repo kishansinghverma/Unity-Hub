@@ -11,6 +11,10 @@ class OakterRemote {
         return oakterRemoteService.getDevices();
     };
 
+    public syncDevices = (): Promise<ExecutionResponse> => {
+        return oakterRemoteService.syncDevices();
+    };
+
     public issueCommand = (commandId: string | number, remoteId: string | number): Promise<ExecutionResponse> => {
         return oakterRemoteService.issueCommand(commandId, remoteId);
     };

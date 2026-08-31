@@ -36,6 +36,7 @@ export const Url = {
     Delete: "/api/emandi/entry",
     NotificationUrl: "/api/whatsapp/sendtext/unityhub",
     OakterRemoteCommand: "/api/oakterremote/command",
+    OakterRemoteSyncDevices: "/api/oakterremote/syncdevices",
     OakterRemoteIsConnected: "/api/oakterremote/isconnected",
     Distance: "https://dev.virtualearth.net/REST/V1/Routes/Driving?o=json&wp.0=sadabad&key=AhWAWkHKZZ0JtpBDWvq2_vZqrtmAgf3prbe31w7FbepXyGzvHoWzvpetsQIA7DpL&wp.1"
 }

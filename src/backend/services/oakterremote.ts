@@ -1,8 +1,11 @@
 import "dotenv/config";
+import fs from "fs";
+import path from "path";
 import { source } from "../common/constants";
 import { Logger } from "../common/models";
 import { requestParams } from "../common/constants";
 import { getJsonResponse, validateResponse } from "../common/utils";
+import { ExecutionResponse } from "../common/types";
 
 class OakterRemoteService {
     private logger: Logger;
@@ -12,6 +15,7 @@ class OakterRemoteService {
     private sessionId = process.env.OAKTER_SESSION_ID;
     private oakRemoteId = process.env.OAKTER_REMOTE_ID;
     private oakRemoteAuthToken = process.env.OAKTER_AUTH_TOKEN;
+    private deviceCatalogPath = path.join(__dirname, "../static/oakterremote-devices.json");
 
     constructor() {
         this.logger = new Logger(source.oakterremote);
@@ -68,6 +72,18 @@ class OakterRemoteService {
         };
 
         return fetch(`${this.remoteBaseUrl}/api/ir/remotes/v2`, fetchParams).then(getJsonResponse);
+    };
+
+    public syncDevices = async (): Promise<ExecutionResponse> => {
+        const result = await this.getDevices();
+        const directory = path.dirname(this.deviceCatalogPath);
+        const temporaryPath = `${this.deviceCatalogPath}.${process.pid}-${Date.now()}.tmp`;
+
+        await fs.promises.mkdir(directory, { recursive: true });
+        await fs.promises.writeFile(temporaryPath, JSON.stringify(result.content, null, 2), "utf8");
+        await fs.promises.rename(temporaryPath, this.deviceCatalogPath);
+
+        return result;
     };
 
     public initialize = () => {
