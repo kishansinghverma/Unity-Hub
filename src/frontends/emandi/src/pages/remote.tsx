@@ -68,52 +68,67 @@ const DEVICE_ICONS: Record<DeviceCategory, LucideIcon> = {
     generic: Cpu
 };
 
-let audioCtx: AudioContext | null = null;
+type FeedbackAudio = {
+    context: AudioContext;
+    clickBuffer: AudioBuffer;
+    output: GainNode;
+};
 
-const playFeedback = () => {
-    if (typeof navigator !== "undefined" && navigator.vibrate) {
-        navigator.vibrate(50);
+let feedbackAudio: FeedbackAudio | null = null;
+
+const createFeedbackAudio = (): FeedbackAudio | null => {
+    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioContextClass) return null;
+
+    const context: AudioContext = new AudioContextClass();
+    const output = context.createGain();
+    output.gain.value = 0.22;
+    output.connect(context.destination);
+
+    const duration = 0.035;
+    const clickBuffer = context.createBuffer(1, Math.ceil(context.sampleRate * duration), context.sampleRate);
+    const samples = clickBuffer.getChannelData(0);
+    let phase = 0;
+
+    for (let index = 0; index < samples.length; index += 1) {
+        const time = index / context.sampleRate;
+        const frequency = 1250 * Math.exp(-time * 90) + 120;
+        const attack = Math.min(1, time / 0.0015);
+        const decay = Math.exp(-time * 105);
+        const noise = (Math.random() * 2 - 1) * 0.12;
+
+        phase += (Math.PI * 2 * frequency) / context.sampleRate;
+        samples[index] = (Math.sin(phase) * 0.88 + noise) * attack * decay;
     }
-    
-    try {
-        if (!audioCtx) {
-            const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-            if (AudioContextClass) {
-                audioCtx = new AudioContextClass();
-            }
-        }
-        
-        if (audioCtx) {
-            if (audioCtx.state === "suspended") {
-                audioCtx.resume();
-            }
 
-            const now = audioCtx.currentTime;
-            
-            // Clean, sharp UI tick (like Fire TV)
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            
-            // Sine wave for a clean sound without buzziness
-            osc.type = "sine";
-            
-            // Extremely rapid pitch drop to simulate a physical "click" transient
-            osc.frequency.setValueAtTime(1500, now);
-            osc.frequency.exponentialRampToValueAtTime(100, now + 0.015);
-            
-            // Very tight volume envelope
-            gain.gain.setValueAtTime(0, now);
-            gain.gain.linearRampToValueAtTime(0.5, now + 0.002); // fast 2ms attack
-            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.02); // fast 20ms decay
-            
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            
-            osc.start(now);
-            osc.stop(now + 0.03); // 30ms total duration
+    return { context, clickBuffer, output };
+};
+
+const playFeedback = (isRepeat = false) => {
+    try {
+        if (typeof navigator !== "undefined" && navigator.vibrate) {
+            navigator.vibrate(isRepeat ? 8 : 14);
         }
-    } catch (e) {
-        console.warn("Audio feedback failed", e);
+
+        feedbackAudio ??= createFeedbackAudio();
+        if (!feedbackAudio) return;
+
+        const playClick = () => {
+            const source = feedbackAudio!.context.createBufferSource();
+            source.buffer = feedbackAudio!.clickBuffer;
+            source.playbackRate.value = isRepeat ? 1.08 : 1;
+            source.connect(feedbackAudio!.output);
+            source.onended = () => source.disconnect();
+            source.start();
+        };
+
+        if (feedbackAudio.context.state === "suspended") {
+            void feedbackAudio.context.resume().then(playClick).catch(() => undefined);
+        } else {
+            playClick();
+        }
+    } catch (error) {
+        console.warn("Device feedback failed", error);
     }
 };
 
@@ -145,7 +160,6 @@ export const RemotePage = () => {
     };
 
     const issueCommand = (commandId: number, remoteId: number) => {
-        playFeedback();
         fetch(Url.OakterRemoteCommand, { ...PostParams, body: JSON.stringify({ commandId, remoteId }) })
             .then(handleJsonResponse)
             .then(json => { if (!json.Status) throw new Error(json.Response) })
@@ -161,11 +175,13 @@ export const RemotePage = () => {
 
     const press = (commandKey: string, commandId: number, remoteId: number) => {
         setPressedCommandKey(commandKey);
-        
+
+        playFeedback();
         issueCommand(commandId, remoteId);
-        
+
         stopCommandRepeat();
         repeatIntervalRef.current = window.setInterval(() => {
+            playFeedback(true);
             issueCommand(commandId, remoteId);
         }, 500);
     };
