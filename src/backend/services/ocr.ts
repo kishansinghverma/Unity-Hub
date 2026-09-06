@@ -28,7 +28,7 @@ class OcrService {
 
             if (!response.ok) {
                 this.logger.error(`Upstream Api Error: ${response.status} ${response.statusText}`);
-                throw new Throwable(`OCR service failed with status ${response.status}`, 502);
+                throw new Throwable(`Upstream Api Error`, response.status || 502);
             }
 
             const data: any = await response.json();
@@ -48,7 +48,7 @@ class OcrService {
             }
 
             this.logger.success(`Captcha resolved successfully: ${parsedCode}`);
-            
+
             return {
                 content: { code: parsedCode, text: digits },
                 statusCode: 200
