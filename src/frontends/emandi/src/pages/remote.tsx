@@ -68,64 +68,43 @@ const DEVICE_ICONS: Record<DeviceCategory, LucideIcon> = {
     generic: Cpu
 };
 
-type FeedbackAudio = {
-    context: AudioContext;
-    clickBuffer: AudioBuffer;
-    output: GainNode;
-};
+let audioContext: AudioContext | null = null;
 
-let feedbackAudio: FeedbackAudio | null = null;
+const playRemoteClick = (context: AudioContext, isRepeat: boolean) => {
+    const now = context.currentTime;
+    const oscillator = context.createOscillator();
+    const gain = context.createGain();
 
-const createFeedbackAudio = (): FeedbackAudio | null => {
-    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-    if (!AudioContextClass) return null;
+    oscillator.type = "triangle";
+    oscillator.frequency.setValueAtTime(isRepeat ? 420 : 520, now);
+    oscillator.frequency.exponentialRampToValueAtTime(180, now + 0.02);
+    gain.gain.setValueAtTime(isRepeat ? 0.055 : 0.08, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.025);
 
-    const context: AudioContext = new AudioContextClass();
-    const output = context.createGain();
-    output.gain.value = 0.22;
-    output.connect(context.destination);
-
-    const duration = 0.035;
-    const clickBuffer = context.createBuffer(1, Math.ceil(context.sampleRate * duration), context.sampleRate);
-    const samples = clickBuffer.getChannelData(0);
-    let phase = 0;
-
-    for (let index = 0; index < samples.length; index += 1) {
-        const time = index / context.sampleRate;
-        const frequency = 1250 * Math.exp(-time * 90) + 120;
-        const attack = Math.min(1, time / 0.0015);
-        const decay = Math.exp(-time * 105);
-        const noise = (Math.random() * 2 - 1) * 0.12;
-
-        phase += (Math.PI * 2 * frequency) / context.sampleRate;
-        samples[index] = (Math.sin(phase) * 0.88 + noise) * attack * decay;
-    }
-
-    return { context, clickBuffer, output };
+    oscillator.connect(gain);
+    gain.connect(context.destination);
+    oscillator.onended = () => {
+        oscillator.disconnect();
+        gain.disconnect();
+    };
+    oscillator.start(now);
+    oscillator.stop(now + 0.025);
 };
 
 const playFeedback = (isRepeat = false) => {
     try {
         if (typeof navigator !== "undefined" && navigator.vibrate) {
-            navigator.vibrate(isRepeat ? 8 : 14);
+            navigator.vibrate(isRepeat ? 6 : 10);
         }
 
-        feedbackAudio ??= createFeedbackAudio();
-        if (!feedbackAudio) return;
+        const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+        if (!AudioContextClass) return;
+        audioContext ??= new AudioContextClass();
 
-        const playClick = () => {
-            const source = feedbackAudio!.context.createBufferSource();
-            source.buffer = feedbackAudio!.clickBuffer;
-            source.playbackRate.value = isRepeat ? 1.08 : 1;
-            source.connect(feedbackAudio!.output);
-            source.onended = () => source.disconnect();
-            source.start();
-        };
-
-        if (feedbackAudio.context.state === "suspended") {
-            void feedbackAudio.context.resume().then(playClick).catch(() => undefined);
+        if (audioContext.state === "suspended") {
+            void audioContext.resume().then(() => playRemoteClick(audioContext!, isRepeat)).catch(() => undefined);
         } else {
-            playClick();
+            playRemoteClick(audioContext, isRepeat);
         }
     } catch (error) {
         console.warn("Device feedback failed", error);
