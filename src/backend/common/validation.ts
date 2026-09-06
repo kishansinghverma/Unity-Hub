@@ -52,6 +52,9 @@ const schemas: { [key: string]: any } = {
         rate: joi.number().required(),
         finalize: joi.boolean()
     },
+    "/api/emandi/captcha": {
+        base64string: joi.string().required()
+    },
     "/api/files/html": {
         name: joi.string().valid('niner', 'gatepass'),
         party: joi.string().trim().min(3).required(),

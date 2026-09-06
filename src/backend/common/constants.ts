@@ -73,7 +73,8 @@ export enum source {
     oakterremote = 'OakterRemote',
     whatsapp = 'WhatsApp',
     udp = 'UdpServer',
-    file = 'FileHandler'
+    file = 'FileHandler',
+    ocr = 'OCR'
 }
 
 export const mimeType: { [key: string]: string } = {

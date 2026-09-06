@@ -4,6 +4,7 @@ import { eMandi } from '../operations/emandi';
 import { Logger } from '../common/models';
 import { replyError, replySuccess } from '../common/utils';
 import { validator } from '../common/validation';
+import { ocrService } from '../services/ocr';
 
 const router = express.Router();
 const logger = new Logger(source.route);
@@ -94,6 +95,13 @@ router.delete("/entry/:id", (request, response) => {
 router.delete("/parties/:id", (request, response) => {
     eMandi.deleteParty(request.params.id)
         .then(replySuccess(response))
+        .catch(replyError(response));
+});
+
+router.post("/captcha", (request, response) => {
+    validator.validateRequest(request)
+        .then(({ base64string }) => ocrService.resolveCaptcha(base64string)
+            .then(replySuccess(response)))
         .catch(replyError(response));
 });
 
