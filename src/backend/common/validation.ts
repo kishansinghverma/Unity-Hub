@@ -55,11 +55,16 @@ const schemas: { [key: string]: any } = {
     "/api/emandi/captcha": {
         base64string: joi.string().required()
     },
-    "/api/mandi/proxy/init": joi.object({
-        email: joi.string().trim().optional(),
-        password: joi.string().optional(),
+    "/api/mandiproxy/init": joi.object({
+        email: joi.string().trim().email().max(254).required(),
+        password: joi.string().min(1).max(1024).required(),
         autorefresh: joi.boolean().optional()
-    }).optional(),
+    }),
+    "/api/mandiproxy/gatepass": joi.object({
+        top: joi.number().integer().min(1).optional(),
+        startDate: joi.string().trim().optional(),
+        endDate: joi.string().trim().optional()
+    }),
     "/api/files/html": {
         name: joi.string().valid('niner', 'gatepass'),
         party: joi.string().trim().min(3).required(),
@@ -118,10 +123,10 @@ const schemas: { [key: string]: any } = {
 }
 
 class Validator {
-    public validateRequest = (request: Request) => {
+    public validateRequest = (request: Request, value: unknown = request.body) => {
         const path = request.originalUrl.split('?')[0].replace(/\/$/, '');
         const schema = schemas[path];
-        if (schema) return joi.isSchema(schema) ? schema.validateAsync(request.body) : joi.object(schema).validateAsync(request.body);
+        if (schema) return joi.isSchema(schema) ? schema.validateAsync(value) : joi.object(schema).validateAsync(value);
         else return Promise.reject(new Throwable(constants.errors.schemaNotReady, 501));
     }
 }

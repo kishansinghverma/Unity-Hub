@@ -7,26 +7,27 @@ const router = express.Router();
 
 router.post('/init', (request, response) => {
     validator.validateRequest(request)
-        .then(body => mandiProxy.init(body))
-        .then(replySuccess(response))
+        .then(values => mandiProxy.initializeSession(values)
+            .then(replySuccess(response)))
         .catch(replyError(response));
 });
 
 router.get('/status', (request, response) => {
-    mandiProxy.getStatus()
+    mandiProxy.getSessionStatus()
         .then(replySuccess(response))
         .catch(replyError(response));
 });
 
 router.get('/logout', (request, response) => {
-    mandiProxy.logout()
+    mandiProxy.clearSession()
         .then(replySuccess(response))
         .catch(replyError(response));
 });
 
-router.get('/gatepasses', (request, response) => {
-    mandiProxy.getGatepasses(request.query, request.method, request.headers, request.body)
-        .then(replySuccess(response))
+router.get('/gatepass', (request, response) => {
+    validator.validateRequest(request, request.query)
+        .then(values => mandiProxy.getGatepasses(values)
+            .then(replySuccess(response)))
         .catch(replyError(response));
 });
 

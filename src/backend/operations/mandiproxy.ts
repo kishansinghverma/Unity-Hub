@@ -1,42 +1,76 @@
-import { ExecutionResponse, EMandiAuthRequest, RequestConfig } from "../common/types";
+import { Throwable } from "../common/models";
+import { ExecutionResponse, EMandiAuthRequest, GatepassQuery } from "../common/types";
 import { emandiClient } from "../services/emandiclient";
 import { eMandiPortal } from "../common/constants";
 
-class MandiProxy {
-    public init = async (request: EMandiAuthRequest = {}): Promise<ExecutionResponse> => {
-        const autorefresh = request.autorefresh !== undefined ? request.autorefresh : true;
+const DATE_PATTERN = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+const ISO_DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/;
+const DEFAULT_LOOKBACK_DAYS = 7;
+const DEFAULT_PAGE_LENGTH = 10;
 
-        return emandiClient.initializeSession({
-            email: request.email,
-            password: request.password,
-            autorefresh
+class MandiProxy {
+
+    public initializeSession = (request: EMandiAuthRequest): Promise<ExecutionResponse> => emandiClient.initializeSession(request);
+
+    public getSessionStatus = (): Promise<ExecutionResponse> => emandiClient.getSessionStatus();
+
+    public clearSession = (): Promise<ExecutionResponse> => emandiClient.clearSession();
+
+    public getGatepasses = (query: GatepassQuery = {}): Promise<ExecutionResponse> => {
+        const now = new Date();
+        const fromDate = this.toPortalDate(query.startDate) ?? this.formatPortalDate(new Date(now.getTime() - DEFAULT_LOOKBACK_DAYS * 86_400_000));
+        const toDate = this.toPortalDate(query.endDate) ?? this.formatPortalDate(now);
+
+        return emandiClient.sendRequest({
+            url: eMandiPortal.gatepassList,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+                "X-Requested-With": "XMLHttpRequest",
+            },
+            body: new URLSearchParams({
+                fromDate,
+                toDate,
+                draw: "1",
+                start: "0",
+                length: String(query.top ?? DEFAULT_PAGE_LENGTH),
+                "order[0][column]": "1",
+                "order[0][dir]": "desc"
+            })
         });
     };
 
-    public getStatus = (): Promise<ExecutionResponse> => {
-        return emandiClient.getSessionStatus();
+    private formatPortalDate = (date: Date): string => {
+        const dd = String(date.getDate()).padStart(2, "0");
+        const mm = String(date.getMonth() + 1).padStart(2, "0");
+        return `${dd}/${mm}/${date.getFullYear()}`;
     };
 
-    public logout = (): Promise<ExecutionResponse> => {
-        return emandiClient.clearSession();
-    };
+    private toPortalDate = (input?: string): string | undefined => {
+        const trimmed = input?.trim();
+        if (!trimmed) return undefined;
 
-    public getGatepasses = (query: any = {}, method: string = "GET", headers: any = {}, body: any = null): Promise<ExecutionResponse> => {
-        const defaultUrl = method === "POST" ? eMandiPortal.gatepassList : eMandiPortal.gatepasses;
-        const targetUrl = (query.url || query.path || defaultUrl) as string;
+        const europeanDate = trimmed.match(DATE_PATTERN);
+        const isoDate = trimmed.match(ISO_DATE_PATTERN);
+        if (!europeanDate && !isoDate) throw new Throwable("Dates must use DD/MM/YYYY or YYYY-MM-DD format", 400);
 
-        const payload: RequestConfig = {
-            url: targetUrl,
-            method: method,
-            headers: headers["content-type"] ? { "Content-Type": headers["content-type"] as string } : undefined,
-            body: ["POST", "PUT", "PATCH"].includes(method) && body && Object.keys(body).length > 0 ? body : null
-        };
+        const [, dayValue, monthValue, yearValue] = europeanDate ?? [
+            "",
+            isoDate![3],
+            isoDate![2],
+            isoDate![1]
+        ];
+        
+        const day = Number(dayValue);
+        const month = Number(monthValue);
+        const year = Number(yearValue);
+        const parsed = new Date(year, month - 1, day);
 
-        return emandiClient.sendRequest(payload);
-    };
+        if (parsed.getFullYear() !== year || parsed.getMonth() !== month - 1 || parsed.getDate() !== day) {
+            throw new Throwable("Dates must be valid calendar dates", 400);
+        }
 
-    public sendRequest = (config: RequestConfig): Promise<ExecutionResponse> => {
-        return emandiClient.sendRequest(config);
+        return this.formatPortalDate(parsed);
     };
 }
 

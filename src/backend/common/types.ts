@@ -174,7 +174,7 @@ export type Credentials = {
     password: string;
 };
 
-export type EMandiAuthRequest = Partial<Credentials> & {
+export type EMandiAuthRequest = Credentials & {
     autorefresh?: boolean;
 };
 
@@ -189,14 +189,13 @@ export type EMandiSessionInfo = Partial<EMandiSession> & {
     authenticated: boolean;
     isExpired: boolean;
     cookieCount: number;
-    cookies?: Record<string, string>;
 };
 
 export type RequestConfig = {
     url: string;
     method?: string;
     headers?: Record<string, string>;
-    body?: any;
+    body?: unknown;
 };
 
 export type LoginToken = {
@@ -204,4 +203,16 @@ export type LoginToken = {
     captchaImageUrl: string;
     captchaText: string;
     captchaToken: string;
+};
+
+export type LoginResponse = {
+    succeeded?: boolean;
+    role?: string;
+    message?: string;
+};
+
+export type GatepassQuery = {
+    top?: number;
+    startDate?: string;
+    endDate?: string;
 };

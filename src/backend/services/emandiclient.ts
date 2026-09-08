@@ -1,17 +1,29 @@
+import {
+    Credentials,
+    EMandiAuthRequest,
+    EMandiSession,
+    EMandiSessionInfo,
+    ExecutionResponse,
+    LoginResponse,
+    LoginToken,
+    RequestConfig,
+} from "../common/types";
 import { Logger, Throwable } from "../common/models";
 import { eMandiPortal, source } from "../common/constants";
-import { ExecutionResponse, EMandiAuthRequest, EMandiSession, EMandiSessionInfo, RequestConfig, Credentials, LoginToken } from "../common/types";
 import { ocrService } from "./ocr";
 import { CookieJar } from "tough-cookie";
 import fetchCookie from "fetch-cookie";
+
+const SESSION_TTL_MS = 30 * 60 * 1000;
+const REQUEST_TIMEOUT_MS = 30_000;
+const MAX_LOGIN_ATTEMPTS = 3;
+const BASE_URL = eMandiPortal.baseUrl;
+const USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
 
 export class EMandiClient {
     private readonly logger: Logger;
     private readonly cookieJar: CookieJar;
     private readonly fetch: typeof fetch;
-    private readonly baseUrl: string;
-    private readonly userAgent: string;
-    private readonly sessionTtlMs: number;
 
     private session: EMandiSession | null = null;
     private credentials: Credentials | null = null;
@@ -21,33 +33,29 @@ export class EMandiClient {
         this.logger = new Logger(source.emandi);
         this.cookieJar = new CookieJar();
         this.fetch = fetchCookie(fetch, this.cookieJar);
-        this.baseUrl = eMandiPortal.baseUrl;
-        this.userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
-        this.sessionTtlMs = 30 * 60 * 1000;
     }
 
     public async initializeSession(request: EMandiAuthRequest): Promise<ExecutionResponse> {
-        const credentials = this.resolveCredentials(request);
-        this.autoRefresh = request.autorefresh ?? true;
+        this.clearLocalSession();
+        await this.cookieJar.removeAllCookies();
+        await this.authenticate(request);
 
-        if (this.autoRefresh) {
-            this.credentials = { ...credentials };
-        }
-
-        await this.authenticate(credentials);
-        this.logger.success(`eMandi session initialized for ${credentials.email}`);
+        const autoRefresh = request.autorefresh ?? true;
+        this.autoRefresh = autoRefresh;
+        this.credentials = autoRefresh ? { email: request.email, password: request.password } : null;
+        this.logger.success("eMandi session initialized");
 
         return this.buildAuthResponse();
     }
 
     public async getSessionStatus(): Promise<ExecutionResponse> {
-        const cookies = await this.cookieJar.getCookies(this.baseUrl);
+        const cookies = await this.cookieJar.getCookies(BASE_URL);
+        const authenticated = this.isSessionActive();
 
         const info: EMandiSessionInfo = {
-            authenticated: this.isSessionActive(),
-            isExpired: !this.isSessionActive() && !!this.session,
+            authenticated,
+            isExpired: !authenticated && !!this.session,
             cookieCount: cookies.length,
-            cookies: this.toCookieRecord(cookies),
             ...this.session,
         };
 
@@ -57,33 +65,63 @@ export class EMandiClient {
     public async clearSession(): Promise<ExecutionResponse> {
         if (this.isSessionActive()) {
             try {
-                await this.fetch(`${this.baseUrl}${eMandiPortal.logout}`, {
-                    headers: { "User-Agent": this.userAgent },
-                });
-            } catch (err: any) {
-                this.logger.warning(`Logout request failed: ${err.message}`);
+                await this.fetchWithTimeout(`${BASE_URL}${eMandiPortal.logout}`, { headers: { "User-Agent": USER_AGENT } });
+            }
+            catch (error: unknown) {
+                this.logger.warning(`Logout request failed: ${this.errorMessage(error)}`);
             }
         }
 
         await this.cookieJar.removeAllCookies();
-        this.session = null;
-        this.credentials = null;
-
+        this.clearLocalSession();
         this.logger.success("eMandi session cleared");
+
         return {
             content: { authenticated: false, message: "Session cleared successfully" },
             statusCode: 200,
         };
     }
 
-    public async sendRequest(config: RequestConfig): Promise<ExecutionResponse> {
-        return this.executeRequest(config, true);
+    public async sendRequest(config: RequestConfig, allowRetry = true): Promise<ExecutionResponse> {
+        await this.ensureSession();
+
+        const url = this.resolvePortalUrl(config.url);
+        const requestOptions = this.buildRequestOptions(config);
+
+        this.logger.log(`[${requestOptions.method}] ${url}`);
+
+        let response: Response;
+        try {
+            response = await this.fetchWithTimeout(url, requestOptions);
+        } catch (error: unknown) {
+            if (error instanceof Throwable) throw error;
+            const message = this.errorMessage(error);
+            this.logger.error(`Network error: ${message}`);
+            throw new Throwable(`Network error connecting to eMandi: ${message}`, 502);
+        }
+
+        if (this.isAuthenticationFailure(response)) {
+            this.session = null;
+
+            if (allowRetry && this.autoRefresh && this.credentials) {
+                this.logger.log("Session expired. Re-authenticating...");
+                await this.authenticate(this.credentials);
+                return this.sendRequest(config, false);
+            }
+
+            throw new Throwable("eMandi session has expired. Please authenticate first.", 401);
+        }
+
+        this.refreshSessionExpiry();
+
+        const data = await this.parseResponseBody(response);
+        return { content: data, statusCode: response.status };
     }
 
-    private async authenticate(credentials: Credentials, maxRetries: number = 3): Promise<void> {
+    private async authenticate(credentials: Credentials): Promise<void> {
         let lastError = "";
 
-        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        for (let attempt = 1; attempt <= MAX_LOGIN_ATTEMPTS; attempt++) {
             try {
                 const tokens = await this.fetchLoginTokens();
                 const captchaDigits = await this.resolveCaptcha(tokens.captchaImageUrl);
@@ -94,7 +132,7 @@ export class EMandiClient {
                         email: credentials.email,
                         role: result.role || "merchant",
                         authenticatedAt: new Date().toISOString(),
-                        expiresAt: new Date(Date.now() + this.sessionTtlMs).toISOString(),
+                        expiresAt: new Date(Date.now() + SESSION_TTL_MS).toISOString(),
                     };
                     return;
                 }
@@ -106,23 +144,24 @@ export class EMandiClient {
                 }
 
                 throw new Throwable(result.message || "Authentication failed", 401);
-            } catch (err: any) {
-                if (err.statusCode === 401) throw err;
-                lastError = err.message;
-                this.logger.warning(`Attempt ${attempt} failed: ${err.message}`);
+            }
+            catch (error: unknown) {
+                if (error instanceof Throwable && error.statusCode === 401) throw error;
+                lastError = this.errorMessage(error);
+                this.logger.warning(`Attempt ${attempt} failed: ${lastError}`);
             }
         }
 
-        throw new Throwable(`Authentication failed after ${maxRetries} attempts. Last error: ${lastError || "Captcha resolution failed"}`, 422);
+        throw new Throwable(`Authentication failed after ${MAX_LOGIN_ATTEMPTS} attempts. Last error: ${lastError || "Captcha resolution failed"}`, 422);
     }
 
     private async fetchLoginTokens(): Promise<LoginToken> {
-        const url = `${this.baseUrl}${eMandiPortal.loginPage}`;
+        const url = `${BASE_URL}${eMandiPortal.loginPage}`;
         this.logger.log(`Fetching login page: ${url}`);
 
-        const response = await this.fetch(url, {
+        const response = await this.fetchWithTimeout(url, {
             headers: {
-                "User-Agent": this.userAgent,
+                "User-Agent": USER_AGENT,
                 Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
             },
         });
@@ -149,12 +188,12 @@ export class EMandiClient {
     }
 
     private async resolveCaptcha(imageUrl: string): Promise<string> {
-        const fullUrl = imageUrl.startsWith("http") ? imageUrl : `${this.baseUrl}${imageUrl}`;
+        const fullUrl = imageUrl.startsWith("http") ? imageUrl : `${BASE_URL}${imageUrl}`;
 
-        const response = await this.fetch(fullUrl, {
+        const response = await this.fetchWithTimeout(fullUrl, {
             headers: {
-                "User-Agent": this.userAgent,
-                Referer: `${this.baseUrl}${eMandiPortal.loginPage}`,
+                "User-Agent": USER_AGENT,
+                Referer: `${BASE_URL}${eMandiPortal.loginPage}`,
             },
         });
 
@@ -172,75 +211,39 @@ export class EMandiClient {
             throw new Throwable("OCR returned empty captcha digits", 422);
         }
 
-        this.logger.log(`Captcha resolved: ${digits}`);
         return digits;
     }
 
-    private async submitLogin(credentials: Credentials, tokens: LoginToken, captchaDigits: string): Promise<any> {
-        const params = new URLSearchParams();
-        params.append("Email", credentials.email);
-        params.append("Password", credentials.password);
-        params.append("DNTCaptchaText", tokens.captchaText);
-        params.append("DNTCaptchaToken", tokens.captchaToken);
-        params.append("DNTCaptchaInputText", captchaDigits);
-        params.append("__RequestVerificationToken", tokens.requestToken);
+    private async submitLogin(credentials: Credentials, tokens: LoginToken, captchaDigits: string): Promise<LoginResponse> {
+        const params = new URLSearchParams({
+            Email: credentials.email,
+            Password: credentials.password,
+            DNTCaptchaText: tokens.captchaText,
+            DNTCaptchaToken: tokens.captchaToken,
+            DNTCaptchaInputText: captchaDigits,
+            __RequestVerificationToken: tokens.requestToken,
+        });
 
-        const response = await this.fetch(`${this.baseUrl}${eMandiPortal.loginAction}`, {
+        const response = await this.fetchWithTimeout(`${BASE_URL}${eMandiPortal.loginAction}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
                 "X-Requested-With": "XMLHttpRequest",
                 Accept: "application/json, text/javascript, */*; q=0.01",
-                "User-Agent": this.userAgent,
-                Referer: `${this.baseUrl}${eMandiPortal.loginPage}`,
-                Origin: this.baseUrl,
+                "User-Agent": USER_AGENT,
+                Referer: `${BASE_URL}${eMandiPortal.loginPage}`,
+                Origin: BASE_URL,
             },
             body: params.toString(),
         });
 
+        if (!response.ok) {
+            throw new Throwable(`Login request failed (${response.status})`, response.status || 502);
+        }
+
         const result = await response.json().catch(() => null);
-        if (!result) {
-            throw new Throwable("Unexpected non-JSON response from login endpoint", 502);
-        }
-        return result;
-    }
-
-    private async executeRequest(config: RequestConfig, allowRetry: boolean): Promise<ExecutionResponse> {
-        if (!config?.url) {
-            throw new Throwable("Missing URL in RequestConfig", 400);
-        }
-
-        await this.ensureSession();
-
-        const url = this.resolveUrl(config.url);
-        const options = this.buildFetchOptions(config);
-
-        this.logger.log(`[${options.method}] ${url}`);
-
-        let response: Response;
-        try {
-            response = await this.fetch(url, options);
-        } catch (err: any) {
-            this.logger.error(`Network error: ${err.message}`);
-            throw new Throwable(`Network error connecting to eMandi: ${err.message}`, 502);
-        }
-
-        if (this.isSessionExpired(response)) {
-            this.session = null;
-
-            if (allowRetry && this.autoRefresh && this.credentials) {
-                this.logger.log("Session expired. Re-authenticating...");
-                await this.authenticate(this.credentials);
-                return this.executeRequest(config, false); // one retry only
-            }
-
-            throw new Throwable("eMandi session has expired. Please authenticate first.", 401);
-        }
-
-        this.extendSession();
-        const data = await this.parseBody(response);
-
-        return { content: data, statusCode: response.status };
+        if (!result) throw new Throwable("Unexpected non-JSON response from login endpoint", 502);
+        return result as LoginResponse;
     }
 
     private async ensureSession(): Promise<void> {
@@ -259,7 +262,7 @@ export class EMandiClient {
         return !!this.session && Date.now() < new Date(this.session.expiresAt).getTime();
     }
 
-    private isSessionExpired(response: Response): boolean {
+    private isAuthenticationFailure(response: Response): boolean {
         if (response.status === 401 || response.status === 403) return true;
 
         const location = response.headers.get("location") || "";
@@ -268,87 +271,78 @@ export class EMandiClient {
         return isRedirect && /\/Account(?:\/index|\/LogOut)?/i.test(location);
     }
 
-    private extendSession(): void {
+    private refreshSessionExpiry(): void {
         if (this.session) {
-            this.session.expiresAt = new Date(Date.now() + this.sessionTtlMs).toISOString();
+            this.session.expiresAt = new Date(Date.now() + SESSION_TTL_MS).toISOString();
         }
     }
 
-    private resolveCredentials(request: EMandiAuthRequest): Credentials {
-        const email = request.email || process.env.EMANDI_EMAIL;
-        const password = request.password || process.env.EMANDI_PASSWORD;
+    private resolvePortalUrl(path: string): string {
+        const url = new URL(path, BASE_URL);
+        if (url.origin !== BASE_URL) throw new Throwable("Authenticated requests must target eMandi", 400);
 
-        if (!email || !password) {
-            throw new Throwable("Email and password are required (either in request body or via EMANDI_EMAIL/EMANDI_PASSWORD env vars)", 400);
-        }
-        return { email, password };
+        return url.toString();
     }
 
-    private resolveUrl(url: string): string {
-        if (url.startsWith("http")) return url;
-        const separator = url.startsWith("/") ? "" : "/";
-        return `${this.baseUrl}${separator}${url}`;
-    }
-
-    private buildFetchOptions(config: RequestConfig): RequestInit {
+    private buildRequestOptions(config: RequestConfig): RequestInit {
         const headers: Record<string, string> = {
-            "User-Agent": this.userAgent,
-            Referer: `${this.baseUrl}${eMandiPortal.dashboard}`,
-            ...(config.headers || {}),
+            "User-Agent": USER_AGENT,
+            Referer: `${BASE_URL}${eMandiPortal.dashboard}`,
+            ...config.headers,
         };
 
-        let body = config.body;
-        if (body !== undefined && body !== null && typeof body === "object" && !(body instanceof FormData) && !(body instanceof URLSearchParams) && !Buffer.isBuffer(body)) {
-            const isUrlEncoded = (headers["Content-Type"] || "").includes("application/x-www-form-urlencoded");
-            if (isUrlEncoded) {
-                body = new URLSearchParams(body).toString();
-            } else {
-                if (!headers["Content-Type"]) {
-                    headers["Content-Type"] = "application/json";
-                }
-                body = JSON.stringify(body);
-            }
-        }
+        const isForm = headers["Content-Type"]?.includes("application/x-www-form-urlencoded");
+        const body = config.body && typeof config.body === "object" && !(config.body instanceof FormData) && !(config.body instanceof URLSearchParams) && !Buffer.isBuffer(config.body)
+            ? isForm ? new URLSearchParams(config.body as Record<string, string>).toString() : JSON.stringify(config.body)
+            : config.body as BodyInit | null | undefined;
 
-        const options: RequestInit = {
-            method: config.method || "GET",
-            headers,
+        return {
+            method: config.method ?? "GET",
+            headers: body && !headers["Content-Type"] ? { ...headers, "Content-Type": "application/json" } : headers,
+            body: body ?? null,
             redirect: "manual",
         };
-
-        if (body !== undefined && body !== null) {
-            options.body = body;
-        }
-
-        return options;
     }
 
-    private async parseBody(response: Response): Promise<any> {
+    private async parseResponseBody(response: Response): Promise<any> {
         const contentType = response.headers.get("content-type") || "";
         return contentType.includes("application/json")
             ? response.json().catch(() => null)
             : response.text();
     }
 
+    private async fetchWithTimeout(url: string, options: RequestInit = {}): Promise<Response> {
+        try {
+            return await this.fetch(url, {
+                ...options,
+                signal: options.signal ?? AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+            });
+        } catch (error: unknown) {
+            if (error instanceof Error && (error.name === "TimeoutError" || error.name === "AbortError")) {
+                throw new Throwable("eMandi request timed out", 504);
+            }
+            throw error;
+        }
+    }
+
+    private clearLocalSession(): void {
+        this.session = null;
+        this.credentials = null;
+    }
+
+    private errorMessage(error: unknown): string {
+        return error instanceof Error ? error.message : String(error);
+    }
+
     private extract(html: string, pattern: RegExp): string | null {
         return html.match(pattern)?.[1] ?? null;
     }
 
-    private toCookieRecord(cookies: any[]): Record<string, string> {
-        return cookies.reduce((acc, c) => {
-            acc[c.key] = c.value;
-            return acc;
-        }, {} as Record<string, string>);
-    }
-
-    private async buildAuthResponse(): Promise<ExecutionResponse> {
-        const cookies = await this.cookieJar.getCookies(this.baseUrl);
+    private buildAuthResponse(): ExecutionResponse {
         return {
             content: {
                 authenticated: true,
                 message: "Authenticated successfully with eMandi",
-                cookieCount: cookies.length,
-                cachedCookies: cookies.map((c) => c.key),
                 ...this.session!,
             },
             statusCode: 200,
