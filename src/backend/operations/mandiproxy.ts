@@ -4,7 +4,6 @@ import { emandiClient } from "../services/emandiclient";
 import { eMandiPortal } from "../common/constants";
 
 const DATE_PATTERN = /^(\d{2})\/(\d{2})\/(\d{4})$/;
-const ISO_DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/;
 const DEFAULT_LOOKBACK_DAYS = 7;
 const DEFAULT_PAGE_LENGTH = 10;
 
@@ -50,16 +49,10 @@ class MandiProxy {
         const trimmed = input?.trim();
         if (!trimmed) return undefined;
 
-        const europeanDate = trimmed.match(DATE_PATTERN);
-        const isoDate = trimmed.match(ISO_DATE_PATTERN);
-        if (!europeanDate && !isoDate) throw new Throwable("Dates must use DD/MM/YYYY or YYYY-MM-DD format", 400);
+        const match = trimmed.match(DATE_PATTERN);
+        if (!match) throw new Throwable("Dates must use DD/MM/YYYY format", 400);
 
-        const [, dayValue, monthValue, yearValue] = europeanDate ?? [
-            "",
-            isoDate![3],
-            isoDate![2],
-            isoDate![1]
-        ];
+        const [, dayValue, monthValue, yearValue] = match;
         
         const day = Number(dayValue);
         const month = Number(monthValue);
