@@ -31,4 +31,11 @@ router.get('/gatepass', (request, response) => {
         .catch(replyError(response));
 });
 
+router.get('/niner', (request, response) => {
+    validator.validateRequest(request, request.query)
+        .then(values => mandiProxy.getNiners(values)
+            .then(replySuccess(response)))
+        .catch(replyError(response));
+});
+
 export default router;

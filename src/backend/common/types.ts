@@ -211,7 +211,7 @@ export type LoginResponse = {
     message?: string;
 };
 
-export type GatepassQuery = {
+export type MandiQuery = {
     top?: number;
     startDate?: string;
     endDate?: string;

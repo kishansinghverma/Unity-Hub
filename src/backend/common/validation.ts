@@ -65,6 +65,11 @@ const schemas: { [key: string]: any } = {
         startDate: joi.string().trim().pattern(/^\d{2}\/\d{2}\/\d{4}$/).optional(),
         endDate: joi.string().trim().pattern(/^\d{2}\/\d{2}\/\d{4}$/).optional()
     }),
+    "/api/mandiproxy/niner": joi.object({
+        top: joi.number().integer().min(1).optional(),
+        startDate: joi.string().trim().pattern(/^\d{2}\/\d{2}\/\d{4}$/).optional(),
+        endDate: joi.string().trim().pattern(/^\d{2}\/\d{2}\/\d{4}$/).optional()
+    }),
     "/api/files/html": {
         name: joi.string().valid('niner', 'gatepass'),
         party: joi.string().trim().min(3).required(),

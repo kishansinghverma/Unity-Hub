@@ -18,7 +18,7 @@ const SESSION_TTL_MS = 30 * 60 * 1000;
 const REQUEST_TIMEOUT_MS = 30_000;
 const MAX_LOGIN_ATTEMPTS = 3;
 const BASE_URL = eMandiPortal.baseUrl;
-const USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+const USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36";
 
 export class EMandiClient {
     private readonly logger: Logger;
@@ -39,6 +39,7 @@ export class EMandiClient {
         this.clearLocalSession();
         await this.cookieJar.removeAllCookies();
         await this.authenticate(request);
+        await this.warmTraderSession();
 
         const autoRefresh = request.autorefresh ?? true;
         this.autoRefresh = autoRefresh;
@@ -87,7 +88,6 @@ export class EMandiClient {
 
         const url = this.resolvePortalUrl(config.url);
         const requestOptions = this.buildRequestOptions(config);
-
         this.logger.log(`[${requestOptions.method}] ${url}`);
 
         let response: Response;
@@ -215,26 +215,25 @@ export class EMandiClient {
     }
 
     private async submitLogin(credentials: Credentials, tokens: LoginToken, captchaDigits: string): Promise<LoginResponse> {
-        const params = new URLSearchParams({
-            Email: credentials.email,
-            Password: credentials.password,
-            DNTCaptchaText: tokens.captchaText,
-            DNTCaptchaToken: tokens.captchaToken,
-            DNTCaptchaInputText: captchaDigits,
-            __RequestVerificationToken: tokens.requestToken,
-        });
+        const form = new FormData();
+        form.set("Email", credentials.email);
+        form.set("Password", credentials.password);
+        form.set("DNTCaptchaText", tokens.captchaText);
+        form.set("DNTCaptchaInputText", captchaDigits);
+        form.set("DNTCaptchaToken", tokens.captchaToken);
+        form.set("__RequestVerificationToken", tokens.requestToken);
+        form.set("X-Requested-With", "XMLHttpRequest");
 
         const response = await this.fetchWithTimeout(`${BASE_URL}${eMandiPortal.loginAction}`, {
             method: "POST",
             headers: {
-                "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
                 "X-Requested-With": "XMLHttpRequest",
-                Accept: "application/json, text/javascript, */*; q=0.01",
+                Accept: "*/*",
                 "User-Agent": USER_AGENT,
                 Referer: `${BASE_URL}${eMandiPortal.loginPage}`,
                 Origin: BASE_URL,
             },
-            body: params.toString(),
+            body: form,
         });
 
         if (!response.ok) {
@@ -256,6 +255,26 @@ export class EMandiClient {
         }
 
         throw new Throwable("No active eMandi session. Please authenticate first.", 401);
+    }
+
+    private async warmTraderSession(): Promise<void> {
+        const response = await this.fetchWithTimeout(`${BASE_URL}${eMandiPortal.tradersIndex}`, {
+            headers: {
+                "User-Agent": USER_AGENT,
+                Accept: "text/html,application/xhtml+xml",
+                Origin: BASE_URL,
+                Referer: `${BASE_URL}${eMandiPortal.loginPage}`,
+            },
+        });
+
+        if (this.isAuthenticationFailure(response)) {
+            throw new Throwable("eMandi session could not be initialized", 401);
+        }
+        if (!response.ok) {
+            throw new Throwable(`Failed to initialize eMandi session (${response.status})`, response.status || 502);
+        }
+
+        await response.arrayBuffer();
     }
 
     private isSessionActive(): boolean {
@@ -287,7 +306,6 @@ export class EMandiClient {
     private buildRequestOptions(config: RequestConfig): RequestInit {
         const headers: Record<string, string> = {
             "User-Agent": USER_AGENT,
-            Referer: `${BASE_URL}${eMandiPortal.dashboard}`,
             ...config.headers,
         };
 
