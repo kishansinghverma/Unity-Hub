@@ -55,6 +55,11 @@ const schemas: { [key: string]: any } = {
     "/api/emandi/captcha": {
         base64string: joi.string().required()
     },
+    "/api/mandi/proxy/init": joi.object({
+        email: joi.string().trim().optional(),
+        password: joi.string().optional(),
+        autorefresh: joi.boolean().optional()
+    }).optional(),
     "/api/files/html": {
         name: joi.string().valid('niner', 'gatepass'),
         party: joi.string().trim().min(3).required(),
@@ -114,7 +119,7 @@ const schemas: { [key: string]: any } = {
 
 class Validator {
     public validateRequest = (request: Request) => {
-        const path = request.originalUrl.replace(/\/$/, '');
+        const path = request.originalUrl.split('?')[0].replace(/\/$/, '');
         const schema = schemas[path];
         if (schema) return joi.isSchema(schema) ? schema.validateAsync(request.body) : joi.object(schema).validateAsync(request.body);
         else return Promise.reject(new Throwable(constants.errors.schemaNotReady, 501));

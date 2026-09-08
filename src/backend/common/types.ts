@@ -168,3 +168,40 @@ export type SharedExpense = {
     split_equally: boolean
     category_id: number;
 };
+
+export type Credentials = {
+    email: string;
+    password: string;
+};
+
+export type EMandiAuthRequest = Partial<Credentials> & {
+    autorefresh?: boolean;
+};
+
+export type EMandiSession = {
+    email: string;
+    role: string;
+    authenticatedAt: string;
+    expiresAt: string;
+};
+
+export type EMandiSessionInfo = Partial<EMandiSession> & {
+    authenticated: boolean;
+    isExpired: boolean;
+    cookieCount: number;
+    cookies?: Record<string, string>;
+};
+
+export type RequestConfig = {
+    url: string;
+    method?: string;
+    headers?: Record<string, string>;
+    body?: any;
+};
+
+export type LoginToken = {
+    requestToken: string;
+    captchaImageUrl: string;
+    captchaText: string;
+    captchaToken: string;
+};

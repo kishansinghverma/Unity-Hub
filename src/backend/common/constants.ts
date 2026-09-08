@@ -74,7 +74,8 @@ export enum source {
     whatsapp = 'WhatsApp',
     udp = 'UdpServer',
     file = 'FileHandler',
-    ocr = 'OCR'
+    ocr = 'OCR',
+    emandi = 'EMandi'
 }
 
 export const mimeType: { [key: string]: string } = {
@@ -86,6 +87,16 @@ export const mimeType: { [key: string]: string } = {
     any: 'application/x-binary'
 }
 
+export const eMandiPortal = {
+    baseUrl: 'https://emandi.up.gov.in',
+    loginPage: '/Account/index',
+    loginAction: '/Account',
+    dashboard: '/Traders/Dashboard',
+    gatepasses: '/Traders/generated_gatepass',
+    gatepassList: '/Traders/SP_Get_Gatepass_List',
+    tradersIndex: '/Traders/index',
+    logout: '/Account/LogOut'
+}
 
 export const requestParams = {
     get: {
