@@ -4,6 +4,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import path from 'path';
 import emandiRoute from '../routes/emandi';
+import mandiProxyRoute from '../routes/mandiproxy';
 import splitwiseRoute from '../routes/splitwise';
 import whatsappRoute from '../routes/whatsapp';
 import fileRoute from '../routes/files';
@@ -49,6 +50,7 @@ class ExpressServer {
         this.router.get('/api/test', (request, response) => { });
 
         this.router.use('/api/emandi', emandiRoute);
+        this.router.use('/api/mandiproxy', mandiProxyRoute);
         this.router.use('/api/expenses', expenseRoute);
         this.router.use('/api/files', fileRoute);
         this.router.use('/api/mqtt', mqttRoute);
