@@ -95,6 +95,7 @@ export const eMandiPortal = {
     gatepasses: '/Traders/generated_gatepass',
     gatepassList: '/Traders/SP_Get_Gatepass_List',
     ninerList: '/Traders/SP_Get_9R_List',
+    ninerPrint: '/Receipt/print_9rs/',
     tradersIndex: '/Traders/index',
     logout: '/Account/LogOut'
 }

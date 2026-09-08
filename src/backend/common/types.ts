@@ -192,10 +192,11 @@ export type EMandiSessionInfo = Partial<EMandiSession> & {
 };
 
 export type RequestConfig = {
-    url: string;
-    method?: string;
-    headers?: Record<string, string>;
-    body?: unknown;
+  url: string;
+  method?: string;
+  headers?: Record<string, string>;
+  body?: unknown;
+  redirect?: RequestRedirect;
 };
 
 export type LoginToken = {

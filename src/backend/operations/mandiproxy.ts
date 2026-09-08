@@ -19,6 +19,25 @@ class MandiProxy {
 
     public getNiners = (query: MandiQuery = {}): Promise<ExecutionResponse> => this.getMandiRecords(eMandiPortal.ninerList, query);
 
+    public printLast = async (): Promise<ExecutionResponse> => {
+        const response = await this.getNiners({ top: 1 });
+        const records = response.content?.data;
+        const recordId = Array.isArray(records) && records[0]?.id;
+
+        if (!recordId) throw new Throwable("No niner record is available to print", 404);
+
+        return emandiClient.sendRequest({
+            url: `${eMandiPortal.ninerPrint}${encodeURIComponent(recordId)}`,
+            method: "GET",
+            headers: {
+                "User-Agent": USER_AGENT,
+                Accept: "text/html,application/xhtml+xml",
+                Origin: eMandiPortal.baseUrl,
+            },
+            redirect: "follow",
+        });
+    };
+
     private async getMandiRecords(url: string, query: MandiQuery): Promise<ExecutionResponse> {
         const now = new Date();
         const fromDate = this.toPortalDate(query.startDate) ?? this.formatPortalDate(new Date(now.getTime() - DEFAULT_LOOKBACK_DAYS * 86_400_000));

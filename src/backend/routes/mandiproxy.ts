@@ -38,4 +38,10 @@ router.get('/niner', (request, response) => {
         .catch(replyError(response));
 });
 
+router.get('/printLast', (request, response) => {
+    mandiProxy.printLast()
+        .then(replySuccess(response))
+        .catch(replyError(response));
+});
+
 export default router;

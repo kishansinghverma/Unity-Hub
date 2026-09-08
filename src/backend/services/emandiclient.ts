@@ -318,7 +318,7 @@ export class EMandiClient {
             method: config.method ?? "GET",
             headers: body && !headers["Content-Type"] ? { ...headers, "Content-Type": "application/json" } : headers,
             body: body ?? null,
-            redirect: "manual",
+            redirect: config.redirect ?? "manual",
         };
     }
 
