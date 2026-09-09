@@ -1,6 +1,7 @@
 import { Throwable } from "../common/models";
 import { ExecutionResponse, EMandiAuthRequest, MandiQuery } from "../common/types";
 import { emandiClient } from "../services/emandiclient";
+import { fileService } from "../services/file";
 import { eMandiPortal } from "../common/constants";
 
 const DATE_PATTERN = /^(\d{2})\/(\d{2})\/(\d{4})$/;
@@ -19,6 +20,41 @@ class MandiProxy {
 
     public getNiners = (query: MandiQuery = {}): Promise<ExecutionResponse> => this.getMandiRecords(eMandiPortal.ninerList, query);
 
+    public printLastGatepass = async (): Promise<ExecutionResponse> => {
+        const response = await this.getGatepasses({ top: 1 });
+        const records = response.content?.data;
+        const recordId = Array.isArray(records) && records[0]?.id;
+
+        if (!recordId) throw new Throwable("No gatepass record is available to print", 404);
+
+        const receipt = await emandiClient.sendRequest({
+            url: `${eMandiPortal.gatepassPrint}${encodeURIComponent(recordId)}`,
+            method: "GET",
+            headers: {
+                "User-Agent": USER_AGENT,
+                Accept: "text/html,application/xhtml+xml",
+                Origin: eMandiPortal.baseUrl,
+            },
+            redirect: "follow",
+        });
+
+        if (typeof receipt.content !== "string") {
+            throw new Throwable("eMandi returned an invalid gatepass response", 502);
+        }
+
+        const parsed = await fileService.parseGatepassReceipt(receipt.content);
+        const pdf = await fileService.generatePdfFromHtml({
+            name: "gatepass",
+            tables: parsed.tables,
+            qr: parsed.qr,
+            party: parsed.party,
+            print: false,
+            forceDownload: true,
+            driverMobile: "",
+        });
+        return { content: pdf, statusCode: 200 };
+    };
+
     public printLast = async (): Promise<ExecutionResponse> => {
         const response = await this.getNiners({ top: 1 });
         const records = response.content?.data;
@@ -26,7 +62,7 @@ class MandiProxy {
 
         if (!recordId) throw new Throwable("No niner record is available to print", 404);
 
-        return emandiClient.sendRequest({
+        const receipt = await emandiClient.sendRequest({
             url: `${eMandiPortal.ninerPrint}${encodeURIComponent(recordId)}`,
             method: "GET",
             headers: {
@@ -36,6 +72,22 @@ class MandiProxy {
             },
             redirect: "follow",
         });
+
+        if (typeof receipt.content !== "string") {
+            throw new Throwable("eMandi returned an invalid receipt response", 502);
+        }
+
+        const parsed = await fileService.parseNinerReceipt(receipt.content);
+        const pdf = await fileService.generatePdfFromHtml({
+            name: "niner",
+            tables: parsed.tables,
+            qr: parsed.qr,
+            party: parsed.party,
+            print: false,
+            forceDownload: true,
+            driverMobile: "",
+        });
+        return { content: pdf, statusCode: 200 };
     };
 
     private async getMandiRecords(url: string, query: MandiQuery): Promise<ExecutionResponse> {

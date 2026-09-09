@@ -27,7 +27,7 @@ export type ExecutionResponse = {
 
 export type CreatePdfRequest = {
     name: string,
-    tables: string,
+    tables: string[],
     qr: string,
     print: boolean,
     forceDownload: boolean,

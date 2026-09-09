@@ -13,12 +13,18 @@ import { eMandiPortal, source } from "../common/constants";
 import { ocrService } from "./ocr";
 import { CookieJar } from "tough-cookie";
 import fetchCookie from "fetch-cookie";
+import fs from "fs";
+import os from "os";
+import path from "path";
 
 const SESSION_TTL_MS = 30 * 60 * 1000;
 const REQUEST_TIMEOUT_MS = 30_000;
 const MAX_LOGIN_ATTEMPTS = 3;
 const BASE_URL = eMandiPortal.baseUrl;
 const USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36";
+
+// >>> TEMP TESTING COOKIE PERSISTENCE — REMOVE THIS BLOCK BEFORE PRODUCTION <<<
+const TEMP_COOKIE_CACHE_PATH = path.join(os.tmpdir(), "unity-hub-emandi-session.json");
 
 export class EMandiClient {
     private readonly logger: Logger;
@@ -31,8 +37,19 @@ export class EMandiClient {
 
     constructor() {
         this.logger = new Logger(source.emandi);
-        this.cookieJar = new CookieJar();
+        const restoredJar = this.restoreTemporaryCookieJar();
+        this.cookieJar = restoredJar ?? new CookieJar();
         this.fetch = fetchCookie(fetch, this.cookieJar);
+
+        // TEMP TESTING COOKIE PERSISTENCE — REMOVE BEFORE PRODUCTION.
+        if (restoredJar) {
+            this.session = {
+                email: "restored-session",
+                role: "merchant",
+                authenticatedAt: new Date().toISOString(),
+                expiresAt: new Date(Date.now() + SESSION_TTL_MS).toISOString(),
+            };
+        }
     }
 
     public async initializeSession(request: EMandiAuthRequest): Promise<ExecutionResponse> {
@@ -40,6 +57,7 @@ export class EMandiClient {
         await this.cookieJar.removeAllCookies();
         await this.authenticate(request);
         await this.warmTraderSession();
+        await this.persistTemporaryCookieJar();
 
         const autoRefresh = request.autorefresh ?? true;
         this.autoRefresh = autoRefresh;
@@ -74,6 +92,7 @@ export class EMandiClient {
         }
 
         await this.cookieJar.removeAllCookies();
+        this.removeTemporaryCookieJar();
         this.clearLocalSession();
         this.logger.success("eMandi session cleared");
 
@@ -102,6 +121,8 @@ export class EMandiClient {
 
         if (this.isAuthenticationFailure(response)) {
             this.session = null;
+            // TEMP TESTING ONLY: discard a stale persisted cookie cache.
+            this.removeTemporaryCookieJar();
 
             if (allowRetry && this.autoRefresh && this.credentials) {
                 this.logger.log("Session expired. Re-authenticating...");
@@ -276,6 +297,42 @@ export class EMandiClient {
 
         await response.arrayBuffer();
     }
+
+    // TEMP TESTING COOKIE PERSISTENCE — REMOVE BEFORE PRODUCTION.
+    private restoreTemporaryCookieJar(): CookieJar | null {
+        try {
+            if (!fs.existsSync(TEMP_COOKIE_CACHE_PATH)) return null;
+            const serialized = JSON.parse(fs.readFileSync(TEMP_COOKIE_CACHE_PATH, "utf8"));
+            const jar = CookieJar.deserializeSync(serialized);
+            return jar.serializeSync()?.cookies?.length ? jar : null;
+        } catch (error: unknown) {
+            this.logger.warning(`Ignoring invalid temporary eMandi cookie cache: ${this.errorMessage(error)}`);
+            return null;
+        }
+    }
+
+    // TEMP TESTING COOKIE PERSISTENCE — REMOVE BEFORE PRODUCTION.
+    private async persistTemporaryCookieJar(): Promise<void> {
+        try {
+            const serialized = this.cookieJar.serializeSync();
+            if (!serialized?.cookies?.length) return;
+            fs.writeFileSync(TEMP_COOKIE_CACHE_PATH, JSON.stringify(serialized), { mode: 0o600 });
+            fs.chmodSync(TEMP_COOKIE_CACHE_PATH, 0o600);
+        } catch (error: unknown) {
+            this.logger.warning(`Could not persist temporary eMandi cookie cache: ${this.errorMessage(error)}`);
+        }
+    }
+
+    // TEMP TESTING COOKIE PERSISTENCE — REMOVE BEFORE PRODUCTION.
+    private removeTemporaryCookieJar(): void {
+        try {
+            if (fs.existsSync(TEMP_COOKIE_CACHE_PATH)) fs.rmSync(TEMP_COOKIE_CACHE_PATH);
+        } catch (error: unknown) {
+            this.logger.warning(`Could not remove temporary eMandi cookie cache: ${this.errorMessage(error)}`);
+        }
+    }
+
+    // <<< END TEMP TESTING COOKIE PERSISTENCE — REMOVE THIS BLOCK BEFORE PRODUCTION >>>
 
     private isSessionActive(): boolean {
         return !!this.session && Date.now() < new Date(this.session.expiresAt).getTime();

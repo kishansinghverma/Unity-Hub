@@ -103,6 +103,92 @@ class Files {
             await context.close();
         }
     }
+
+    public parseNinerReceipt = async (htmlContent: string): Promise<{ party: string, tables: string[], qr: string }> => {
+        await this.initializeBrowser();
+        const context = await this.browserInstance!.newContext();
+        const page = await context.newPage();
+
+        try {
+            const html = /<base\b/i.test(htmlContent)
+                ? htmlContent
+                : htmlContent.replace(/<head\b[^>]*>/i, match => `${match}<base href="https://emandi.up.gov.in/">`);
+
+            await page.setContent(html, { waitUntil: 'load' });
+            const parsed = await page.evaluate(() => {
+                const contents = document.querySelector('#content');
+                const qrElement = contents && contents.querySelector('#qrcode img');
+                const partyElement = document.querySelector('tbody > tr:nth-child(4) > td:nth-child(6) > label');
+                const tableElements = contents ? contents.querySelectorAll('.table') : [];
+                const detailTable = contents && contents.querySelector('.row .col-md-12 table');
+
+                return {
+                    party: partyElement ? (partyElement.textContent || '').trim() : '',
+                    qr: qrElement ? (qrElement.getAttribute('src') || '') : '',
+                    tables: [
+                        tableElements[0] ? tableElements[0].outerHTML : '',
+                        detailTable ? detailTable.outerHTML : '',
+                    ],
+                };
+            });
+
+            if (!parsed.party || !parsed.qr || parsed.tables.some(table => !table)) {
+                throw new Error('Unable to parse 9R receipt.');
+            }
+
+            return {
+                ...parsed,
+                tables: parsed.tables.map(table => table.replace(/<i\b[^>]*\bfa-rupee\b[^>]*><\/i>/gi, '₹')),
+            };
+        } finally {
+            await context.close();
+        }
+    }
+
+    public parseGatepassReceipt = async (htmlContent: string): Promise<{ party: string, tables: string[], qr: string }> => {
+        await this.initializeBrowser();
+        const context = await this.browserInstance!.newContext();
+        const page = await context.newPage();
+
+        try {
+            const html = /<base\b/i.test(htmlContent)
+                ? htmlContent
+                : htmlContent.replace(/<head\b[^>]*>/i, match => `${match}<base href="https://emandi.up.gov.in/">`);
+
+            await page.setContent(html, { waitUntil: 'load' });
+            const parsed = await page.evaluate(() => {
+                const contents = document.querySelector('#content');
+                const qrElement = contents && contents.querySelector('#qrcode img');
+                const partyElement = document.querySelector('tbody > tr:nth-child(1) > td:nth-child(8) > label');
+                const tables = contents ? contents.querySelectorAll('.table') : [];
+                const detailTables = contents ? contents.querySelectorAll('.row .col-md-12 table') : [];
+                const detailRow = contents && contents.querySelector('.row .col-md-12 .row');
+
+                return {
+                    party: partyElement ? (partyElement.textContent || '').trim() : '',
+                    qr: qrElement ? (qrElement.getAttribute('src') || '') : '',
+                    tables: [
+                        tables[0] ? tables[0].outerHTML : '',
+                        detailTables[0] ? detailTables[0].outerHTML : '',
+                        detailTables[1] ? detailTables[1].outerHTML : '',
+                        detailTables[2] ? detailTables[2].outerHTML : '',
+                        detailRow ? detailRow.outerHTML : '',
+                    ],
+                };
+            });
+
+            if (!parsed.party || !parsed.qr || parsed.tables.slice(0, 4).some(table => !table)) {
+                throw new Error('Unable to parse gatepass receipt.');
+            }
+
+            return {
+                ...parsed,
+                tables: parsed.tables.map(table => table.replace(/<i\b[^>]*\bfa-rupee\b[^>]*><\/i>/gi, '₹')),
+            };
+        } finally {
+            await context.close();
+        }
+    }
 }
 
 export const fileService = new Files();

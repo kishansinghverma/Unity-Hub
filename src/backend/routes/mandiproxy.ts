@@ -40,7 +40,13 @@ router.get('/niner', (request, response) => {
 
 router.get('/printLast', (request, response) => {
     mandiProxy.printLast()
-        .then(replySuccess(response))
+        .then(result => response.redirect(`/api/files/${encodeURIComponent(result.content)}`))
+        .catch(replyError(response));
+});
+
+router.get('/printLastGatepass', (request, response) => {
+    mandiProxy.printLastGatepass()
+        .then(result => response.redirect(`/api/files/${encodeURIComponent(result.content)}`))
         .catch(replyError(response));
 });
 
