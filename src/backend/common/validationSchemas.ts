@@ -27,7 +27,7 @@ export const schemas: Record<string, ValidationSchema> = {
             message: joi.string().min(3).required()
         })
     },
-    "POST /api/dispatches": {
+    "POST /api/dispatches/push": {
         body: joi.object({
             date: joi.string().required(),
             seller: joi.string().trim().min(3).required(),
@@ -46,18 +46,21 @@ export const schemas: Record<string, ValidationSchema> = {
             }).required()
         })
     },
-    "PATCH /api/dispatches/next": {
+    "PATCH /api/dispatches/finalize": {
         body: joi.object({
-            rate: joi.number().required(),
-            status: joi.string().valid('processed').optional()
-        })
+            gatepassId: joi.string().trim().min(1).optional(),
+            ninerId: joi.string().trim().min(1).optional(),
+            rate: joi.string().trim().min(1).optional()
+        }).unknown(false)
     },
-    "PATCH /api/dispatches/:id": {
+    "GET /api/dispatches/requeue/:id": {
         params: joi.object({
             id: joi.string().trim().min(1).required()
-        }),
-        body: joi.object({
-            status: joi.string().valid('queued').required()
+        })
+    },
+    "DELETE /api/dispatches/:id": {
+        params: joi.object({
+            id: joi.string().trim().min(1).required()
         })
     },
     "POST /api/dispatches/parties": {

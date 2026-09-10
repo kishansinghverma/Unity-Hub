@@ -1,107 +1,55 @@
 import express from 'express';
-import { constants, source } from '../common/constants';
-import { eMandi } from '../operations/emandi';
-import { Logger } from '../common/models';
 import { replyError, replySuccess } from '../common/utils';
-import { validator } from '../common/validation';
+import { emandi } from '../operations/emandi';
 import { ocrService } from '../services/ocr';
 
 const router = express.Router();
-const logger = new Logger(source.route);
 
-router.get("/", async (request, response) => {
-    logger.log(constants.message.ping);
-    eMandi.validateInstance()
+router.get('/session', (request, response) => {
+    emandi.getSessionStatus()
         .then(replySuccess(response))
         .catch(replyError(response));
 });
 
-router.get("/init", (request, response) => {
-    eMandi.initializeDatabase()
+router.post('/session', (request, response) => {
+    emandi.initializeSession(request.body)
         .then(replySuccess(response))
         .catch(replyError(response));
 });
 
-router.get("/peek", (request, response) => {
-    eMandi.peekRecord()
+router.delete('/session', (request, response) => {
+    emandi.clearSession()
         .then(replySuccess(response))
         .catch(replyError(response));
 });
 
-router.get("/pop", (request, response) => {
-    eMandi.popRecord()
+router.get('/gatepasses', (request, response) => {
+    emandi.getGatepasses(request.query)
         .then(replySuccess(response))
         .catch(replyError(response));
 });
 
-router.get("/queued", (request, response) => {
-    eMandi.getQueued()
+router.get('/gatepasses/latest', (request, response) => {
+    emandi.getLatestGatepass()
         .then(replySuccess(response))
         .catch(replyError(response));
 });
 
-router.get("/processed", (request, response) => {
-    eMandi.getProcessed()
+router.get('/niners', (request, response) => {
+    emandi.getNiners(request.query)
         .then(replySuccess(response))
         .catch(replyError(response));
 });
 
-router.get("/parties", (request, response) => {
-    eMandi.getParties()
+router.get('/niners/latest', (request, response) => {
+    emandi.getLatestNiner()
         .then(replySuccess(response))
         .catch(replyError(response));
 });
 
-router.get("/requeue/:id", (request, response) => {
-    eMandi.requeueRecord(request.params.id)
+router.post('/captcha-resolutions', (request, response) => {
+    ocrService.resolveCaptcha(request.body.base64string)
         .then(replySuccess(response))
-        .catch(replyError(response));
-});
-
-router.post("/push", (request, response) => {
-    validator.validateRequest(request)
-        .then(values => eMandi.queueRecord(values)
-            .then(replySuccess(response)))
-        .catch(replyError(response))
-});
-
-router.post("/parties", (request, response) => {
-    validator.validateRequest(request)
-        .then(values => eMandi.addParty(values)
-            .then(replySuccess(response)))
-        .catch(replyError(response))
-});
-
-router.patch("/parties", (request, response) => {
-    eMandi.updateParty(request.body)
-        .then(replySuccess(response))
-        .catch(replyError(response));
-});
-
-router.patch("/entry", (request, response) => {
-    validator.validateRequest(request)
-        .then(values =>
-            eMandi.updateRecordAtHead(values)
-                .then(replySuccess(response)))
-        .catch(replyError(response));
-});
-
-router.delete("/entry/:id", (request, response) => {
-    eMandi.deleteRecord(request.params.id)
-        .then(replySuccess(response))
-        .catch(replyError(response));
-});
-
-router.delete("/parties/:id", (request, response) => {
-    eMandi.deleteParty(request.params.id)
-        .then(replySuccess(response))
-        .catch(replyError(response));
-});
-
-router.post("/captcha", (request, response) => {
-    validator.validateRequest(request)
-        .then(({ base64string }) => ocrService.resolveCaptcha(base64string)
-            .then(replySuccess(response)))
         .catch(replyError(response));
 });
 

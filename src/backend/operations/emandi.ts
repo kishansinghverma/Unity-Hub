@@ -1,90 +1,121 @@
-import { Collection, Db, Document } from "mongodb";
-import { greenApi, constants as invariants, templates } from "../common/constants";
-import { MongoDbService } from "../services/mongodb";
-import { String } from "../common/models";
-import { getErrorResponse, getHttpCode } from "../common/utils";
-import { whatsAppService } from "../services/whatsapp";
+import { Throwable } from "../common/models";
+import { EMandiRecord, ExecutionResponse, EMandiAuthRequest, EMandiQuery } from "../common/types";
+import { emandiService } from "../services/emandi";
+import { eMandiPortal } from "../common/constants";
+import { normalizePortalDate } from "../common/utils";
+
+const DEFAULT_LOOKBACK_DAYS = 7;
+const DEFAULT_COLLECTION_LIMIT = 50;
+const USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36";
+
+type PortalRecordsQuery = {
+    fromDate: string;
+    toDate: string;
+    limit: number;
+    recordId?: string;
+};
 
 class EMandi {
-    private constants = invariants.emandi;
-    private database: MongoDbService;
+    public initializeSession = (request: EMandiAuthRequest): Promise<ExecutionResponse> => emandiService.initializeSession(request);
 
-    constructor() {
-        this.database = new MongoDbService(this.constants.database);
-    }
+    public getSessionStatus = (): Promise<ExecutionResponse> => emandiService.getSessionStatus();
 
-    public peekRecord = () => this.database.getDocument(this.constants.collections.queued, {}, { sort: { createdOn: 1 } });
+    public clearSession = (): Promise<ExecutionResponse> => emandiService.clearSession();
 
-    public getQueued = () => this.database.getDocuments(this.constants.collections.queued, {}, { sort: { createdOn: 1 } });
-
-    public getProcessed = () => this.database.getDocuments(this.constants.collections.processed, {}, { sort: { createdOn: 1 } });
-
-    public getParties = () => this.database.getDocuments(this.constants.collections.parties, {}, { sort: { name: 1 } });
-
-    public deleteRecord = (recordId: string) => this.database.deleteDocument(this.constants.collections.queued, recordId);
-
-    public addParty = (record: Document) => this.database.insertDocument(this.constants.collections.parties, record);
-
-    public updateParty = (record: Document) => this.database.updateDocument(this.constants.collections.parties, record);
-
-    public deleteParty = (partyId: string) => this.database.deleteDocument(this.constants.collections.parties, partyId);
-
-    public requeueRecord = (recordId: string) => this.database.moveDocument(this.constants.collections.processed, this.constants.collections.queued, { _id: String.mongoId(recordId) }, {});
-
-    public popRecord = () => this.database.moveDocument(this.constants.collections.queued, this.constants.collections.processed, {}, { sort: { createdOn: 1 } });
-
-    public queueRecord = async (record: Document) => {
-        const response = await this.database.insertDocument(this.constants.collections.queued, { ...record, createdOn: String.getEpoch() });
-        const notificationResponse = await whatsAppService.sendMessage(greenApi.groupId.emandi, String.getTaggedString(templates.gatepassCreated, record.party)).catch(getErrorResponse);
-        response.content.notification = notificationResponse.content;
-        return response;
+    public getGatepasses = (query: EMandiQuery = {}): Promise<ExecutionResponse> => {
+        if (query.id && query.date) return this.getGatepassById(query.id, query.date);
+        return this.getPortalRecords(eMandiPortal.gatepassList, this.getCollectionQuery(query));
     };
 
-    public updateRecordAtHead = async ({ finalize, ...patchData }: { finalize: boolean }) => {
-        const operation = async (database: Db) => {
-            if (finalize) {
-                const record = await database.collection(this.constants.collections.queued).findOneAndDelete({}, { sort: { createdOn: 1 } });
-                if (!record) return this.database.emptyResponse;
-                const { insertedId } = await database.collection(this.constants.collections.processed).insertOne({ ...record, ...patchData });
-                return { content: { insertedId }, statusCode: 200 };
-            }
-            else {
-                const updatedRecord = await database.collection(this.constants.collections.queued).findOneAndUpdate({}, { $set: patchData }, { sort: { createdOn: 1 } });
-                return (updatedRecord ? { content: { _id: updatedRecord._id }, statusCode: 200 } : this.database.emptyResponse);
-            }
-        }
-        return this.database.executeOperationOnDatabase(operation);
+    public getNiners = (query: EMandiQuery = {}): Promise<ExecutionResponse> => {
+        if (query.id && query.date) return this.getNinerById(query.id, query.date);
+        return this.getPortalRecords(eMandiPortal.ninerList, this.getCollectionQuery(query));
     };
 
-    public initializeDatabase = async () => {
-        // Creates index on collections.
-        const operation = async (collection: Collection) => {
-            const index = await collection.createIndex({ name: 1, mandi: 1, state: 1 }, { unique: true });
-            return { content: { actions: [{ index }] }, statusCode: 200 };
-        }
+    public getLatestGatepass = async (): Promise<ExecutionResponse> => {
+        const response = await this.getPortalRecords(eMandiPortal.gatepassList, this.getLatestQuery());
+        return this.getFirstRecord(response);
+    };
 
-        const createIndex = async (collecion: Collection) => {
-            const index = await collecion.createIndex({ createdOn: 1 });
-            return { content: { actions: [{ index }] }, statusCode: 200 };
-        }
+    public getLatestNiner = async (): Promise<ExecutionResponse> => {
+        const response = await this.getPortalRecords(eMandiPortal.ninerList, this.getLatestQuery());
+        return this.getFirstRecord(response);
+    };
 
-        await this.database.executeOperationOnCollection(this.constants.collections.processed, createIndex);
-        await this.database.executeOperationOnCollection(this.constants.collections.queued, createIndex);
-        return this.database.executeOperationOnCollection(this.constants.collections.parties, operation);
-    }
+    public getGatepassById = async (recordId: string, date: string): Promise<ExecutionResponse> => {
+        const response = await this.getPortalRecords(eMandiPortal.gatepassList, this.getRecordQuery(recordId, date));
+        return this.getFirstRecord(response);
+    };
 
-    public validateInstance = async () => {
-        const time = new Date().toLocaleString();
-        const response = { time: time, apiServer: { status: invariants.message.serviceOk, code: 200 } };
-        const operation = async (database: Db) => {
-            const { content, statusCode } = await database.command({ ping: 1 })
-                .then(() => ({ content: invariants.message.serviceOk, statusCode: 200 }))
-                .catch((err) => ({ content: err.message, statusCode: getHttpCode(err) }));
-            return { content: { ...response, mongoServer: { status: content, code: statusCode } }, statusCode: 200 };
-        }
+    public getNinerById = async (recordId: string, date: string): Promise<ExecutionResponse> => {
+        const response = await this.getPortalRecords(eMandiPortal.ninerList, this.getRecordQuery(recordId, date));
+        return this.getFirstRecord(response);
+    };
 
-        return await this.database.executeOperationOnDatabase(operation);
-    }
+    private getPortalRecords = (url: string, query: PortalRecordsQuery): Promise<ExecutionResponse> => {
+        const headers = {
+            "User-Agent": USER_AGENT,
+            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+            "X-Requested-With": "XMLHttpRequest",
+            Origin: eMandiPortal.baseUrl,
+            Referer: `${eMandiPortal.baseUrl}${eMandiPortal.gatepasses}`,
+        };
+        const payload = new URLSearchParams({
+            fromDate: query.fromDate,
+            toDate: query.toDate,
+            draw: "1",
+            start: "0",
+            length: String(query.limit),
+            "search[value]": query.recordId ?? "",
+            "order[0][column]": "1",
+            "order[0][dir]": "desc"
+        });
+
+        console.log(payload);
+
+        return emandiService.sendRequest({
+            url,
+            method: "POST",
+            headers,
+            body: payload.toString()
+        });
+    };
+
+    private getCollectionQuery = (query: EMandiQuery): PortalRecordsQuery => {
+        const now = new Date();
+        return {
+            fromDate: normalizePortalDate(query.fromDate) ?? normalizePortalDate(new Date(now.getTime() - DEFAULT_LOOKBACK_DAYS * 86_400_000))!,
+            toDate: normalizePortalDate(query.toDate) ?? normalizePortalDate(now)!,
+            limit: query.limit ?? DEFAULT_COLLECTION_LIMIT
+        };
+    };
+
+    private getLatestQuery = (): PortalRecordsQuery => {
+        const now = new Date();
+        return {
+            fromDate: normalizePortalDate(new Date(now.getTime() - DEFAULT_LOOKBACK_DAYS * 86_400_000))!,
+            toDate: normalizePortalDate(now)!,
+            limit: 1
+        };
+    };
+
+    private getRecordQuery = (recordId: string, date: string): PortalRecordsQuery => {
+        const normalizedDate = normalizePortalDate(date);
+        if (!normalizedDate) throw new Throwable("A valid date is required", 400);
+        return {
+            fromDate: normalizedDate,
+            toDate: normalizedDate,
+            limit: 1,
+            recordId
+        };
+    };
+
+    private getFirstRecord = (response: ExecutionResponse): ExecutionResponse => {
+        const content = response.content;
+        const records: EMandiRecord[] = content && Array.isArray(content.data) ? content.data : [];
+        const record = records[0];
+        return record ? { content: record, statusCode: 200 } : { content: null, statusCode: 404 };
+    };
 }
 
-export const eMandi = new EMandi();
+export const emandi = new EMandi();
