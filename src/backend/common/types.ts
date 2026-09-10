@@ -25,14 +25,46 @@ export type ExecutionResponse = {
     statusCode: number
 };
 
-export type CreatePdfRequest = {
-    name: string,
-    tables: string[],
-    qr: string,
-    print: boolean,
-    forceDownload: boolean,
-    party: string,
-    driverMobile: string
+export type HtmlDocumentData = {
+    tables: string[];
+    qr: string;
+};
+
+export type GatepassDocumentRequest = {
+    source:
+        | { type: "latest" }
+        | { type: "id", gatepassId: string, date: string }
+        | { type: "html", name: string, party: string, tables: string[], qr: string };
+    print: boolean;
+    download: boolean;
+    share: boolean;
+};
+
+export type NinerDocumentRequest = {
+    source:
+        | { type: "latest" }
+        | { type: "id", ninerId: string, date: string }
+        | { type: "html", name: string, party: string, tables: string[], qr: string };
+    print: boolean;
+    download: boolean;
+    share: boolean;
+};
+
+export type GatepassQrData = {
+    serialNumber: string;
+    issueFrom: string;
+    crop: string;
+    weight: string;
+    vehicleNumber: string;
+    applicationNumber: string;
+    issueDate: string;
+    issueTime: string;
+};
+
+export type NinerQrData = {
+    serialNumber: string;
+    mandi: string;
+    crop: string;
 };
 
 export type IncomingMessage = {
@@ -212,8 +244,166 @@ export type LoginResponse = {
     message?: string;
 };
 
-export type MandiQuery = {
-    top?: number;
-    startDate?: string;
-    endDate?: string;
+export type EMandiQuery = {
+    id?: string;
+    date?: string;
+    limit?: number;
+    fromDate?: string;
+    toDate?: string;
 };
+
+export type EMandiGatepass = {
+    id: string;
+    book_number: string;
+    serial_number: string;
+    trader_license_number: string | null;
+    dateofissue: string;
+    timeofissue: string;
+    nine_r_id: string;
+    dist_todestination: string;
+    home_center: string;
+    center_code: string | null;
+    dateofdestination: string;
+    timeofdestination: string | null;
+    receiver_name_add: string | null;
+    kreta_mandi: string;
+    status: string;
+    created_at: string;
+    updated_at: string | null;
+    bundle_no: string;
+    vehicle: string;
+    vehicle_no: string;
+    mandi_code: string | null;
+    ack: string;
+    self_generate: string;
+    remark: string | null;
+    action_date: string | null;
+    action_by: string | null;
+    ip_address: string | null;
+    desg_code: string | null;
+    action_time: string | null;
+    user_id: string | null;
+    ack_date: string | null;
+    ack_by: string | null;
+    ack_time: string | null;
+    page_no: string | null;
+    kreta_mandi1: string | null;
+    destination_state: string;
+    lstMandi: unknown | null;
+    lstNineR: unknown | null;
+    lstVehicleType: unknown | null;
+    qrcode: string | null;
+    trader_name: string;
+    crop_name: string;
+    crop_weight: string;
+    traderfullinfo: string;
+    qty_parameter: string | null;
+    crop_type: string;
+    avg_speed: string;
+    uname: string;
+    contact: string;
+    designation: string | null;
+    mandi_name: string;
+    crop_name_hi: string;
+    estimated_travel_time: string;
+    vikreta_details: unknown | null;
+    kreta_details: unknown | null;
+    kreta_mandiName: string | null;
+    uniquecode: string;
+    exportType: string;
+    qrImage: string | null;
+    nine_r_date: string | null;
+    paidType: string | null;
+    crop_code: string | null;
+    lstState: unknown | null;
+    isUnpaidAuto: number;
+    gatepassValidityStaus: string;
+    isExpiry: number;
+    isRejected: number;
+    proRejection: number;
+    issuerName: string;
+    stateName: string;
+    niner_number: string | null;
+    latitude: string;
+    longitude: string;
+    taggingDate: string;
+    isBeforeDateFromSetDate: string;
+    isVehicleTagging: string;
+    vehicleTaggingRemark: string;
+    vehicleImage: string | null;
+    vehicleFullImage: string | null;
+    gatepassIssueDate: string | null;
+};
+
+export type EMandiNiner = {
+    id: string;
+    book_number: string;
+    serial_number: string;
+    crop_code: string;
+    trade_mandi: string;
+    dateofissue: string;
+    trader_license_number: string;
+    kreta_details: string;
+    vikreta_details: string;
+    crop_weight: string;
+    crop_rate: string;
+    crop_amount: string;
+    total_tax: string;
+    total_amount: string;
+    mandi_name: string;
+    trader_name: string;
+    mandi_code: string | null;
+    created_at: string;
+    updated_at: string | null;
+    crop_type: string;
+    qty_parameter: string | null;
+    six_r_id: string;
+    buyer_license_no: string;
+    buyer_state: string;
+    status: string;
+    rem_amount: string | null;
+    mandi_fee: string;
+    dev_fee: string;
+    weighing_fee: string;
+    commission_fee: string;
+    porter_fee: string;
+    tax: string;
+    agent_fee: string;
+    other_fee: string;
+    lstCrop: unknown | null;
+    qrcode: string | null;
+    firm_name: string;
+    crop_name_eng: string;
+    mandi_name_eng: string;
+    t_mandi_fee: string;
+    t_dev_fee: string;
+    t_weighing_fee: string;
+    t_commission_fee: string;
+    t_porter_fee: string;
+    t_tax: string;
+    t_agent_fee: string;
+    t_other_fee: string;
+    trader_type: string | null;
+    cal_mandi_fee: string | null;
+    cal_dev_fee: string | null;
+    exportType: string;
+    nineRDetails: unknown[];
+    cropName: string | null;
+    insturment_id: string | null;
+    instumentAmount: string | null;
+    qrImage: string | null;
+    stockType: string | null;
+    stockTypeCategory: string | null;
+    payType: string | null;
+    crop_name_hi: string | null;
+    isFotkar: string;
+    fotkarId: string;
+    cancelactive: string;
+    iscancel: string;
+    vehicle: string | null;
+    vehicle_no: string;
+    lstVehicleType: unknown | null;
+    vehicleName: string;
+};
+
+export type EMandiRecord = EMandiGatepass | EMandiNiner;

@@ -1,7 +1,6 @@
 import express from 'express';
 import { expenses } from '../operations/expense';
 import { replyError, replySuccess } from '../common/utils';
-import { validator } from '../common/validation';
 
 const router = express.Router();
 
@@ -60,23 +59,20 @@ router.post('/description', (request, response) => {
 })
 
 router.post('/predictions', (request, response) => {
-    validator.validateRequest(request)
-        .then(values => expenses.addPrediction(values)
-            .then(replySuccess(response)))
+    expenses.addPrediction(request.body)
+        .then(replySuccess(response))
         .catch(replyError(response));
 });
 
 router.post('/statement/bank', (request, response) => {
-    validator.validateRequest(request)
-        .then(values => expenses.updateBankStatement(values)
-            .then(replySuccess(response)))
+    expenses.updateBankStatement(request.body)
+        .then(replySuccess(response))
         .catch(replyError(response));
 });
 
 router.post('/statement/paymentapp', (request, response) => {
-    validator.validateRequest(request)
-        .then(values => expenses.updatePaymentAppStatement(values)
-            .then(replySuccess(response)))
+    expenses.updatePaymentAppStatement(request.body)
+        .then(replySuccess(response))
         .catch(replyError(response));
 });
 

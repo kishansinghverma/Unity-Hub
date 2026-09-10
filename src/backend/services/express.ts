@@ -4,7 +4,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import path from 'path';
 import emandiRoute from '../routes/emandi';
-import mandiProxyRoute from '../routes/mandiproxy';
+import dispatchesRoute from '../routes/dispatches';
 import splitwiseRoute from '../routes/splitwise';
 import whatsappRoute from '../routes/whatsapp';
 import fileRoute from '../routes/files';
@@ -14,6 +14,8 @@ import oakterRemoteRoute from '../routes/oakterremote';
 import { Logger } from '../common/models';
 import { source } from '../common/constants';
 import http from 'http';
+import documentsRoute from '../routes/documents';
+import { validationMiddleware } from '../common/validationMiddleware';
 
 class ExpressServer {
     private logger: Logger;
@@ -36,6 +38,7 @@ class ExpressServer {
         this.router.use(bodyParser.json({ limit: '5mb' }));
         this.router.use(bodyParser.urlencoded({ extended: true }));
         this.router.use(cors());
+        this.router.use(validationMiddleware);
     }
 
     private registerStaticServer = () => {
@@ -47,12 +50,11 @@ class ExpressServer {
     }
 
     private registerRoutes = () => {
-        this.router.get('/api/test', (request, response) => { });
-
         this.router.use('/api/emandi', emandiRoute);
-        this.router.use('/api/mandiproxy', mandiProxyRoute);
+        this.router.use('/api/dispatches', dispatchesRoute);
         this.router.use('/api/expenses', expenseRoute);
         this.router.use('/api/files', fileRoute);
+        this.router.use('/api/documents', documentsRoute);
         this.router.use('/api/mqtt', mqttRoute);
         this.router.use('/api/oakterremote', oakterRemoteRoute);
         this.router.use('/api/splitwise', splitwiseRoute);

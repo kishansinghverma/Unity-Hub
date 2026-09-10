@@ -1,6 +1,5 @@
 import express from "express";
 import { replyError, replySuccess } from "../common/utils";
-import { validator } from "../common/validation";
 import { oakterRemote } from "../operations/oakterremote";
 
 const router = express.Router();
@@ -24,9 +23,8 @@ router.post("/syncdevices", (request, response) => {
 });
 
 router.post("/command", (request, response) => {
-    validator.validateRequest(request)
-        .then(({ commandId, remoteId }) => oakterRemote.issueCommand(commandId, remoteId)
-            .then(replySuccess(response)))
+    oakterRemote.issueCommand(request.body.commandId, request.body.remoteId)
+        .then(replySuccess(response))
         .catch(replyError(response));
 });
 

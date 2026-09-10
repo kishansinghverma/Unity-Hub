@@ -1,7 +1,7 @@
 import { MongoError } from "mongodb";
 import joi from 'joi';
 import { ObjectUtils, SplitwiseThrowable, Throwable } from "./models";
-import { OperationResponse, ExecutionResponse } from "./types";
+import { GatepassQrData, NinerQrData, OperationResponse, ExecutionResponse } from "./types";
 import { Response as ExpressResponse } from "express";
 import { constants, mongoErrorCodes } from "./constants";
 import { MulterError } from "multer";
@@ -59,3 +59,38 @@ export const replyError = (response: ExpressResponse) => ((error: Error) => {
     const errorResponse = getErrorResponse(error);
     response.status(errorResponse.statusCode).send(errorResponse.content);
 });
+
+export const getGatepassQrData = ({serialNumber,issueFrom,crop,weight,vehicleNumber,applicationNumber,issueDate,issueTime}: GatepassQrData): string =>
+    `Gatepass no:${serialNumber},Issue from:${issueFrom},Crop:${crop},Weight:${weight},Vehicle no:${vehicleNumber},applicationnumber:${applicationNumber}date & time of issue :${issueDate} ${issueTime}InstrumentType:Gatepass,http://emandi.up.gov.in/`;
+
+export const getNinerQrData = ({ serialNumber, mandi, crop }: NinerQrData): string =>
+    `SerialNo:${serialNumber},Mandi:${mandi},Crop:${crop}InstrumentType:9R,http://emandi.up.gov.in/`;
+
+export function normalizePortalDate(input?: Date | string): string | undefined {
+    if (!input) return undefined;
+
+    if (input instanceof Date) {
+        if (Number.isNaN(input.getTime())) throw new Throwable("Dates must be valid calendar dates", 400);
+        const day = String(input.getDate()).padStart(2, "0");
+        const month = String(input.getMonth() + 1).padStart(2, "0");
+        return `${day}/${month}/${input.getFullYear()}`;
+    }
+
+    const trimmed = input.trim();
+    if (!trimmed) return undefined;
+
+    const match = trimmed.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    if (!match) throw new Throwable("Dates must use DD/MM/YYYY format", 400);
+
+    const [, dayValue, monthValue, yearValue] = match;
+    const day = Number(dayValue);
+    const month = Number(monthValue);
+    const year = Number(yearValue);
+    const parsed = new Date(year, month - 1, day);
+
+    if (parsed.getFullYear() !== year || parsed.getMonth() !== month - 1 || parsed.getDate() !== day) {
+        throw new Throwable("Dates must be valid calendar dates", 400);
+    }
+
+    return `${dayValue}/${monthValue}/${yearValue}`;
+}
