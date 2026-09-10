@@ -1,7 +1,6 @@
 import express from 'express';
 import { replyError, replySuccess } from '../common/utils';
 import { emandi } from '../operations/emandi';
-import { ocrService } from '../services/ocr';
 
 const router = express.Router();
 
@@ -43,12 +42,6 @@ router.get('/niners', (request, response) => {
 
 router.get('/niners/latest', (request, response) => {
     emandi.getLatestNiner()
-        .then(replySuccess(response))
-        .catch(replyError(response));
-});
-
-router.post('/captcha-resolutions', (request, response) => {
-    ocrService.resolveCaptcha(request.body.base64string)
         .then(replySuccess(response))
         .catch(replyError(response));
 });

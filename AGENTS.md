@@ -1,6 +1,6 @@
 # Repository Guidelines
 
-Last reviewed: 2026-09-10 — documented current route, type, and rendering conventions.
+Last reviewed: 2026-09-10 — verified multi-action document responses and build output.
 
 ## Project Structure & Module Organization
 

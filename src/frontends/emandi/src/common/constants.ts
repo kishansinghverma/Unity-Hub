@@ -28,12 +28,10 @@ export const vehicleType: { [key: string]: string } = {
 };
 
 export const Url = {
-    Parties: "/api/emandi/parties",
-    Push: "/api/emandi/push",
-    Processed: "/api/emandi/processed",
-    Requeue: "/api/emandi/requeue",
-    Queued: "/api/emandi/queued",
-    Delete: "/api/emandi/entry",
+    Parties: "/api/dispatches/parties",
+    Dispatches: "/api/dispatches/push",
+    Processed: "/api/dispatches/processed",
+    Queued: "/api/dispatches/queued",
     NotificationUrl: "/api/whatsapp/sendtext/unityhub",
     OakterRemoteCommand: "/api/oakterremote/command",
     OakterRemoteSyncDevices: "/api/oakterremote/syncdevices",

@@ -2,7 +2,7 @@ import { capitalize, getDate, handleError } from "./utils";
 import { PatchParams, PostParams, States, Url } from "../common/constants";
 
 export const createNewEntry = (formData: any) => {
-    return fetch(Url.Push, {
+    return fetch(Url.Dispatches, {
         ...PostParams,
         body: JSON.stringify({
             date: getDate(),
@@ -31,8 +31,7 @@ export const createNewParty = (formData: any) => {
 }
 
 export const updateParty = (formData: any) => {
-    const patchData = {
-        _id: formData._id,
+    const requestData = {
         name: capitalize(formData.name),
         mandi: capitalize(formData.mandi),
         state: States[formData.stateCode],
@@ -42,8 +41,8 @@ export const updateParty = (formData: any) => {
     };
 
     return {
-        executeRequest: () => fetch(Url.Parties, { ...PatchParams, body: JSON.stringify(patchData) }),
-        data: patchData
+        executeRequest: () => fetch(`${Url.Parties}/${formData._id}`, { ...PatchParams, body: JSON.stringify(requestData) }),
+        data: { _id: formData._id, ...requestData }
     };
 }
 

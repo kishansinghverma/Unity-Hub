@@ -86,7 +86,7 @@ export const schemas: Record<string, ValidationSchema> = {
             licenceNumber: joi.string().trim().empty('')
         })
     },
-    "POST /api/emandi/captcha-resolutions": {
+    "POST /api/vision/captcha": {
         body: joi.object({
             base64string: joi.string().required()
         })
@@ -148,7 +148,7 @@ export const schemas: Record<string, ValidationSchema> = {
             share: joi.boolean().required(),
             driverMobile: joi.string().regex(/^(\d{10})?$/).empty('').optional()
         }).custom((value, helpers) => {
-            if ([value.print, value.download, value.share].filter(Boolean).length !== 1)
+            if ([value.print, value.download, value.share].filter(Boolean).length === 0)
                 return helpers.error('any.invalid');
             return value;
         })
@@ -177,7 +177,7 @@ export const schemas: Record<string, ValidationSchema> = {
             share: joi.boolean().required(),
             driverMobile: joi.string().regex(/^(\d{10})?$/).empty('').optional()
         }).custom((value, helpers) => {
-            if ([value.print, value.download, value.share].filter(Boolean).length !== 1)
+            if ([value.print, value.download, value.share].filter(Boolean).length === 0)
                 return helpers.error('any.invalid');
             return value;
         })

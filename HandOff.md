@@ -2,7 +2,7 @@
 
 Last updated: 2026-09-10
 
-Latest operation: documented current route, type, and rendering conventions in `AGENTS.md`.
+Latest operation: implemented multi-action document execution and status responses; full build verified successfully.
 
 ## Current State
 
@@ -19,7 +19,7 @@ The repository is on `main`, synchronized with `origin/main`, with all current w
 
 - Session: `POST`, `GET`, or `DELETE /api/emandi/session`
 - Portal records: `GET /api/emandi/gatepasses` and `GET /api/emandi/niners`
-- Captcha OCR: `POST /api/emandi/captcha-resolutions`
+- Captcha OCR: `POST /api/vision/captcha`
 - Dispatch lists: `GET /api/dispatches/queued` and `GET /api/dispatches/processed`
 - Dispatch management: `GET /api/dispatches/status`, `PUT /api/dispatches/init`, `GET /api/dispatches/peek`, `GET /api/dispatches/pop`, `POST /api/dispatches/push`, `PATCH /api/dispatches/finalize`, `GET /api/dispatches/requeue/:id`, and `DELETE /api/dispatches/:id`
 - Parties: `GET|POST /api/dispatches/parties` and `PATCH|DELETE /api/dispatches/parties/:id`
@@ -59,6 +59,13 @@ Schemas expose any applicable combination of `params`, `query`, and `body`. The 
 - `FinalizeDispatchRequest` is defined at `src/backend/common/types/request/FinalizeDispatchRequest.ts` and is used by `operations/dispatches.ts`.
 - Every public method in `operations/dispatches.ts` currently has a route binding; no dead public dispatch operation was found.
 - Repository conventions now document the dedicated four-template document rendering flow, lean HTML payloads, request-type placement, and the current dispatch route/finalization contract.
+- Vision functionality is exposed through `POST /api/vision/captcha`; eMandi login uses `visionService.resolveCaptcha`, and document QR generation uses `vision.generateQR`.
+- `operations/documents.ts` now selects HTML or JSON creation explicitly through separate Gatepass/Niner helper methods; download, print, and WhatsApp delivery are handled by one shared completion method.
+- The HTML guard in `resolveGatepass`/`resolveNiner` remains because the current `Exclude<...>` type does not narrow nested `source` unions sufficiently for TypeScript; it is unreachable through valid callers but protects direct misuse and preserves compilation.
+- `completeDocumentRequest` now accepts `share` and sends via WhatsApp only when `share === true`; download and print remain separate actions.
+- Next document UI change: add Print, Download, and Share Via WhatsApp checkboxes, default Share Via WhatsApp to selected, submit all selected actions together, redirect on a returned download link, and notify separately for failed print/share actions.
+- `CreateDocumentResponse` is defined at `src/backend/common/types/response/CreateDocumentResponse.ts`; it reports print/share/download statuses and an optional `downloadUrl`.
+- Document creation attempts selected actions independently, returns JSON for both document endpoints, and uses the static PDF URL for downloads; the old in-memory PDF response path and unused `readPdf()` helper were removed.
 - Existing unrelated worktree changes remain uncommitted and must be preserved.
 
 ## Follow-up Considerations

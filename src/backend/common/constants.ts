@@ -74,7 +74,7 @@ export enum source {
     whatsapp = 'WhatsApp',
     udp = 'UdpServer',
     file = 'FileHandler',
-    ocr = 'OCR',
+    vision = 'Vision',
     emandi = 'EMandi'
 }
 

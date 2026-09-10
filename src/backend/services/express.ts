@@ -3,6 +3,7 @@ import express, { NextFunction, Request, Response } from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import path from 'path';
+import http from 'http';
 import emandiRoute from '../routes/emandi';
 import dispatchesRoute from '../routes/dispatches';
 import splitwiseRoute from '../routes/splitwise';
@@ -11,10 +12,10 @@ import fileRoute from '../routes/files';
 import mqttRoute from '../routes/mqtt';
 import expenseRoute from '../routes/expense';
 import oakterRemoteRoute from '../routes/oakterremote';
+import documentsRoute from '../routes/documents';
+import visionRoute from '../routes/vision';
 import { Logger } from '../common/models';
 import { source } from '../common/constants';
-import http from 'http';
-import documentsRoute from '../routes/documents';
 import { validationMiddleware } from '../common/validationMiddleware';
 
 class ExpressServer {
@@ -55,6 +56,7 @@ class ExpressServer {
         this.router.use('/api/expenses', expenseRoute);
         this.router.use('/api/files', fileRoute);
         this.router.use('/api/documents', documentsRoute);
+        this.router.use('/api/vision', visionRoute);
         this.router.use('/api/mqtt', mqttRoute);
         this.router.use('/api/oakterremote', oakterRemoteRoute);
         this.router.use('/api/splitwise', splitwiseRoute);

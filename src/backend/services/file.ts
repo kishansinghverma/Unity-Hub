@@ -122,7 +122,6 @@ class Files {
         }
     }
 
-    public readPdf = (fileName: string) => fs.readFileSync(path.join(__dirname, '../static', fileName));
 }
 
 export const fileService = new Files();

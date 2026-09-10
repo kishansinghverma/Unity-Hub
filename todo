@@ -1,3 +1,4 @@
 Add actionmessages on list pages
 add routes
 Make the operation atomic in updateAtHead
+Implement document action selection in the frontend: show Print, Download, and Share Via WhatsApp checkboxes; keep Share Via WhatsApp selected by default; build the payload on button click; send it to the backend; redirect to the returned download link when available; and display error notifications for failed print/share actions.

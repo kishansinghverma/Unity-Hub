@@ -1,13 +1,14 @@
+import QRCode from "qrcode";
 import { Logger, Throwable } from "../common/models";
 import { source } from "../common/constants";
 import { ExecutionResponse } from "../common/types";
 
-class OcrService {
+class VisionService {
     private logger: Logger;
     private apiUrl: string = 'https://api.ocr.space/parse/image';
 
     constructor() {
-        this.logger = new Logger(source.ocr);
+        this.logger = new Logger(source.vision);
     }
 
     public resolveCaptcha = async (base64Image: string): Promise<ExecutionResponse> => {
@@ -43,22 +44,28 @@ class OcrService {
             const digits = rawText.replace(/\D/g, '');
             const parsedCode = parseInt(digits, 10);
 
-            if (isNaN(parsedCode)) {
-                throw new Throwable('Failed to extract digits from captcha', 422);
-            }
-
+            if (isNaN(parsedCode)) throw new Throwable('Failed to extract digits from captcha', 422);
             this.logger.success(`Captcha resolved successfully: ${parsedCode}`);
-
-            return {
-                content: { code: parsedCode, text: digits },
-                statusCode: 200
-            };
+            return { content: { code: parsedCode, text: digits }, statusCode: 200 };
+            
         } catch (error: any) {
             if (error instanceof Throwable) throw error;
             this.logger.error(`OCR Exception: ${error.message}`);
             throw new Throwable(error.message || 'Internal OCR service error', 500);
         }
     };
+
+    public generateQR = (text: string, version: 8 | 14, width: 1140 | 1620): Promise<string> => QRCode.toDataURL([{ data: Buffer.from(text, "utf8"), mode: "byte" }], {
+        version,
+        errorCorrectionLevel: "Q",
+        maskPattern: 2,
+        margin: 4,
+        width,
+        color: {
+            dark: "#000000FF",
+            light: "#FFFFFFFF"
+        }
+    });
 }
 
-export const ocrService = new OcrService();
+export const visionService = new VisionService();
