@@ -1,6 +1,6 @@
 # Repository Guidelines
 
-Last reviewed: 2026-09-10 — verified multi-action document responses and build output.
+Last reviewed: 2026-09-11 — reviewed the current remote page and runtime commands catalog behavior.
 
 ## Project Structure & Module Organization
 
@@ -23,9 +23,19 @@ Keep route handlers thin; place business logic in `operations/` and integrations
 
 Request-specific types belong under `src/backend/common/types/request/` in one file per request, such as `FinalizeDispatchRequest.ts`. Keep rendering payload types minimal and separate from transport/action metadata.
 
+Prefer small, responsibility-focused operation functions. Public document methods should select the HTML or JSON path and delegate creation to dedicated helpers; shared delivery behavior belongs in one completion helper. Avoid mixing record resolution, PDF generation, printing, sharing, and response construction in one large function.
+
+When multiple independent actions are requested, attempt each selected action instead of returning after the first one. Return a structured result for every action, including `success`, `failed`, or `not_requested`, and preserve useful error messages for the frontend.
+
+Validation errors should explain the violated business rule in plain language. Add explicit Joi messages for custom cross-field rules instead of exposing generic `any.invalid` messages.
+
 Document rendering uses dedicated templates: `template_gatepass_html.ejs`, `template_niner_html.ejs`, `template_gatepass_json.ejs`, and `template_niner_json.ejs`. Do not reintroduce a generic combined document template or server-side receipt parsers. HTML rendering uses the lean `HtmlDocumentData` payload (`tables` and `qr`); the logo is embedded as a Base64 data URL from `assets/logo_emandi.png`.
 
 The dispatch API is mounted at `/api/dispatches` and currently exposes `/status`, `/init`, `/queued`, `/processed`, `/peek`, `/pop`, `/push`, `/finalize`, `/requeue/:id`, `/:id`, and party CRUD under `/parties`. `PATCH /finalize` accepts optional string `gatepassId`, `ninerId`, and `rate` fields, always moves the oldest queued record to processed, and merges only supplied fields. Keep the route, operation, validation, and documentation contracts aligned.
+
+Vision functionality is mounted at `/api/vision`; captcha OCR is exposed at `POST /captcha`, and QR generation is shared by document operations through the Vision service. Keep external integrations in services and expose them through operations/routes where an HTTP contract is needed.
+
+The Oakter device catalog at `src/backend/static/commands.json` is runtime state and must remain untracked. `GET /devices` reads the file and, when it is missing, synchronizes from Oakter before returning the hydrated catalog. Later reads use the saved file, while explicit refresh calls `/syncdevices` and renders its response directly.
 
 ## Testing Guidelines
 

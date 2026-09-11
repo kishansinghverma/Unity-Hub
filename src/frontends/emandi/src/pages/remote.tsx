@@ -29,7 +29,6 @@ import { Button, Container, Header, HeaderSubheader, Segment } from "semantic-ui
 import { toast } from "react-toastify";
 import { PostParams, Url } from "../common/constants";
 import { handleError, handleJsonResponse } from "../operations/utils";
-import commandsData from "../static/commands.json";
 import "./remote.css";
 
 type RemoteCommand = {
@@ -114,10 +113,7 @@ const playFeedback = (isRepeat = false) => {
 export const RemotePage = () => {
     const [pressedCommandKey, setPressedCommandKey] = useState<string | null>(null);
     const [connectionStatus, setConnectionStatus] = useState<"checking" | "connected" | "disconnected">("checking");
-    const [devices, setDevices] = useState<RemoteDevice[]>(() => {
-        const response = commandsData as CommandResponse;
-        return response.Response ?? [];
-    });
+    const [devices, setDevices] = useState<RemoteDevice[]>([]);
     const [isRefreshingDevices, setIsRefreshingDevices] = useState(false);
     const repeatIntervalRef = useRef<number | null>(null);
 
@@ -126,7 +122,7 @@ export const RemotePage = () => {
         setDevices(response.Response);
     };
 
-    const refreshDevices = () => {
+    const syncDevices = () => {
         setIsRefreshingDevices(true);
         fetch(Url.OakterRemoteSyncDevices, PostParams)
             .then(handleJsonResponse)
@@ -137,6 +133,13 @@ export const RemotePage = () => {
             .catch(handleError)
             .finally(() => setIsRefreshingDevices(false));
     };
+
+    useEffect(() => {
+        fetch(Url.OakterRemoteDevices)
+            .then(handleJsonResponse)
+            .then((json: CommandResponse) => updateDevices(json))
+            .catch(handleError);
+    }, []);
 
     const issueCommand = (commandId: number, remoteId: number) => {
         fetch(Url.OakterRemoteCommand, { ...PostParams, body: JSON.stringify({ commandId, remoteId }) })
@@ -289,7 +292,7 @@ export const RemotePage = () => {
                                 className="remote-refresh-button"
                                 disabled={isRefreshingDevices}
                                 loading={isRefreshingDevices}
-                                onClick={refreshDevices}
+                                onClick={syncDevices}
                             >
                                 <RefreshCw size={16} aria-hidden />
                                 Refresh Devices

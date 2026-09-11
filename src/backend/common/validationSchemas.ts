@@ -109,6 +109,8 @@ export const schemas: Record<string, ValidationSchema> = {
             if (value.id && !value.date) return helpers.error('any.invalid');
             if (value.date && !value.id) return helpers.error('any.invalid');
             return value;
+        }).messages({
+            'any.invalid': 'id and date must be provided together'
         })
     },
     "GET /api/emandi/niners": {
@@ -122,6 +124,8 @@ export const schemas: Record<string, ValidationSchema> = {
             if (value.id && !value.date) return helpers.error('any.invalid');
             if (value.date && !value.id) return helpers.error('any.invalid');
             return value;
+        }).messages({
+            'any.invalid': 'id and date must be provided together'
         })
     },
     "POST /api/documents/gatepasses": {
@@ -151,6 +155,8 @@ export const schemas: Record<string, ValidationSchema> = {
             if ([value.print, value.download, value.share].filter(Boolean).length === 0)
                 return helpers.error('any.invalid');
             return value;
+        }).messages({
+            'any.invalid': 'At least one of print, download, or share must be true'
         })
     },
     "POST /api/documents/niners": {
@@ -180,6 +186,8 @@ export const schemas: Record<string, ValidationSchema> = {
             if ([value.print, value.download, value.share].filter(Boolean).length === 0)
                 return helpers.error('any.invalid');
             return value;
+        }).messages({
+            'any.invalid': 'At least one of print, download, or share must be true'
         })
     },
     "PATCH /api/splitwise/groups": {

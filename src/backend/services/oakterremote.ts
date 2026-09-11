@@ -15,7 +15,7 @@ class OakterRemoteService {
     private sessionId = process.env.OAKTER_SESSION_ID;
     private oakRemoteId = process.env.OAKTER_REMOTE_ID;
     private oakRemoteAuthToken = process.env.OAKTER_AUTH_TOKEN;
-    private deviceCatalogPath = path.join(__dirname, "../static/oakterremote-devices.json");
+    private deviceCatalogPath = path.join(__dirname, "../static/commands.json");
 
     constructor() {
         this.logger = new Logger(source.oakterremote);
@@ -60,7 +60,7 @@ class OakterRemoteService {
             .then(content => content.RenewSessionResult.ESPDevices[0].Connected);
     };
 
-    public getDevices = () => {
+    private fetchDevices = () => {
         const payload = {
             Header: this.getHeader(),
             OakRemoteId: this.oakRemoteId,
@@ -74,8 +74,20 @@ class OakterRemoteService {
         return fetch(`${this.remoteBaseUrl}/api/ir/remotes/v2`, fetchParams).then(getJsonResponse);
     };
 
+    public getDevices = async (): Promise<ExecutionResponse> => {
+        try {
+            const content = JSON.parse(await fs.promises.readFile(this.deviceCatalogPath, "utf8"));
+            return { content, statusCode: 200 };
+        } catch (error: any) {
+            if (error.code === "ENOENT") {
+                return this.syncDevices();
+            }
+            throw error;
+        }
+    };
+
     public syncDevices = async (): Promise<ExecutionResponse> => {
-        const result = await this.getDevices();
+        const result = await this.fetchDevices();
         const directory = path.dirname(this.deviceCatalogPath);
         const temporaryPath = `${this.deviceCatalogPath}.${process.pid}-${Date.now()}.tmp`;
 

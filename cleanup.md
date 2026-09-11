@@ -110,7 +110,7 @@ Codex CLI approvals granted during documentation lookup allowed narrowly scoped 
 - `e81ee1f` — Oakter device synchronization and the frontend refresh action.
   - Added `POST /api/oakterremote/syncdevices`.
   - Kept `GET /api/oakterremote/devices` as a live Oakter catalog request.
-  - Added atomic persistence to `src/backend/static/oakterremote-devices.json`.
+  - Added atomic persistence to `src/backend/static/commands.json`.
   - Added the Refresh Devices frontend control.
 - `289dc8f` — Remote page visual and accessibility refresh.
   - Updated `src/frontends/emandi/src/pages/remote.tsx`.
@@ -133,7 +133,7 @@ git diff -- src/frontends/emandi/src/pages/remote.tsx
 
 ## Generated and runtime files
 
-- `src/backend/static/oakterremote-devices.json`
+- `src/backend/static/commands.json`
   - Ignored by Git.
   - Runtime catalog produced by device synchronization.
   - Removing it deletes the locally persisted Oakter catalog; the next sync recreates it.
@@ -166,5 +166,5 @@ git diff -- src/frontends/emandi/src/pages/remote.tsx
 - Review `git status --short` and all source diffs.
 - Revert session commits only if their functionality is no longer wanted.
 - Remove `src/frontends/emandi/build/` if generated build output should not remain locally.
-- Remove `src/backend/static/oakterremote-devices.json` only if the cached device catalog should be discarded.
+- Remove `src/backend/static/commands.json` only if the cached device catalog should be discarded.
 - Review Codex application approvals if temporary official-documentation command approvals should be removed.
