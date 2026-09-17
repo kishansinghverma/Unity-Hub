@@ -5,6 +5,7 @@ import { GatepassQrData, NinerQrData, OperationResponse, ExecutionResponse } fro
 import { Response as ExpressResponse } from "express";
 import { constants, mongoErrorCodes } from "./constants";
 import { MulterError } from "multer";
+import axios from "axios";
 export const getHttpCode = (error: MongoError) => (mongoErrorCodes[error.code ?? 8] ?? 500);
 
 export const validateResponse = (response: Response) => {
@@ -31,6 +32,10 @@ export const getErrorResponse = (error: Error) => {
     }
     else if (error instanceof Throwable) {
         errorCode = error.statusCode;
+        errorType = constants.errors.customError;
+    }
+    else if (axios.isAxiosError(error)) {
+        errorCode = error.response?.status ?? 502;
         errorType = constants.errors.customError;
     }
     else if (error instanceof MongoError) {

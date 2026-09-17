@@ -97,7 +97,19 @@ export const eMandiPortal = {
     ninerList: '/Traders/SP_Get_9R_List',
     ninerPrint: '/Receipt/print_9rs/',
     tradersIndex: '/Traders/index',
-    logout: '/Account/LogOut'
+    logout: '/Account/LogOut',
+    vehicleTagging: {
+        baseRoute: '/api/VehicleTaggingAPI',
+        getVehicle: '/GetVehicleNumberByGatepass',
+        getTaggingData: '/GetVechicleTaggingData',
+        getVehicleTypes: '/GetVehicleMasterData',
+        insertTaggingData: '/InsertVehcileTaggingData'
+    }
+}
+
+export const oakterRemoteRoutes = {
+    sendCommand: '/api/ir/send',
+    deviceCatalog: '/api/ir/remotes/v2'
 }
 
 export const requestParams = {

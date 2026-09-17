@@ -14,6 +14,7 @@ import expenseRoute from '../routes/expense';
 import oakterRemoteRoute from '../routes/oakterremote';
 import documentsRoute from '../routes/documents';
 import visionRoute from '../routes/vision';
+import vtagRoute from '../routes/vtag';
 import { Logger } from '../common/models';
 import { source } from '../common/constants';
 import { validationMiddleware } from '../common/validationMiddleware';
@@ -57,6 +58,7 @@ class ExpressServer {
         this.router.use('/api/files', fileRoute);
         this.router.use('/api/documents', documentsRoute);
         this.router.use('/api/vision', visionRoute);
+        this.router.use('/api/vtag', vtagRoute);
         this.router.use('/api/mqtt', mqttRoute);
         this.router.use('/api/oakterremote', oakterRemoteRoute);
         this.router.use('/api/splitwise', splitwiseRoute);

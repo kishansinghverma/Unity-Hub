@@ -1,9 +1,8 @@
 import "dotenv/config";
 import fs from "fs";
 import path from "path";
-import { source } from "../common/constants";
+import { oakterRemoteRoutes, requestParams, source } from "../common/constants";
 import { Logger } from "../common/models";
-import { requestParams } from "../common/constants";
 import { getJsonResponse, validateResponse } from "../common/utils";
 import { ExecutionResponse } from "../common/types";
 
@@ -40,7 +39,7 @@ class OakterRemoteService {
         };
 
         const fetchParams = { ...requestParams.post, body: JSON.stringify(payload) };
-        return fetch(`${this.remoteBaseUrl}/api/ir/send`, fetchParams).then(getJsonResponse);
+        return fetch(`${this.remoteBaseUrl}${oakterRemoteRoutes.sendCommand}`, fetchParams).then(getJsonResponse);
     };
 
     public isConnected = () => {
@@ -71,7 +70,7 @@ class OakterRemoteService {
             body: JSON.stringify(payload)
         };
 
-        return fetch(`${this.remoteBaseUrl}/api/ir/remotes/v2`, fetchParams).then(getJsonResponse);
+        return fetch(`${this.remoteBaseUrl}${oakterRemoteRoutes.deviceCatalog}`, fetchParams).then(getJsonResponse);
     };
 
     public getCatalog = async (): Promise<ExecutionResponse> => {

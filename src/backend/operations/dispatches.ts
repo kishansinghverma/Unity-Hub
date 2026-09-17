@@ -4,7 +4,7 @@ import { MongoDbService } from "../services/mongodb";
 import { String } from "../common/models";
 import { getErrorResponse, getHttpCode } from "../common/utils";
 import { whatsAppService } from "../services/whatsapp";
-import { FinalizeDispatchRequest } from "../common/types/request/FinalizeDispatchRequest";
+import { FinalizeDispatchRequest } from "../common/types/inbound/request/Dispatch";
 
 class Dispatches {
     private constants = globalConstants.emandi;

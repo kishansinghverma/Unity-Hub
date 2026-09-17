@@ -1,6 +1,6 @@
 # Repository Guidelines
 
-Last reviewed: 2026-09-17 — reviewed frontend/backend Oakter remote contracts.
+Last reviewed: 2026-09-17 — vtag propagates Axios errors to shared error handling.
 
 ## Project Structure & Module Organization
 
@@ -21,7 +21,7 @@ Both projects use strict TypeScript. Use four-space indentation in backend files
 
 Keep route handlers thin; place business logic in `operations/` and integrations in `services/`. Public operation methods should have one clear route binding, and route renames must be synchronized with validation schemas, frontend callers, README, and `HandOff.md`. Create React App's ESLint configuration checks frontend code.
 
-Request-specific types belong under `src/backend/common/types/request/` in one file per request, such as `FinalizeDispatchRequest.ts`. Keep rendering payload types minimal and separate from transport/action metadata.
+Express request payload models belong under `src/backend/common/types/inbound/request/`, Express response payload models under `src/backend/common/types/inbound/response/`, backend or external API request models under `src/backend/common/types/outbound/request/`, and backend or external API response models under `src/backend/common/types/outbound/response/`. Keep rendering payload types minimal and separate from transport/action metadata.
 
 Prefer small, responsibility-focused operation functions. Public document methods should select the HTML or JSON path and delegate creation to dedicated helpers; shared delivery behavior belongs in one completion helper. Avoid mixing record resolution, PDF generation, printing, sharing, and response construction in one large function.
 
@@ -34,6 +34,8 @@ Document rendering uses dedicated templates: `template_gatepass_html.ejs`, `temp
 The dispatch API is mounted at `/api/dispatches` and currently exposes `/status`, `/init`, `/queued`, `/processed`, `/peek`, `/pop`, `/push`, `/finalize`, `/requeue/:id`, `/:id`, and party CRUD under `/parties`. `PATCH /finalize` accepts optional string `gatepassId`, `ninerId`, and `rate` fields, always moves the oldest queued record to processed, and merges only supplied fields. Keep the route, operation, validation, and documentation contracts aligned.
 
 Vision functionality is mounted at `/api/vision`; captcha OCR is exposed at `POST /captcha`, and QR generation is shared by document operations through the Vision service. Keep external integrations in services and expose them through operations/routes where an HTTP contract is needed.
+
+Vehicle-tagging functionality is mounted at `/api/vtag` and proxies the eMandi `VehicleTaggingAPI` with direct Axios calls. The local vehicle lookup is `GET /vehicles/:gatepassId`; it sends the upstream `GetVehicleNumberByGatepass` request with `InstrumentType: 1` fixed by the backend. Vehicle master data is exposed at `GET /vehicles/types`, and the local tagging collection and creation routes are `GET /entries` and `POST /entries`. The GET filter request is accepted as JSON and forwarded upstream as a JSON GET body.
 
 The Oakter device catalog at `src/backend/static/oak-devices.json` is runtime state and must remain untracked. `GET /devices` checks for the file and, when it is missing, synchronizes from Oakter before returning the hydrated catalog. Later reads use the saved file, while explicit refresh calls `/syncdevices` and renders its response directly.
 

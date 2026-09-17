@@ -1,6 +1,6 @@
 import { greenApi } from "../common/constants";
 import { EMandiGatepass, EMandiNiner, ExecutionResponse, GatepassDocumentRequest, NinerDocumentRequest } from "../common/types";
-import { CreateDocumentResponse, DocumentActionResponse } from "../common/types/response/CreateDocumentResponse";
+import { CreateDocumentResponse, DocumentActionResponse } from "../common/types/inbound/response/Documents";
 import { getGatepassQrData, getNinerQrData } from "../common/utils";
 import { fileService } from "../services/file";
 import { mqttService } from "../services/mqtt";

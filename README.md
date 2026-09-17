@@ -9,6 +9,7 @@ Unity Hub hosts multiple remote services and frontends under one domain.
 - `/api/documents/gatepasses`: create a gatepass PDF from `latest`, `id`, or direct HTML data for download, MQTT printing, or WhatsApp sharing.
 - `/api/documents/niners`: create a niner PDF from `latest`, `id`, or direct HTML data for download, MQTT printing, or WhatsApp sharing.
 - `/api/vision/captcha`: resolve captcha digits from a Base64 image.
+- `/api/vtag`: authenticated vehicle-tagging access through `GET /vehicles/:gatepassId`, `GET /vehicles/types`, and `GET|POST /entries`.
 
 Use resource-oriented HTTP methods: `GET` reads, `POST` creates, `PATCH` changes state, `PUT` replaces or initializes an idempotent resource, and `DELETE` removes it.
 

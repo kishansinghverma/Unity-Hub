@@ -2,7 +2,7 @@
 
 Last updated: 2026-09-17
 
-Latest operation: added a stable remote-page loading skeleton while the initial catalog request is pending.
+Latest operation: changed vtag Axios requests to async/await with shared error propagation.
 
 ## Current State
 
@@ -20,6 +20,7 @@ The repository is on `main`, synchronized with `origin/main`, with all current w
 - Session: `POST`, `GET`, or `DELETE /api/emandi/session`
 - Portal records: `GET /api/emandi/gatepasses` and `GET /api/emandi/niners`
 - Captcha OCR: `POST /api/vision/captcha`
+- Vehicle tagging: `GET /api/vtag/vehicles/:gatepassId`, `GET /api/vtag/vehicles/types`, and `GET|POST /api/vtag/entries`
 - Dispatch lists: `GET /api/dispatches/queued` and `GET /api/dispatches/processed`
 - Dispatch management: `GET /api/dispatches/status`, `PUT /api/dispatches/init`, `GET /api/dispatches/peek`, `GET /api/dispatches/pop`, `POST /api/dispatches/push`, `PATCH /api/dispatches/finalize`, `GET /api/dispatches/requeue/:id`, and `DELETE /api/dispatches/:id`
 - Parties: `GET|POST /api/dispatches/parties` and `PATCH|DELETE /api/dispatches/parties/:id`
@@ -34,9 +35,11 @@ Schemas expose any applicable combination of `params`, `query`, and `body`. The 
 
 ## Verification
 
-- `npm run build` passes, including backend TypeScript compilation and the production React build.
+- `npm run build` passes after the direct vtag Axios change, including backend TypeScript compilation and the production React build.
 - `npx tsc --noEmit` passes.
 - `git diff --check` passes.
+- `npm install axios` completed; npm reported 22 audit findings in the dependency tree.
+- Vehicle-tagging sample payloads from `Workspace.postman_collection.json` pass their Joi schemas; the vehicle lookup and type routes correctly require no body schema.
 - The React build reports existing `react-hooks/exhaustive-deps` warnings in `editparty.tsx`, `newentry.tsx`, `parties.tsx`, `processed.tsx`, and `queued.tsx`.
 - The root `npm test` remains an intentional failing placeholder; no backend test framework is configured.
 
@@ -56,22 +59,30 @@ Schemas expose any applicable combination of `params`, `query`, and `body`. The 
 - `getRecordQuery` retains its `normalizePortalDate` guard because it validates actual calendar dates and protects direct/internal callers, even though route schemas require the date field and format.
 - Dispatch route names, operation method names, validation schemas, frontend push URL, README, and handoff documentation now use the same contract, including `GET /api/dispatches/pop`.
 - `PATCH /api/dispatches/finalize` accepts optional string fields `gatepassId`, `ninerId`, and `rate`; it always moves the oldest queued record to processed and merges only supplied fields.
-- `FinalizeDispatchRequest` is defined at `src/backend/common/types/request/FinalizeDispatchRequest.ts` and is used by `operations/dispatches.ts`.
+- `FinalizeDispatchRequest` is defined at `src/backend/common/types/inbound/request/Dispatch.ts` and is used by `operations/dispatches.ts`.
 - Every public method in `operations/dispatches.ts` currently has a route binding; no dead public dispatch operation was found.
 - Repository conventions now document the dedicated four-template document rendering flow, lean HTML payloads, request-type placement, and the current dispatch route/finalization contract.
 - Vision functionality is exposed through `POST /api/vision/captcha`; eMandi login uses `visionService.resolveCaptcha`, and document QR generation uses `vision.generateQR`.
+- Vehicle-tagging requests use dedicated request types, a thin route/operation layer, and `vehicleTaggingService` to send requests directly with Axios. The GET tagging filter preserves the collection’s JSON body, including string `InstrumentType`.
+- `getErrorResponse` in `src/backend/common/utils.ts` now recognizes Axios errors, preserves upstream HTTP statuses, and maps transport failures to `502`.
+- vtag request handling uses async/await without a local catch, allowing Axios errors and validation errors to reach the shared route error handler.
+- Vehicle-tagging endpoint constants keep `/api/VehicleTaggingAPI` in `eMandiPortal.vehicleTagging.baseRoute`; each operation stores only its remaining path and the service composes the full upstream URL.
+- Vehicle lookup uses the concise `getVehicle` operation/service method and hardcodes upstream `InstrumentType: 1`; other vtag internals use `getTaggingData`, `getVehicleTypes`, and `insertTaggingData`.
+- Express vehicle-tagging payloads are defined in `src/backend/common/types/inbound/request/VehicleTagging.ts`; the distinct upstream vehicle lookup payload is defined in `src/backend/common/types/outbound/request/VehicleTagging.ts`.
+- Matching tagging collection and creation payloads reuse the inbound `GetTaggedVehicleRequest` and `TagVehicleRequest` models directly; only transformed backend API payloads have separate outbound models.
+- Oakter remote service calls use `oakterRemoteRoutes.sendCommand` and `oakterRemoteRoutes.deviceCatalog`; the renewal URL remains environment-configured as a complete URL.
 - `operations/documents.ts` now selects HTML or JSON creation explicitly through separate Gatepass/Niner helper methods; download, print, and WhatsApp delivery are handled by one shared completion method.
 - The HTML guard in `resolveGatepass`/`resolveNiner` remains because the current `Exclude<...>` type does not narrow nested `source` unions sufficiently for TypeScript; it is unreachable through valid callers but protects direct misuse and preserves compilation.
 - `completeDocumentRequest` now accepts `share` and sends via WhatsApp only when `share === true`; download and print remain separate actions.
 - Next document UI change: add Print, Download, and Share Via WhatsApp checkboxes, default Share Via WhatsApp to selected, submit all selected actions together, redirect on a returned download link, and notify separately for failed print/share actions.
-- `CreateDocumentResponse` is defined at `src/backend/common/types/response/CreateDocumentResponse.ts`; it reports print/share/download statuses and an optional `downloadUrl`.
+- `CreateDocumentResponse` is defined at `src/backend/common/types/inbound/response/Documents.ts`; it reports print/share/download statuses and an optional `downloadUrl`.
 - Document creation attempts selected actions independently, returns JSON for both document endpoints, and uses the static PDF URL for downloads; the old in-memory PDF response path and unused `readPdf()` helper were removed.
 - Document requests may select any combination of print, download, and share actions, provided at least one is selected. Each action returns `success`, `failed`, or `not_requested`; partial failures use HTTP `207` and include per-action error messages.
 - Successful download actions return `downloadUrl: /api/files/<fileName>` for frontend redirection.
 - Document validation now reports `At least one of print, download, or share must be true` when all actions are false.
 - Emandi gatepass and niner query validation now report `id and date must be provided together` when only one paired parameter is supplied.
 - Current working preferences: keep functions responsibility-focused, separate HTML/JSON document creation helpers, execute independent document actions without early returns, return structured per-action statuses, and use explicit business-oriented validation messages.
-- Current architecture preference: keep route handlers thin, operations responsible for workflows, services responsible for integrations, and request/response types in dedicated `common/types/request` and `common/types/response` files.
+- Current architecture preference: keep route handlers thin, operations responsible for workflows, services responsible for integrations, Express request/response types under `common/types/inbound/{request,response}`, and backend API request/response types under `common/types/outbound/{request,response}`.
 - Remote controls now load from `GET /api/oakterremote/devices`, which reads backend `static/oak-devices.json`; `POST /api/oakterremote/syncdevices` updates that file, then the frontend renders the sync response.
 - `src/backend/static/oak-devices.json` is intentionally untracked runtime state. `GET /devices` checks for the file through `getCatalog()` and calls `syncCatalog()` when it is missing; `syncCatalog()` uses `fetchCatalogFromRemote()` to hydrate and store the upstream catalog. Later reads reuse the saved file, while explicit refresh uses the sync response directly.
 - Verification after the remote catalog flow update: `npx tsc --noEmit` passed, `npm run build` passed with only the existing React hook warnings, and `git diff --check` passed.
@@ -95,6 +106,7 @@ Schemas expose any applicable combination of `params`, `query`, and `body`. The 
 - Stored PDF HTML may expose QR data and personal information; restrict access or add cleanup outside debugging.
 - Niner and gatepass JSON document rendering use their dedicated EJS templates with typed record mappings, QR generation, and download/print/share handling.
 - The portal is responsible for matching `search[value]`; the backend returns the sole result from the `limit=1` response.
+- Axios is a runtime dependency used by vtag because native Node `fetch` rejects GET requests with bodies; the collection’s GET tagging payload is now sent through Axios.
 - `EMandiQuery` includes optional `id` and `date`; operations decide between single-record and collection retrieval.
 - Niner JSON rendering passes the eMandi record directly to `template_niner_json.ejs`.
 - QR payload builders intentionally preserve the portal’s punctuation, spacing, missing separators, and static URL suffix.

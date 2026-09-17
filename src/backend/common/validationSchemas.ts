@@ -91,6 +91,35 @@ export const schemas: Record<string, ValidationSchema> = {
             base64string: joi.string().required()
         })
     },
+    "GET /api/vtag/vehicles/:gatepassId": {
+        params: joi.object({
+            gatepassId: joi.string().trim().min(1).required()
+        }).unknown(false)
+    },
+    "GET /api/vtag/entries": {
+        body: joi.object({
+            FromDate: joi.string().trim().pattern(/^\d{2}\/\d{2}\/\d{4}$/).required(),
+            ToDate: joi.string().trim().pattern(/^\d{2}\/\d{2}\/\d{4}$/).required(),
+            MobileNumber: joi.string().trim().pattern(/^\d{10}$/).required(),
+            InstrumentType: joi.string().trim().pattern(/^[1-9]\d*$/).required()
+        }).unknown(false)
+    },
+    "POST /api/vtag/entries": {
+        body: joi.object({
+            ContactNumber: joi.string().trim().pattern(/^\d{10}$/).required(),
+            InstrumentNumber: joi.string().trim().min(1).required(),
+            InstrumentType: joi.number().integer().positive().required(),
+            InstrumentTypeName: joi.string().trim().min(1).required(),
+            VehicleTypeId: joi.number().integer().positive().required(),
+            VehicleTypeName: joi.string().trim().min(1).required(),
+            VehicleNumber: joi.string().trim().min(1).required(),
+            Latitude: joi.string().trim().min(1).required(),
+            Longitude: joi.string().trim().min(1).required(),
+            IPAddress: joi.string().trim().min(1).required(),
+            VehicleImage: joi.string().min(1).required(),
+            VehicleFullImage: joi.string().min(1).required()
+        }).unknown(false)
+    },
     "POST /api/emandi/session": {
         body: joi.object({
             email: joi.string().trim().email().max(254).required(),
