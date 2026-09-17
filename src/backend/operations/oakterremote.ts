@@ -8,14 +8,14 @@ class OakterRemote {
     };
 
     public getDevices = (): Promise<ExecutionResponse> => {
-        return oakterRemoteService.getDevices();
+        return oakterRemoteService.getCatalog();
     };
 
     public syncDevices = (): Promise<ExecutionResponse> => {
-        return oakterRemoteService.syncDevices();
+        return oakterRemoteService.syncCatalog();
     };
 
-    public issueCommand = (commandId: string | number, remoteId: string | number): Promise<ExecutionResponse> => {
+    public issueCommand = (commandId: string, remoteId: string | number): Promise<ExecutionResponse> => {
         return oakterRemoteService.issueCommand(commandId, remoteId);
     };
 }

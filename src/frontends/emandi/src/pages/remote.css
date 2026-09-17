@@ -10,6 +10,7 @@
     isolation: isolate;
     overflow: hidden;
     margin: 0 !important;
+    min-height: clamp(440px, 62vh, 720px);
     padding: clamp(1.25rem, 3vw, 2.5rem) !important;
     color: #172033;
     background:
@@ -52,6 +53,90 @@
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
+}
+
+.remote-loading {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.remote-skeleton-device {
+    padding: clamp(1rem, 2vw, 1.4rem);
+    background: rgba(255, 255, 255, 0.45);
+    border: 1px solid rgba(148, 163, 184, 0.14);
+    border-radius: 22px;
+}
+
+.remote-skeleton-device-title {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 1rem;
+}
+
+.remote-skeleton-command-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+    gap: 0.75rem;
+}
+
+.remote-skeleton-command {
+    display: flex;
+    min-height: 102px;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 0.65rem;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(148, 163, 184, 0.14);
+    border-radius: 17px;
+}
+
+.remote-skeleton {
+    display: block;
+    background: linear-gradient(100deg, rgba(226, 232, 240, 0.72) 20%, rgba(248, 250, 252, 0.98) 40%, rgba(226, 232, 240, 0.72) 60%);
+    background-size: 220% 100%;
+    border-radius: 999px;
+    animation: remote-skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+.remote-skeleton-device-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 13px;
+}
+
+.remote-skeleton-device-name {
+    width: min(180px, 42%);
+    height: 14px;
+}
+
+.remote-skeleton-command-icon {
+    width: 43px;
+    height: 43px;
+    border-radius: 14px;
+}
+
+.remote-skeleton-command-label {
+    width: 58px;
+    height: 9px;
+}
+
+.remote-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+@keyframes remote-skeleton-shimmer {
+    0% { background-position: 100% 0; }
+    100% { background-position: -100% 0; }
 }
 
 .remote-page-header {
@@ -349,6 +434,7 @@
     }
 
     .remote-devices-container.ui.segment {
+        min-height: 440px;
         padding: 1rem !important;
         border-radius: 22px !important;
     }
@@ -373,9 +459,19 @@
         gap: 0.55rem;
     }
 
+    .remote-skeleton-command-grid {
+        grid-template-columns: repeat(auto-fill, minmax(82px, 1fr));
+        gap: 0.55rem;
+    }
+
     .remote-command-button.ui.button {
         min-height: 88px !important;
         border-radius: 14px !important;
+    }
+
+    .remote-skeleton-command {
+        min-height: 88px;
+        border-radius: 14px;
     }
 
     .remote-command-icon-wrap {
@@ -404,7 +500,9 @@
 
     .remote-refresh-button.ui.button,
     .remote-command-button.ui.button,
-    .remote-command-icon-wrap {
+    .remote-command-icon-wrap,
+    .remote-skeleton {
         transition: none !important;
+        animation: none;
     }
 }

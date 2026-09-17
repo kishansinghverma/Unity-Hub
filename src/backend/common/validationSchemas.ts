@@ -236,10 +236,7 @@ export const schemas: Record<string, ValidationSchema> = {
     },
     "POST /api/oakterremote/command": {
         body: joi.object({
-            commandId: joi.alternatives().try(
-                joi.number().integer().positive(),
-                joi.string().trim().regex(/^[1-9]\d*$/)
-            ).required(),
+            commandId: joi.string().trim().regex(/^[1-9]\d*$/).required(),
             remoteId: joi.alternatives().try(
                 joi.number().integer().positive(),
                 joi.string().trim().regex(/^[1-9]\d*$/)

@@ -32,12 +32,12 @@ import { handleError, handleJsonResponse } from "../operations/utils";
 import "./remote.css";
 
 type RemoteCommand = {
-    Id: number;
+    Id: string;
     Name: string;
 };
 
 type RemoteDevice = {
-    Id: number;
+    Id: number | string;
     Name: string;
     CommandList: RemoteCommand[];
 };
@@ -110,16 +110,45 @@ const playFeedback = (isRepeat = false) => {
     }
 };
 
+const RemoteSkeleton = () => (
+    <div className="remote-loading" role="status" aria-label="Loading remote controls">
+        <span className="remote-sr-only">Loading remote controls</span>
+        {Array.from({ length: 2 }).map((_, deviceIndex) => (
+            <section className="remote-skeleton-device" key={deviceIndex}>
+                <div className="remote-skeleton-device-title">
+                    <span className="remote-skeleton remote-skeleton-device-icon" />
+                    <span className="remote-skeleton remote-skeleton-device-name" />
+                </div>
+                <div className="remote-skeleton-command-grid">
+                    {Array.from({ length: 8 }).map((__, commandIndex) => (
+                        <span className="remote-skeleton-command" key={commandIndex}>
+                            <span className="remote-skeleton remote-skeleton-command-icon" />
+                            <span className="remote-skeleton remote-skeleton-command-label" />
+                        </span>
+                    ))}
+                </div>
+            </section>
+        ))}
+    </div>
+);
+
 export const RemotePage = () => {
     const [pressedCommandKey, setPressedCommandKey] = useState<string | null>(null);
     const [connectionStatus, setConnectionStatus] = useState<"checking" | "connected" | "disconnected">("checking");
     const [devices, setDevices] = useState<RemoteDevice[]>([]);
+    const [isLoadingDevices, setIsLoadingDevices] = useState(true);
     const [isRefreshingDevices, setIsRefreshingDevices] = useState(false);
     const repeatIntervalRef = useRef<number | null>(null);
 
     const updateDevices = (response: CommandResponse) => {
         if (!Array.isArray(response.Response)) throw new Error("Invalid device catalog received from server");
-        setDevices(response.Response);
+        setDevices(response.Response.map(device => ({
+            ...device,
+            CommandList: device.CommandList.map(command => ({
+                ...command,
+                Id: String(command.Id)
+            }))
+        })));
     };
 
     const syncDevices = () => {
@@ -138,10 +167,11 @@ export const RemotePage = () => {
         fetch(Url.OakterRemoteDevices)
             .then(handleJsonResponse)
             .then((json: CommandResponse) => updateDevices(json))
-            .catch(handleError);
+            .catch(handleError)
+            .finally(() => setIsLoadingDevices(false));
     }, []);
 
-    const issueCommand = (commandId: number, remoteId: number) => {
+    const issueCommand = (commandId: string, remoteId: number | string) => {
         fetch(Url.OakterRemoteCommand, { ...PostParams, body: JSON.stringify({ commandId, remoteId }) })
             .then(handleJsonResponse)
             .then(json => { if (!json.Status) throw new Error(json.Response) })
@@ -155,7 +185,7 @@ export const RemotePage = () => {
         }
     };
 
-    const press = (commandKey: string, commandId: number, remoteId: number) => {
+    const press = (commandKey: string, commandId: string, remoteId: number | string) => {
         setPressedCommandKey(commandKey);
 
         playFeedback();
@@ -282,7 +312,7 @@ export const RemotePage = () => {
                             <Header as="h2" className="remote-page-title">
                                 Smart Remote
                                 <HeaderSubheader>
-                                    Control center · {devices.length} devices
+                                    {isLoadingDevices ? "Loading devices…" : `Control center · ${devices.length} devices`}
                                 </HeaderSubheader>
                             </Header>
                         </div>
@@ -302,7 +332,7 @@ export const RemotePage = () => {
                             </span>
                         </div>
                     </div>
-                    {devices.map((device) => {
+                    {isLoadingDevices ? <RemoteSkeleton /> : devices.map((device) => {
                         const deviceCategory = getDeviceCategory(device.Name);
                         const DeviceFallbackIcon = DEVICE_ICONS[deviceCategory];
                         return (

@@ -15,7 +15,7 @@ class OakterRemoteService {
     private sessionId = process.env.OAKTER_SESSION_ID;
     private oakRemoteId = process.env.OAKTER_REMOTE_ID;
     private oakRemoteAuthToken = process.env.OAKTER_AUTH_TOKEN;
-    private deviceCatalogPath = path.join(__dirname, "../static/commands.json");
+    private deviceCatalogPath = path.join(__dirname, "../static/oak-devices.json");
 
     constructor() {
         this.logger = new Logger(source.oakterremote);
@@ -31,7 +31,7 @@ class OakterRemoteService {
         SessionId: this.sessionId,
     });
 
-    public issueCommand = (commandId: string | number, remoteId: string | number) => {
+    public issueCommand = (commandId: string, remoteId: string | number) => {
         const payload = {
             Header: this.getHeader(),
             RemoteId: remoteId,
@@ -56,11 +56,11 @@ class OakterRemoteService {
 
         return fetch(`${this.renewSessionUrl}`, fetchParams)
             .then(validateResponse)
-            .then(res => res.json())
+            .then(response => response.json())
             .then(content => content.RenewSessionResult.ESPDevices[0].Connected);
     };
 
-    private fetchDevices = () => {
+    private fetchCatalogFromRemote = () => {
         const payload = {
             Header: this.getHeader(),
             OakRemoteId: this.oakRemoteId,
@@ -74,26 +74,21 @@ class OakterRemoteService {
         return fetch(`${this.remoteBaseUrl}/api/ir/remotes/v2`, fetchParams).then(getJsonResponse);
     };
 
-    public getDevices = async (): Promise<ExecutionResponse> => {
-        try {
+    public getCatalog = async (): Promise<ExecutionResponse> => {
+        if (fs.existsSync(this.deviceCatalogPath)) {
             const content = JSON.parse(await fs.promises.readFile(this.deviceCatalogPath, "utf8"));
             return { content, statusCode: 200 };
-        } catch (error: any) {
-            if (error.code === "ENOENT") {
-                return this.syncDevices();
-            }
-            throw error;
         }
+
+        return this.syncCatalog();
     };
 
-    public syncDevices = async (): Promise<ExecutionResponse> => {
-        const result = await this.fetchDevices();
+    public syncCatalog = async (): Promise<ExecutionResponse> => {
+        const result = await this.fetchCatalogFromRemote();
         const directory = path.dirname(this.deviceCatalogPath);
-        const temporaryPath = `${this.deviceCatalogPath}.${process.pid}-${Date.now()}.tmp`;
 
         await fs.promises.mkdir(directory, { recursive: true });
-        await fs.promises.writeFile(temporaryPath, JSON.stringify(result.content, null, 2), "utf8");
-        await fs.promises.rename(temporaryPath, this.deviceCatalogPath);
+        await fs.promises.writeFile(this.deviceCatalogPath, JSON.stringify(result.content, null, 2), "utf8");
 
         return result;
     };

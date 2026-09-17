@@ -1,8 +1,8 @@
 # Project Handoff
 
-Last updated: 2026-09-11
+Last updated: 2026-09-17
 
-Latest operation: updated the remote catalog flow so the backend hydrates `/devices` when the local catalog is missing, while explicit refresh uses the `/syncdevices` response directly.
+Latest operation: added a stable remote-page loading skeleton while the initial catalog request is pending.
 
 ## Current State
 
@@ -72,14 +72,16 @@ Schemas expose any applicable combination of `params`, `query`, and `body`. The 
 - Emandi gatepass and niner query validation now report `id and date must be provided together` when only one paired parameter is supplied.
 - Current working preferences: keep functions responsibility-focused, separate HTML/JSON document creation helpers, execute independent document actions without early returns, return structured per-action statuses, and use explicit business-oriented validation messages.
 - Current architecture preference: keep route handlers thin, operations responsible for workflows, services responsible for integrations, and request/response types in dedicated `common/types/request` and `common/types/response` files.
-- Remote controls now load from `GET /api/oakterremote/devices`, which reads backend `static/commands.json`; `POST /api/oakterremote/syncdevices` updates that file, then the frontend reloads it.
-- `src/backend/static/commands.json` is intentionally untracked runtime state. `GET /devices` reads the file and calls `syncDevices()` when it is missing, so the backend stores and returns the hydrated upstream catalog. Later reads reuse the saved file, while explicit refresh uses the sync response directly so the UI does not make a second catalog request.
+- Remote controls now load from `GET /api/oakterremote/devices`, which reads backend `static/oak-devices.json`; `POST /api/oakterremote/syncdevices` updates that file, then the frontend renders the sync response.
+- `src/backend/static/oak-devices.json` is intentionally untracked runtime state. `GET /devices` checks for the file through `getCatalog()` and calls `syncCatalog()` when it is missing; `syncCatalog()` uses `fetchCatalogFromRemote()` to hydrate and store the upstream catalog. Later reads reuse the saved file, while explicit refresh uses the sync response directly.
 - Verification after the remote catalog flow update: `npx tsc --noEmit` passed, `npm run build` passed with only the existing React hook warnings, and `git diff --check` passed.
 - The obsolete tracked `src/frontends/emandi/src/static/commands.json` copy was removed; the backend runtime catalog is now the only source.
 - Verification after the catalog cleanup: `npx tsc --noEmit` passed, `npm run build` passed with only the existing React hook warnings, and `git diff --check` passed.
 - Remote-control rendering still assumes every device has a valid `CommandList` array and renders no empty/error state when the catalog is empty or malformed; consider adding guarded normalization and an explicit empty state.
 - Remote command buttons repeat every command while held because `press()` starts a 500ms interval for all commands; this is intentional for hold controls but may be undesirable for one-shot commands such as power, input, or play.
 - The frontend follow-up remains in `todo`: add the three action checkboxes, default Share Via WhatsApp to selected, submit the combined payload, redirect to `downloadUrl`, and notify for failed print/share actions.
+- Remote contract review: `/devices`, `/syncdevices`, and `/isconnected` match the frontend assumptions. Global `validationMiddleware` applies the `/command` request schema before the route runs. `commandId` is now string-only in backend validation and service signatures; the frontend normalizes catalog command IDs with `String(...)` before sending them. The frontend still assumes forwarded remote fields `Status` and `Response` without a backend response type or normalization.
+- The remote page now shows an initial skeleton and maintains a minimum-height outer panel while `/devices` loads; manual refresh keeps the existing catalog visible.
 - Existing unrelated worktree changes remain uncommitted and must be preserved.
 
 ## Follow-up Considerations

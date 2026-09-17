@@ -1,6 +1,6 @@
 # Repository Guidelines
 
-Last reviewed: 2026-09-11 — reviewed the current remote page and runtime commands catalog behavior.
+Last reviewed: 2026-09-17 — reviewed frontend/backend Oakter remote contracts.
 
 ## Project Structure & Module Organization
 
@@ -35,7 +35,11 @@ The dispatch API is mounted at `/api/dispatches` and currently exposes `/status`
 
 Vision functionality is mounted at `/api/vision`; captcha OCR is exposed at `POST /captcha`, and QR generation is shared by document operations through the Vision service. Keep external integrations in services and expose them through operations/routes where an HTTP contract is needed.
 
-The Oakter device catalog at `src/backend/static/commands.json` is runtime state and must remain untracked. `GET /devices` reads the file and, when it is missing, synchronizes from Oakter before returning the hydrated catalog. Later reads use the saved file, while explicit refresh calls `/syncdevices` and renders its response directly.
+The Oakter device catalog at `src/backend/static/oak-devices.json` is runtime state and must remain untracked. `GET /devices` checks for the file and, when it is missing, synchronizes from Oakter before returning the hydrated catalog. Later reads use the saved file, while explicit refresh calls `/syncdevices` and renders its response directly.
+
+Keep the Oakter remote contracts aligned: the global `validationMiddleware` validates `POST /api/oakterremote/command` against its schema before the route runs. The frontend expects catalog responses with `Response`, connection responses with `isConnected`, and command responses with `Status`/`Response`; the backend currently forwards the remote command response without normalizing it.
+
+The remote page displays an initial loading skeleton with a stable outer panel height while the catalog request is pending. Manual refresh preserves the current controls while syncing.
 
 ## Testing Guidelines
 
