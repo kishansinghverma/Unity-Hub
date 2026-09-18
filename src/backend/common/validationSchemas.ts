@@ -170,7 +170,6 @@ export const schemas: Record<string, ValidationSchema> = {
                 }).unknown(false),
                 joi.object({
                     type: joi.valid("html").required(),
-                    name: joi.string().valid('niner', 'gatepass').required(),
                     party: joi.string().trim().min(1).required(),
                     tables: joi.array().items(joi.string()).required(),
                     qr: joi.string().required()
@@ -201,7 +200,6 @@ export const schemas: Record<string, ValidationSchema> = {
                 }).unknown(false),
                 joi.object({
                     type: joi.valid("html").required(),
-                    name: joi.string().valid('niner', 'gatepass').required(),
                     party: joi.string().trim().min(1).required(),
                     tables: joi.array().items(joi.string()).required(),
                     qr: joi.string().required()

@@ -34,7 +34,7 @@ export type GatepassDocumentRequest = {
     source:
         | { type: "latest" }
         | { type: "id", gatepassId: string, date: string }
-        | { type: "html", name: string, party: string, tables: string[], qr: string };
+        | { type: "html", party: string, tables: string[], qr: string };
     print: boolean;
     download: boolean;
     share: boolean;
@@ -44,7 +44,7 @@ export type NinerDocumentRequest = {
     source:
         | { type: "latest" }
         | { type: "id", ninerId: string, date: string }
-        | { type: "html", name: string, party: string, tables: string[], qr: string };
+        | { type: "html", party: string, tables: string[], qr: string };
     print: boolean;
     download: boolean;
     share: boolean;

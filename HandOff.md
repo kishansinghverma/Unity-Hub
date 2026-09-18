@@ -1,8 +1,8 @@
 # Project Handoff
 
-Last updated: 2026-09-17
+Last updated: 2026-09-18
 
-Latest operation: changed vtag Axios requests to async/await with shared error propagation.
+Latest operation: removed the unused HTML document `name` field from the request types.
 
 ## Current State
 
@@ -54,7 +54,7 @@ Schemas expose any applicable combination of `params`, `query`, and `body`. The 
 - Direct document HTML requests use `template_niner_html.ejs` or `template_gatepass_html.ejs`; JSON requests use `template_niner_json.ejs` or `template_gatepass_json.ejs`.
 - `template_emandi.ejs`, `fileService.generatePdfFromHtml`, `files.createAndSharePdf`, the `POST /api/files/html` route, and its validation schema have been removed. `CreatePdfRequest` remains for the dedicated document HTML renderers.
 - `HtmlDocumentData` contains only `tables: string[]` and `qr`; it is used by `generateNinerPdfFromHtml` and `generateGatepassPdfFromHtml`.
-- HTML request `name` remains part of the public request contract, while `party` is used separately for WhatsApp captions.
+- HTML document requests now contain only `party`, `tables`, and `qr`; `party` is used separately for WhatsApp captions.
 - `emandi.getGatepassHtml`, `emandi.getLatestGatepassHtml`, and `eMandiPortal.gatepassPrint` were removed as leftovers from the former server-side portal-HTML parsing flow.
 - `getRecordQuery` retains its `normalizePortalDate` guard because it validates actual calendar dates and protects direct/internal callers, even though route schemas require the date field and format.
 - Dispatch route names, operation method names, validation schemas, frontend push URL, README, and handoff documentation now use the same contract, including `GET /api/dispatches/pop`.
@@ -66,6 +66,7 @@ Schemas expose any applicable combination of `params`, `query`, and `body`. The 
 - Vehicle-tagging requests use dedicated request types, a thin route/operation layer, and `vehicleTaggingService` to send requests directly with Axios. The GET tagging filter preserves the collection’s JSON body, including string `InstrumentType`.
 - `getErrorResponse` in `src/backend/common/utils.ts` now recognizes Axios errors, preserves upstream HTTP statuses, and maps transport failures to `502`.
 - vtag request handling uses async/await without a local catch, allowing Axios errors and validation errors to reach the shared route error handler.
+- `API_ROUTES.md` documents all currently registered API routes and their functionality.
 - Vehicle-tagging endpoint constants keep `/api/VehicleTaggingAPI` in `eMandiPortal.vehicleTagging.baseRoute`; each operation stores only its remaining path and the service composes the full upstream URL.
 - Vehicle lookup uses the concise `getVehicle` operation/service method and hardcodes upstream `InstrumentType: 1`; other vtag internals use `getTaggingData`, `getVehicleTypes`, and `insertTaggingData`.
 - Express vehicle-tagging payloads are defined in `src/backend/common/types/inbound/request/VehicleTagging.ts`; the distinct upstream vehicle lookup payload is defined in `src/backend/common/types/outbound/request/VehicleTagging.ts`.

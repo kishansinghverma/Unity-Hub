@@ -1,6 +1,6 @@
 # Repository Guidelines
 
-Last reviewed: 2026-09-17 — vtag propagates Axios errors to shared error handling.
+Last reviewed: 2026-09-18 — removed the unused HTML document `name` field.
 
 ## Project Structure & Module Organization
 
