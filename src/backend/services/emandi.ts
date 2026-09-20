@@ -5,7 +5,6 @@ import {
     ExecutionResponse,
     LoginResponse,
     LoginToken,
-    RequestConfig,
 } from "../common/types";
 import { Logger, Throwable } from "../common/models";
 import { eMandiPortal, source } from "../common/constants";
@@ -24,6 +23,13 @@ const CREDENTIAL_KEYS = {
     password: "emandi.password"
 };
 
+type EmandiRequestConfig = {
+    url: string;
+    method: "POST";
+    headers: Record<string, string>;
+    body: string;
+};
+
 export class EMandiService {
     private readonly logger: Logger;
     private readonly cookieJar: CookieJar;
@@ -38,7 +44,7 @@ export class EMandiService {
         this.fetch = fetchCookie(fetch, this.cookieJar);
     }
 
-    public async initialize(request: EmandiCredentials): Promise<ExecutionResponse> {
+    public initialize = async (request: EmandiCredentials): Promise<ExecutionResponse> => {
         await this.saveCredential(CREDENTIAL_KEYS.username, request.username);
         await this.saveCredential(CREDENTIAL_KEYS.password, request.password);
         await this.purgeCurrentSession()
@@ -47,16 +53,15 @@ export class EMandiService {
             content: { initialized: true, message: "eMandi credentials initialized" },
             statusCode: 200
         };
-    }
+    };
 
-    private isSessionActive(): boolean {
-        return !!this.session && Date.now() < new Date(this.session.expiresAt).getTime();
-    }
+    private isSessionActive = (): boolean => !!this.session && Date.now() < new Date(this.session.expiresAt).getTime();
 
-    private purgeCurrentSession = async () => {
+    private purgeCurrentSession = async (): Promise<void> => {
         this.session = null;
         await this.cookieJar.removeAllCookies();
-    }
+    };
+
     private saveCredential = async (key: string, secret: string): Promise<void> => {
         const existing = await keyVault.getSecret(key);
         if (existing) await keyVault.updateSecret(key, secret);
@@ -76,7 +81,7 @@ export class EMandiService {
         return { username: username.secret, password: password.secret };
     };
 
-    public async getSessionStatus(): Promise<ExecutionResponse> {
+    public getSessionStatus = async (): Promise<ExecutionResponse> => {
         const cookies = await this.cookieJar.getCookies(BASE_URL);
         const authenticated = this.isSessionActive();
 
@@ -88,9 +93,9 @@ export class EMandiService {
         };
 
         return { content: info, statusCode: 200 };
-    }
+    };
 
-    public async sendRequest(config: RequestConfig, allowRetry = true): Promise<ExecutionResponse> {
+    public sendRequest = async (config: EmandiRequestConfig, allowRetry = true): Promise<ExecutionResponse> => {
         await this.ensureSession();
 
         const url = this.resolvePortalUrl(config.url);
@@ -121,11 +126,11 @@ export class EMandiService {
 
         const data = await this.parseResponseBody(response);
         return { content: data, statusCode: response.status };
-    }
+    };
 
 
 
-    private async authenticateFromVault(): Promise<void> {
+    private authenticateFromVault = async (): Promise<void> => {
         const credentials = await this.getStoredCredentials();
 
         try {
@@ -136,9 +141,9 @@ export class EMandiService {
             this.purgeCurrentSession()
             throw error;
         }
-    }
+    };
 
-    private async authenticate(credentials: EmandiCredentials): Promise<void> {
+    private authenticate = async (credentials: EmandiCredentials): Promise<void> => {
         let lastError = "";
 
         for (let attempt = 1; attempt <= MAX_LOGIN_ATTEMPTS; attempt++) {
@@ -173,9 +178,9 @@ export class EMandiService {
         }
 
         throw new Throwable(`Authentication failed after ${MAX_LOGIN_ATTEMPTS} attempts. Last error: ${lastError || "Captcha resolution failed"}`, 422);
-    }
+    };
 
-    private async fetchLoginTokens(): Promise<LoginToken> {
+    private fetchLoginTokens = async (): Promise<LoginToken> => {
         const url = `${BASE_URL}${eMandiPortal.loginPage}`;
         this.logger.log(`Fetching login page: ${url}`);
 
@@ -205,9 +210,9 @@ export class EMandiService {
         }
 
         return { requestToken, captchaImageUrl, captchaText, captchaToken };
-    }
+    };
 
-    private async resolveCaptcha(imageUrl: string): Promise<string> {
+    private resolveCaptcha = async (imageUrl: string): Promise<string> => {
         const fullUrl = imageUrl.startsWith("http") ? imageUrl : `${BASE_URL}${imageUrl}`;
 
         const response = await this.fetchWithTimeout(fullUrl, {
@@ -232,9 +237,9 @@ export class EMandiService {
         }
 
         return digits;
-    }
+    };
 
-    private async submitLogin(credentials: EmandiCredentials, tokens: LoginToken, captchaDigits: string): Promise<LoginResponse> {
+    private submitLogin = async (credentials: EmandiCredentials, tokens: LoginToken, captchaDigits: string): Promise<LoginResponse> => {
         const form = new FormData();
         form.set("Email", credentials.username);
         form.set("Password", credentials.password);
@@ -263,9 +268,9 @@ export class EMandiService {
         const result = await response.json().catch(() => null);
         if (!result) throw new Throwable("Unexpected non-JSON response from login endpoint", 502);
         return result as LoginResponse;
-    }
+    };
 
-    private async ensureSession(): Promise<void> {
+    private ensureSession = async (): Promise<void> => {
         if (this.isSessionActive()) return;
 
         if (!this.authenticationPromise) {
@@ -275,9 +280,9 @@ export class EMandiService {
         }
 
         await this.authenticationPromise;
-    }
+    };
 
-    private async warmTraderSession(): Promise<void> {
+    private warmTraderSession = async (): Promise<void> => {
         const response = await this.fetchWithTimeout(`${BASE_URL}${eMandiPortal.tradersIndex}`, {
             headers: {
                 "User-Agent": USER_AGENT,
@@ -295,47 +300,39 @@ export class EMandiService {
         }
 
         await response.arrayBuffer();
-    }
+    };
 
 
 
-    private isAuthenticationFailure(response: Response): boolean {
+    private isAuthenticationFailure = (response: Response): boolean => {
         if (response.status === 401 || response.status === 403) return true;
 
         const location = response.headers.get("location") || "";
         const isRedirect = [301, 302, 303, 307].includes(response.status);
 
         return isRedirect && /\/Account(?:\/index|\/LogOut)?/i.test(location);
-    }
+    };
 
-    private resolvePortalUrl(path: string): string {
+    private resolvePortalUrl = (path: string): string => {
         const url = new URL(path, BASE_URL);
         if (url.origin !== BASE_URL) throw new Throwable("Authenticated requests must target eMandi", 400);
 
         return url.toString();
-    }
+    };
 
-    private buildRequestOptions(config: RequestConfig): RequestInit {
-        const headers: Record<string, string> = { "User-Agent": USER_AGENT, ...config.headers };
-        const isForm = headers["Content-Type"]?.includes("application/x-www-form-urlencoded");
-        const body = config.body && typeof config.body === "object" && !(config.body instanceof FormData) && !(config.body instanceof URLSearchParams) && !Buffer.isBuffer(config.body)
-            ? isForm ? new URLSearchParams(config.body as Record<string, string>).toString() : JSON.stringify(config.body)
-            : config.body as BodyInit | null | undefined;
+    private buildRequestOptions = (config: EmandiRequestConfig): RequestInit => ({
+        method: config.method,
+        headers: { "User-Agent": USER_AGENT, ...config.headers },
+        body: config.body,
+        redirect: "manual",
+    });
 
-        return {
-            method: config.method ?? "GET",
-            headers: body && !headers["Content-Type"] ? { ...headers, "Content-Type": "application/json" } : headers,
-            body: body ?? null,
-            redirect: config.redirect ?? "manual",
-        };
-    }
-
-    private async parseResponseBody(response: Response): Promise<any> {
+    private parseResponseBody = async (response: Response) => {
         const contentType = response.headers.get("content-type");
         return contentType?.includes("application/json") ? response.json().catch(() => null) : response.text();
-    }
+    };
 
-    private async fetchWithTimeout(url: string, options: RequestInit = {}): Promise<Response> {
+    private fetchWithTimeout = async (url: string, options: RequestInit = {}) => {
         try {
             return await this.fetch(url, {
                 ...options,
@@ -348,15 +345,15 @@ export class EMandiService {
             }
             throw error;
         }
-    }
+    };
 
-    private errorMessage(error: unknown): string {
+    private errorMessage = (error: unknown) => {
         return error instanceof Error ? error.message : String(error);
-    }
+    };
 
-    private extract(html: string, pattern: RegExp): string | null {
+    private extract = (html: string, pattern: RegExp) => {
         return html.match(pattern)?.[1] ?? null;
-    }
+    };
 }
 
 export const emandiService = new EMandiService();
