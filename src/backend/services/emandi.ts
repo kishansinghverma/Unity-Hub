@@ -101,7 +101,7 @@ export class EMandiService {
             await this.warmTraderSession();
         }
         catch (error) {
-            this.purgeCurrentSession()
+            await this.purgeCurrentSession();
             throw error;
         }
     };

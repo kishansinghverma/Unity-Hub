@@ -2,7 +2,7 @@
 
 Last updated: 2026-09-20
 
-Latest operation: added one-time eMandi session re-authentication and request retry after remote session expiry.
+Latest operation: awaited eMandi session cleanup when authentication fails.
 
 ## Current State
 
@@ -111,7 +111,7 @@ Schemas expose any applicable combination of `params`, `query`, and `body`. The 
 ### eMandi service audit TODO
 
 - [x] Re-authenticate and retry the original request once when the portal reports an expired session, while preventing retry loops.
-- [ ] Await `purgeCurrentSession()` in authentication-failure cleanup paths.
+- [x] Await `purgeCurrentSession()` in authentication-failure cleanup paths.
 - [ ] Restore same-origin validation for portal and captcha URLs, or constrain request inputs to trusted relative paths.
 - [ ] Handle non-captcha login failures immediately and preserve the portal’s failure message/status.
 - [ ] Treat a missing OCR code as empty instead of the string `"undefined"`, and validate captcha digits before login.

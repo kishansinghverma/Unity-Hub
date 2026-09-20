@@ -1,6 +1,6 @@
 # Repository Guidelines
 
-Last reviewed: 2026-09-20 — added one-time eMandi session recovery and request retry.
+Last reviewed: 2026-09-20 — awaited eMandi session cleanup on authentication failure.
 
 ## Project Structure & Module Organization
 
