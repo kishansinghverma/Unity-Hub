@@ -120,12 +120,11 @@ export const schemas: Record<string, ValidationSchema> = {
             VehicleFullImage: joi.string().min(1).required()
         }).unknown(false)
     },
-    "POST /api/emandi/session": {
+    "POST /api/emandi/init": {
         body: joi.object({
-            email: joi.string().trim().email().max(254).required(),
-            password: joi.string().min(1).max(1024).required(),
-            autorefresh: joi.boolean().optional()
-        })
+            userName: joi.string().trim().min(1).max(254).required(),
+            password: joi.string().min(1).max(1024).required()
+        }).unknown(false)
     },
     "GET /api/emandi/gatepasses": {
         query: joi.object({

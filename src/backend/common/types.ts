@@ -206,17 +206,13 @@ export type SharedExpense = {
     category_id: number;
 };
 
-export type Credentials = {
-    email: string;
+export type EmandiCredentials = {
+    username: string;
     password: string;
 };
 
-export type EMandiAuthRequest = Credentials & {
-    autorefresh?: boolean;
-};
-
 export type EMandiSession = {
-    email: string;
+    username: string;
     role: string;
     authenticatedAt: string;
     expiresAt: string;

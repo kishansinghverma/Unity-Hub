@@ -1,8 +1,8 @@
 # Project Handoff
 
-Last updated: 2026-09-18
+Last updated: 2026-09-20
 
-Latest operation: removed the unused HTML document `name` field from the request types.
+Latest operation: moved eMandi credential initialization to `POST /api/emandi/init` with encrypted KeyVault storage and lazy in-memory session creation.
 
 ## Current State
 
@@ -17,7 +17,7 @@ The repository is on `main`, synchronized with `origin/main`, with all current w
 
 ## Current API Contract
 
-- Session: `POST`, `GET`, or `DELETE /api/emandi/session`
+- eMandi credentials: `POST /api/emandi/init` with only `userName` and `password`; credentials are encrypted through KeyVault, while session status and clearing remain `GET` and `DELETE /api/emandi/session`
 - Portal records: `GET /api/emandi/gatepasses` and `GET /api/emandi/niners`
 - Captcha OCR: `POST /api/vision/captcha`
 - Vehicle tagging: `GET /api/vtag/vehicles/:gatepassId`, `GET /api/vtag/vehicles/types`, and `GET|POST /api/vtag/entries`
@@ -28,6 +28,8 @@ The repository is on `main`, synchronized with `origin/main`, with all current w
 - eMandi records: `GET /api/emandi/gatepasses/latest`, single-record `GET /api/emandi/gatepasses?id=...&date=DD/MM/YYYY`, and filtered `GET /api/emandi/gatepasses?fromDate=...&toDate=...&limit=...`; equivalent query-based routes exist for `/niners`.
 
 Validation keys now include the HTTP method where one resource path supports multiple operations.
+
+The eMandi `/init` body rejects unknown fields. It stores no session or cookie state on disk, does not use environment credentials, and does not refresh active sessions. Authenticated portal requests reuse the in-memory session, creating one from KeyVault only when the session is absent or expired; a failed authenticated request is retried once after re-authentication.
 
 `validator.middleware` runs after body parsing and before route registration. It uses the typed `Validator` in `validationMiddleware.ts` with schemas from `validationSchemas.ts`, validates defined method/path pairs, supports `:id` route patterns, sequentially validates declared `request.params`, `request.body`, and `request.query` sections, writes sanitized values back to the request, and skips undefined paths.
 

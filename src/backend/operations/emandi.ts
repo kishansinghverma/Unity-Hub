@@ -1,5 +1,5 @@
 import { Throwable } from "../common/models";
-import { EMandiRecord, ExecutionResponse, EMandiAuthRequest, EMandiQuery } from "../common/types";
+import { EMandiRecord, ExecutionResponse, EMandiQuery, EmandiCredentials } from "../common/types";
 import { emandiService } from "../services/emandi";
 import { eMandiPortal } from "../common/constants";
 import { normalizePortalDate } from "../common/utils";
@@ -16,11 +16,9 @@ type PortalRecordsQuery = {
 };
 
 class EMandi {
-    public initializeSession = (request: EMandiAuthRequest): Promise<ExecutionResponse> => emandiService.initializeSession(request);
+    public initialize = (request: EmandiCredentials): Promise<ExecutionResponse> => emandiService.initialize(request);
 
     public getSessionStatus = (): Promise<ExecutionResponse> => emandiService.getSessionStatus();
-
-    public clearSession = (): Promise<ExecutionResponse> => emandiService.clearSession();
 
     public getGatepasses = (query: EMandiQuery = {}): Promise<ExecutionResponse> => {
         if (query.id && query.date) return this.getGatepassById(query.id, query.date);

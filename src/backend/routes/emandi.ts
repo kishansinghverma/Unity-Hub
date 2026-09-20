@@ -10,14 +10,8 @@ router.get('/session', (request, response) => {
         .catch(replyError(response));
 });
 
-router.post('/session', (request, response) => {
-    emandi.initializeSession(request.body)
-        .then(replySuccess(response))
-        .catch(replyError(response));
-});
-
-router.delete('/session', (request, response) => {
-    emandi.clearSession()
+router.post('/init', (request, response) => {
+    emandi.initialize(request.body)
         .then(replySuccess(response))
         .catch(replyError(response));
 });

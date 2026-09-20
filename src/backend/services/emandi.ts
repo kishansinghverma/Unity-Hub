@@ -1,6 +1,5 @@
 import {
-    Credentials,
-    EMandiAuthRequest,
+    EmandiCredentials,
     EMandiSession,
     EMandiSessionInfo,
     ExecutionResponse,
@@ -11,20 +10,19 @@ import {
 import { Logger, Throwable } from "../common/models";
 import { eMandiPortal, source } from "../common/constants";
 import { visionService } from "./vision";
+import { keyVault } from "../operations/keyvault";
 import { CookieJar } from "tough-cookie";
 import fetchCookie from "fetch-cookie";
-import fs from "fs";
-import os from "os";
-import path from "path";
 
 const SESSION_TTL_MS = 30 * 60 * 1000;
 const REQUEST_TIMEOUT_MS = 30_000;
 const MAX_LOGIN_ATTEMPTS = 3;
 const BASE_URL = eMandiPortal.baseUrl;
 const USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36";
-
-// >>> TEMP TESTING COOKIE PERSISTENCE — REMOVE THIS BLOCK BEFORE PRODUCTION <<<
-const TEMP_COOKIE_CACHE_PATH = path.join(os.tmpdir(), "unity-hub-emandi-session.json");
+const CREDENTIAL_KEYS = {
+    username: "emandi.username",
+    password: "emandi.password"
+};
 
 export class EMandiService {
     private readonly logger: Logger;
@@ -32,40 +30,51 @@ export class EMandiService {
     private readonly fetch: typeof fetch;
 
     private session: EMandiSession | null = null;
-    private credentials: Credentials | null = null;
-    private autoRefresh: boolean = true;
+    private authenticationPromise: Promise<void> | null = null;
 
     constructor() {
         this.logger = new Logger(source.emandi);
-        const restoredJar = this.restoreTemporaryCookieJar();
-        this.cookieJar = restoredJar ?? new CookieJar();
+        this.cookieJar = new CookieJar();
         this.fetch = fetchCookie(fetch, this.cookieJar);
-
-        // TEMP TESTING COOKIE PERSISTENCE — REMOVE BEFORE PRODUCTION.
-        if (restoredJar) {
-            this.session = {
-                email: "restored-session",
-                role: "merchant",
-                authenticatedAt: new Date().toISOString(),
-                expiresAt: new Date(Date.now() + SESSION_TTL_MS).toISOString(),
-            };
-        }
     }
 
-    public async initializeSession(request: EMandiAuthRequest): Promise<ExecutionResponse> {
-        this.clearLocalSession();
+    public async initialize(request: EmandiCredentials): Promise<ExecutionResponse> {
+        await this.saveCredential(CREDENTIAL_KEYS.username, request.username);
+        await this.saveCredential(CREDENTIAL_KEYS.password, request.password);
+        await this.purgeCurrentSession()
+
+        return {
+            content: { initialized: true, message: "eMandi credentials initialized" },
+            statusCode: 200
+        };
+    }
+
+    private isSessionActive(): boolean {
+        return !!this.session && Date.now() < new Date(this.session.expiresAt).getTime();
+    }
+
+    private purgeCurrentSession = async () => {
+        this.session = null;
         await this.cookieJar.removeAllCookies();
-        await this.authenticate(request);
-        await this.warmTraderSession();
-        await this.persistTemporaryCookieJar();
-
-        const autoRefresh = request.autorefresh ?? true;
-        this.autoRefresh = autoRefresh;
-        this.credentials = autoRefresh ? { email: request.email, password: request.password } : null;
-        this.logger.success("eMandi session initialized");
-
-        return this.buildAuthResponse();
     }
+    private saveCredential = async (key: string, secret: string): Promise<void> => {
+        const existing = await keyVault.getSecret(key);
+        if (existing) await keyVault.updateSecret(key, secret);
+        else await keyVault.setSecret(key, secret);
+    };
+
+    private getStoredCredentials = async (): Promise<EmandiCredentials> => {
+        const [username, password] = await Promise.all([
+            keyVault.getSecret(CREDENTIAL_KEYS.username),
+            keyVault.getSecret(CREDENTIAL_KEYS.password)
+        ]);
+
+        if (!username || !password) {
+            throw new Throwable("eMandi credentials are not initialized yet.", 401);
+        }
+
+        return { username: username.secret, password: password.secret };
+    };
 
     public async getSessionStatus(): Promise<ExecutionResponse> {
         const cookies = await this.cookieJar.getCookies(BASE_URL);
@@ -79,27 +88,6 @@ export class EMandiService {
         };
 
         return { content: info, statusCode: 200 };
-    }
-
-    public async clearSession(): Promise<ExecutionResponse> {
-        if (this.isSessionActive()) {
-            try {
-                await this.fetchWithTimeout(`${BASE_URL}${eMandiPortal.logout}`, { headers: { "User-Agent": USER_AGENT } });
-            }
-            catch (error: unknown) {
-                this.logger.warning(`Logout request failed: ${this.errorMessage(error)}`);
-            }
-        }
-
-        await this.cookieJar.removeAllCookies();
-        this.removeTemporaryCookieJar();
-        this.clearLocalSession();
-        this.logger.success("eMandi session cleared");
-
-        return {
-            content: { authenticated: false, message: "Session cleared successfully" },
-            statusCode: 200,
-        };
     }
 
     public async sendRequest(config: RequestConfig, allowRetry = true): Promise<ExecutionResponse> {
@@ -121,25 +109,36 @@ export class EMandiService {
 
         if (this.isAuthenticationFailure(response)) {
             this.session = null;
-            // TEMP TESTING ONLY: discard a stale persisted cookie cache.
-            this.removeTemporaryCookieJar();
 
-            if (allowRetry && this.autoRefresh && this.credentials) {
+            if (allowRetry) {
                 this.logger.log("Session expired. Re-authenticating...");
-                await this.authenticate(this.credentials);
+                await this.ensureSession();
                 return this.sendRequest(config, false);
             }
 
-            throw new Throwable("eMandi session has expired. Please authenticate first.", 401);
+            throw new Throwable("eMandi session has expired and could not be recreated.", 401);
         }
-
-        this.refreshSessionExpiry();
 
         const data = await this.parseResponseBody(response);
         return { content: data, statusCode: response.status };
     }
 
-    private async authenticate(credentials: Credentials): Promise<void> {
+
+
+    private async authenticateFromVault(): Promise<void> {
+        const credentials = await this.getStoredCredentials();
+
+        try {
+            await this.authenticate(credentials);
+            await this.warmTraderSession();
+        }
+        catch (error) {
+            this.purgeCurrentSession()
+            throw error;
+        }
+    }
+
+    private async authenticate(credentials: EmandiCredentials): Promise<void> {
         let lastError = "";
 
         for (let attempt = 1; attempt <= MAX_LOGIN_ATTEMPTS; attempt++) {
@@ -150,7 +149,7 @@ export class EMandiService {
 
                 if (result.succeeded) {
                     this.session = {
-                        email: credentials.email,
+                        username: credentials.username,
                         role: result.role || "merchant",
                         authenticatedAt: new Date().toISOString(),
                         expiresAt: new Date(Date.now() + SESSION_TTL_MS).toISOString(),
@@ -235,9 +234,9 @@ export class EMandiService {
         return digits;
     }
 
-    private async submitLogin(credentials: Credentials, tokens: LoginToken, captchaDigits: string): Promise<LoginResponse> {
+    private async submitLogin(credentials: EmandiCredentials, tokens: LoginToken, captchaDigits: string): Promise<LoginResponse> {
         const form = new FormData();
-        form.set("Email", credentials.email);
+        form.set("Email", credentials.username);
         form.set("Password", credentials.password);
         form.set("DNTCaptchaText", tokens.captchaText);
         form.set("DNTCaptchaInputText", captchaDigits);
@@ -269,13 +268,13 @@ export class EMandiService {
     private async ensureSession(): Promise<void> {
         if (this.isSessionActive()) return;
 
-        if (this.autoRefresh && this.credentials) {
-            this.logger.log("Session inactive. Auto-refreshing...");
-            await this.authenticate(this.credentials);
-            return;
+        if (!this.authenticationPromise) {
+            this.authenticationPromise = this.authenticateFromVault().finally(() => {
+                this.authenticationPromise = null;
+            });
         }
 
-        throw new Throwable("No active eMandi session exists.", 401);
+        await this.authenticationPromise;
     }
 
     private async warmTraderSession(): Promise<void> {
@@ -298,45 +297,7 @@ export class EMandiService {
         await response.arrayBuffer();
     }
 
-    // TEMP TESTING COOKIE PERSISTENCE — REMOVE BEFORE PRODUCTION.
-    private restoreTemporaryCookieJar(): CookieJar | null {
-        try {
-            if (!fs.existsSync(TEMP_COOKIE_CACHE_PATH)) return null;
-            const serialized = JSON.parse(fs.readFileSync(TEMP_COOKIE_CACHE_PATH, "utf8"));
-            const jar = CookieJar.deserializeSync(serialized);
-            return jar.serializeSync()?.cookies?.length ? jar : null;
-        } catch (error: unknown) {
-            this.logger.warning(`Ignoring invalid temporary eMandi cookie cache: ${this.errorMessage(error)}`);
-            return null;
-        }
-    }
 
-    // TEMP TESTING COOKIE PERSISTENCE — REMOVE BEFORE PRODUCTION.
-    private async persistTemporaryCookieJar(): Promise<void> {
-        try {
-            const serialized = this.cookieJar.serializeSync();
-            if (!serialized?.cookies?.length) return;
-            fs.writeFileSync(TEMP_COOKIE_CACHE_PATH, JSON.stringify(serialized), { mode: 0o600 });
-            fs.chmodSync(TEMP_COOKIE_CACHE_PATH, 0o600);
-        } catch (error: unknown) {
-            this.logger.warning(`Could not persist temporary eMandi cookie cache: ${this.errorMessage(error)}`);
-        }
-    }
-
-    // TEMP TESTING COOKIE PERSISTENCE — REMOVE BEFORE PRODUCTION.
-    private removeTemporaryCookieJar(): void {
-        try {
-            if (fs.existsSync(TEMP_COOKIE_CACHE_PATH)) fs.rmSync(TEMP_COOKIE_CACHE_PATH);
-        } catch (error: unknown) {
-            this.logger.warning(`Could not remove temporary eMandi cookie cache: ${this.errorMessage(error)}`);
-        }
-    }
-
-    // <<< END TEMP TESTING COOKIE PERSISTENCE — REMOVE THIS BLOCK BEFORE PRODUCTION >>>
-
-    private isSessionActive(): boolean {
-        return !!this.session && Date.now() < new Date(this.session.expiresAt).getTime();
-    }
 
     private isAuthenticationFailure(response: Response): boolean {
         if (response.status === 401 || response.status === 403) return true;
@@ -347,12 +308,6 @@ export class EMandiService {
         return isRedirect && /\/Account(?:\/index|\/LogOut)?/i.test(location);
     }
 
-    private refreshSessionExpiry(): void {
-        if (this.session) {
-            this.session.expiresAt = new Date(Date.now() + SESSION_TTL_MS).toISOString();
-        }
-    }
-
     private resolvePortalUrl(path: string): string {
         const url = new URL(path, BASE_URL);
         if (url.origin !== BASE_URL) throw new Throwable("Authenticated requests must target eMandi", 400);
@@ -361,11 +316,7 @@ export class EMandiService {
     }
 
     private buildRequestOptions(config: RequestConfig): RequestInit {
-        const headers: Record<string, string> = {
-            "User-Agent": USER_AGENT,
-            ...config.headers,
-        };
-
+        const headers: Record<string, string> = { "User-Agent": USER_AGENT, ...config.headers };
         const isForm = headers["Content-Type"]?.includes("application/x-www-form-urlencoded");
         const body = config.body && typeof config.body === "object" && !(config.body instanceof FormData) && !(config.body instanceof URLSearchParams) && !Buffer.isBuffer(config.body)
             ? isForm ? new URLSearchParams(config.body as Record<string, string>).toString() : JSON.stringify(config.body)
@@ -380,10 +331,8 @@ export class EMandiService {
     }
 
     private async parseResponseBody(response: Response): Promise<any> {
-        const contentType = response.headers.get("content-type") || "";
-        return contentType.includes("application/json")
-            ? response.json().catch(() => null)
-            : response.text();
+        const contentType = response.headers.get("content-type");
+        return contentType?.includes("application/json") ? response.json().catch(() => null) : response.text();
     }
 
     private async fetchWithTimeout(url: string, options: RequestInit = {}): Promise<Response> {
@@ -392,17 +341,13 @@ export class EMandiService {
                 ...options,
                 signal: options.signal ?? AbortSignal.timeout(REQUEST_TIMEOUT_MS),
             });
-        } catch (error: unknown) {
+        }
+        catch (error) {
             if (error instanceof Error && (error.name === "TimeoutError" || error.name === "AbortError")) {
-                throw new Throwable("eMandi request timed out", 504);
+                throw new Throwable("EMandi Request Timed OSut", 504);
             }
             throw error;
         }
-    }
-
-    private clearLocalSession(): void {
-        this.session = null;
-        this.credentials = null;
     }
 
     private errorMessage(error: unknown): string {
@@ -411,17 +356,6 @@ export class EMandiService {
 
     private extract(html: string, pattern: RegExp): string | null {
         return html.match(pattern)?.[1] ?? null;
-    }
-
-    private buildAuthResponse(): ExecutionResponse {
-        return {
-            content: {
-                authenticated: true,
-                message: "Authenticated successfully with eMandi",
-                ...this.session!,
-            },
-            statusCode: 200,
-        };
     }
 }
 
