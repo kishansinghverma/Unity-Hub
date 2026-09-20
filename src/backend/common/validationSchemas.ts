@@ -122,7 +122,7 @@ export const schemas: Record<string, ValidationSchema> = {
     },
     "POST /api/emandi/init": {
         body: joi.object({
-            userName: joi.string().trim().min(1).max(254).required(),
+            username: joi.string().trim().min(1).max(254).required(),
             password: joi.string().min(1).max(1024).required()
         }).unknown(false)
     },
