@@ -1,6 +1,6 @@
 # Repository Guidelines
 
-Last reviewed: 2026-09-20 — consolidated EMandi credentials into one encrypted KeyVault secret.
+Last reviewed: 2026-09-21 — aligned finalize validation with frontend zero-rate and empty-ID payloads.
 
 ## Project Structure & Module Organization
 
@@ -31,7 +31,7 @@ Validation errors should explain the violated business rule in plain language. A
 
 Document rendering uses dedicated templates: `template_gatepass_html.ejs`, `template_niner_html.ejs`, `template_gatepass_json.ejs`, and `template_niner_json.ejs`. Do not reintroduce a generic combined document template or server-side receipt parsers. HTML rendering uses the lean `HtmlDocumentData` payload (`tables` and `qr`); the logo is embedded as a Base64 data URL from `assets/logo_emandi.png`.
 
-The dispatch API is mounted at `/api/dispatches` and currently exposes `/status`, `/init`, `/queued`, `/processed`, `/peek`, `/pop`, `/push`, `/finalize`, `/requeue/:id`, `/:id`, and party CRUD under `/parties`. `PATCH /finalize` accepts optional string `gatepassId`, `ninerId`, and `rate` fields, always moves the oldest queued record to processed, and merges only supplied fields. Keep the route, operation, validation, and documentation contracts aligned.
+The dispatch API is mounted at `/api/dispatches` and currently exposes `/status`, `/init`, `/queued`, `/processed`, `/peek`, `/pop`, `/push`, `/finalize`, `/requeue/:id`, `/:id`, and party CRUD under `/parties`. `PATCH /finalize` accepts optional `gatepassId` and `ninerId` strings, including empty strings, plus a non-empty string `rate` or numeric `0`; it always moves the oldest queued record to processed and merges only supplied fields. Keep the route, operation, validation, and documentation contracts aligned.
 
 Vision functionality is mounted at `/api/vision`; captcha OCR is exposed at `POST /captcha`, and QR generation is shared by document operations through the Vision service. Keep external integrations in services and expose them through operations/routes where an HTTP contract is needed.
 

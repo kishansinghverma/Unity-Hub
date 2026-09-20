@@ -48,9 +48,12 @@ export const schemas: Record<string, ValidationSchema> = {
     },
     "PATCH /api/dispatches/finalize": {
         body: joi.object({
-            gatepassId: joi.string().trim().min(1).optional(),
-            ninerId: joi.string().trim().min(1).optional(),
-            rate: joi.string().trim().min(1).optional()
+            gatepassId: joi.string().trim().allow('').optional(),
+            ninerId: joi.string().trim().allow('').optional(),
+            rate: joi.alternatives().try(
+                joi.string().trim().min(1),
+                joi.number().valid(0)
+            ).optional()
         }).unknown(false)
     },
     "GET /api/dispatches/requeue/:id": {

@@ -1,8 +1,8 @@
 # Project Handoff
 
-Last updated: 2026-09-20
+Last updated: 2026-09-21
 
-Latest operation: consolidated EMandi credentials into one encrypted KeyVault secret.
+Latest operation: aligned finalize validation with frontend zero-rate and empty-ID payloads.
 
 ## Current State
 
@@ -68,7 +68,7 @@ Schemas expose any applicable combination of `params`, `query`, and `body`. The 
 - `emandi.getGatepassHtml`, `emandi.getLatestGatepassHtml`, and `eMandiPortal.gatepassPrint` were removed as leftovers from the former server-side portal-HTML parsing flow.
 - `getRecordQuery` retains its `normalizePortalDate` guard because it validates actual calendar dates and protects direct/internal callers, even though route schemas require the date field and format.
 - Dispatch route names, operation method names, validation schemas, frontend push URL, README, and handoff documentation now use the same contract, including `GET /api/dispatches/pop`.
-- `PATCH /api/dispatches/finalize` accepts optional string fields `gatepassId`, `ninerId`, and `rate`; it always moves the oldest queued record to processed and merges only supplied fields.
+- `PATCH /api/dispatches/finalize` accepts optional `gatepassId` and `ninerId` strings, including empty strings, plus a non-empty string `rate` or numeric `0`; it always moves the oldest queued record to processed and merges only supplied fields.
 - `FinalizeDispatchRequest` is defined at `src/backend/common/types/inbound/request/Dispatch.ts` and is used by `operations/dispatches.ts`.
 - Every public method in `operations/dispatches.ts` currently has a route binding; no dead public dispatch operation was found.
 - Repository conventions now document the dedicated four-template document rendering flow, lean HTML payloads, request-type placement, and the current dispatch route/finalization contract.

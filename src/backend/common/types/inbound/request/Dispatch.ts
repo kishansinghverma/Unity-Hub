@@ -1,5 +1,5 @@
 export type FinalizeDispatchRequest = {
     gatepassId?: string;
     ninerId?: string;
-    rate?: string;
+    rate?: string | 0;
 };
