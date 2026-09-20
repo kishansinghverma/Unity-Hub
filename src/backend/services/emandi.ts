@@ -288,11 +288,6 @@ export class EMandiService {
         redirect: "manual",
     });
 
-    private parseResponseBody = async (response: Response) => {
-        const contentType = response.headers.get("content-type");
-        return contentType?.includes("application/json") ? response.json().catch(() => null) : response.text();
-    };
-
     private fetchWithTimeout = async (url: string, options: RequestInit = {}) => {
         try {
             return await this.fetch(url, {
@@ -310,6 +305,11 @@ export class EMandiService {
 
     private errorMessage = (error: unknown) => {
         return error instanceof Error ? error.message : error?.toString();
+    };
+
+        private parseResponseBody = async (response: Response) => {
+        const contentType = response.headers.get("content-type");
+        return contentType?.includes("application/json") ? response.json().catch(() => null) : response.text();
     };
 
     private extract = (html: string, pattern: RegExp) => {
