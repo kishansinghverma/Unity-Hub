@@ -275,7 +275,7 @@ export class EMandiService {
             return;
         }
 
-        throw new Throwable("No active eMandi session. Please authenticate first.", 401);
+        throw new Throwable("No active eMandi session exists.", 401);
     }
 
     private async warmTraderSession(): Promise<void> {

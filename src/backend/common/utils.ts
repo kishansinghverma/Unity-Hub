@@ -31,8 +31,8 @@ export const getErrorResponse = (error: Error) => {
         errorType = constants.errors.validationError;
     }
     else if (error instanceof Throwable) {
-        errorCode = error.statusCode;
-        errorType = constants.errors.customError;
+        errorCode = error.statusCode ?? 500;
+        errorType = constants.errorsBycode[errorCode] ?? constants.errors.customError;
     }
     else if (axios.isAxiosError(error)) {
         errorCode = error.response?.status ?? 502;

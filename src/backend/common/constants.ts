@@ -1,3 +1,36 @@
+const errorsBycode: Record<number, string> = {
+    203: 'NonAuthoritativeInformation',
+    204: 'NoContent',
+    208: 'AlreadyReported',
+    301: 'MovedPermanently',
+    400: 'BadRequest',
+    401: 'Unauthorized',
+    402: 'PaymentRequired',
+    403: 'Forbidden',
+    404: 'NotFound',
+    405: 'MethodNotAllowed',
+    406: 'NotAcceptable',
+    407: 'ProxyAuthenticationRequired',
+    408: 'RequestTimeout',
+    409: 'Conflict',
+    411: 'LengthRequired',
+    412: 'PreconditionFailed',
+    413: 'ContentTooLarge',
+    414: 'URITooLong',
+    415: 'UnsupportedMediaType',
+    416: 'RangeNotSatisfiable',
+    417: 'ExpectationFailed',
+    422: 'UnprocessableContent',
+    424: 'FailedDependency',
+    428: 'PreconditionRequired',
+    500: 'InternalServerError',
+    501: 'NotImplemented',
+    502: 'BadGateway',
+    503: 'ServiceUnavailable',
+    504: 'GatewayTimeout',
+    511: 'NetworkAuthenticationRequired'
+};
+
 export const constants = {
     emandi: {
         database: 'E-Mandi',
@@ -42,7 +75,8 @@ export const constants = {
         mqttPublished: "Mqtt Message Published Successfully",
         cronJobRegistered: 'Cron Jobs Registered!'
     },
-    adminDb: 'admin'
+    adminDb: 'admin',
+    errorsBycode
 };
 
 export const templates = {
