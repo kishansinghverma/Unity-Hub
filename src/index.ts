@@ -27,3 +27,5 @@ const initialize = async () => {
     cronJobs.initialize();
     httpServer.initialize();
 };
+
+initialize();
