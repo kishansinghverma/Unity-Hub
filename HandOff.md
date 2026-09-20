@@ -2,7 +2,7 @@
 
 Last updated: 2026-09-20
 
-Latest operation: updated `GET /api/emandi/session` to reuse or create the in-memory EMandi session.
+Latest operation: consolidated EMandi credentials into one encrypted KeyVault secret.
 
 ## Current State
 
@@ -17,7 +17,7 @@ The repository is on `main`, synchronized with `origin/main`, with all current w
 
 ## Current API Contract
 
-- eMandi credentials: `POST /api/emandi/init` with only `userName` and `password`; credentials are encrypted through KeyVault. `GET /api/emandi/session` returns the active session or creates one from KeyVault, and `DELETE /api/emandi/session` clears it.
+- eMandi credentials: `POST /api/emandi/init` with only `username` and `password`; the `{ username, password }` JSON is stored as one encrypted KeyVault secret named `EmandiCredentials`. `GET /api/emandi/session` returns the active session or creates one from KeyVault, and `DELETE /api/emandi/session` clears it.
 - Portal records: `GET /api/emandi/gatepasses` and `GET /api/emandi/niners`
 - Captcha OCR: `POST /api/vision/captcha`
 - Vehicle tagging: `GET /api/vtag/vehicles/:gatepassId`, `GET /api/vtag/vehicles/types`, and `GET|POST /api/vtag/entries`

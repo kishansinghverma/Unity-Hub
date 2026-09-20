@@ -18,10 +18,7 @@ const REQUEST_TIMEOUT_MS = 30_000;
 const MAX_LOGIN_ATTEMPTS = 3;
 const BASE_URL = eMandiPortal.baseUrl;
 const USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36";
-const CREDENTIAL_KEYS = {
-    username: "emandi.username",
-    password: "emandi.password"
-};
+const CREDENTIAL_KEY = "EmandiCredentials";
 
 type EmandiRequestConfig = {
     url: string;
@@ -46,8 +43,7 @@ export class EMandiService {
 
     public initialize = async (request: EmandiCredentials): Promise<ExecutionResponse> => {
         await this.purgeCurrentSession()
-        await this.saveCredential(CREDENTIAL_KEYS.username, request.username);
-        await this.saveCredential(CREDENTIAL_KEYS.password, request.password);
+        await this.saveCredentials(request);
 
         return {
             content: { initialized: true, message: "EMandi credentials initialized" },
@@ -118,23 +114,20 @@ export class EMandiService {
         await this.cookieJar.removeAllCookies();
     };
 
-    private saveCredential = async (key: string, secret: string): Promise<void> => {
-        const existing = await keyVault.getSecret(key);
-        if (existing) await keyVault.updateSecret(key, secret);
-        else await keyVault.setSecret(key, secret);
+    private saveCredentials = async (credentials: EmandiCredentials): Promise<void> => {
+        const secret = JSON.stringify(credentials);
+        const existing = await keyVault.getSecret(CREDENTIAL_KEY);
+
+        if (existing) await keyVault.updateSecret(CREDENTIAL_KEY, secret);
+        else await keyVault.setSecret(CREDENTIAL_KEY, secret);
     };
 
     private getStoredCredentials = async (): Promise<EmandiCredentials> => {
-        const [username, password] = await Promise.all([
-            keyVault.getSecret(CREDENTIAL_KEYS.username),
-            keyVault.getSecret(CREDENTIAL_KEYS.password)
-        ]);
+        const entry = await keyVault.getSecret(CREDENTIAL_KEY);
+        if (!entry) throw new Throwable("EMandi credentials are not initialized yet.", 401);
 
-        if (!username || !password) {
-            throw new Throwable("EMandi credentials are not initialized yet.", 401);
-        }
-
-        return { username: username.secret, password: password.secret };
+        const credentials = JSON.parse(entry.secret) as Partial<EmandiCredentials>;
+        return credentials as EmandiCredentials;
     };
 
     private authenticate = async (credentials: EmandiCredentials): Promise<EMandiSession> => {

@@ -1,6 +1,6 @@
 # Repository Guidelines
 
-Last reviewed: 2026-09-20 — consolidated EMandi session warm-up into `GET /session`.
+Last reviewed: 2026-09-20 — consolidated EMandi credentials into one encrypted KeyVault secret.
 
 ## Project Structure & Module Organization
 
@@ -55,7 +55,7 @@ History follows Conventional Commit-style subjects: `feat: ...`, `fix: ...`, and
 
 ## Security & Configuration
 
-Runtime integrations read credentials from `.env`, except eMandi credentials, which are accepted only by `POST /api/emandi/init` and stored encrypted through KeyVault. Never commit tokens, passwords, session IDs, or MongoDB/MQTT connection details. Document required variable names without real values and avoid logging sensitive request or authentication data.
+Runtime integrations read credentials from `.env`, except eMandi credentials, which are accepted as `username` and `password` by `POST /api/emandi/init` and stored encrypted through KeyVault. Never commit tokens, passwords, session IDs, or MongoDB/MQTT connection details. Document required variable names without real values and avoid logging sensitive request or authentication data.
 
 Generated PDFs are written to `src/backend/static` at runtime. Avoid persisting rendered HTML for diagnostics, and do not add filesystem paths or external asset dependencies to PDF templates when a self-contained data URL is suitable.
 
