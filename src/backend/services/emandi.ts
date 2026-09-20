@@ -152,10 +152,11 @@ export class EMandiService {
                     };
                 }
 
-                if (result.message?.toLowerCase().includes("captcha")) throw new Throwable(result.message || "Captcha resolution failed", 401);
-                
+                lastError = result.message || "EMandi authentication failed.";
+                if (!lastError.toLowerCase().includes("captcha")) throw new Throwable(lastError, 401);
             }
             catch (error) {
+                if (error instanceof Throwable && error.statusCode === 401) throw error;
                 lastError = this.errorMessage(error);
             }
         }
