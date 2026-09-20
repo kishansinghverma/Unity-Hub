@@ -1,6 +1,6 @@
 # Repository Guidelines
 
-Last reviewed: 2026-09-18 — removed the unused HTML document `name` field.
+Last reviewed: 2026-09-20 — refined encrypted KeyVault persistence behavior.
 
 ## Project Structure & Module Organization
 

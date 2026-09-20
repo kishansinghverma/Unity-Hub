@@ -71,8 +71,6 @@ class EMandi {
             "order[0][dir]": "desc"
         });
 
-        console.log(payload);
-
         return emandiService.sendRequest({
             url,
             method: "POST",

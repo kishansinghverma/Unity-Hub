@@ -1,6 +1,6 @@
 import { MongoError } from "mongodb";
 import joi from 'joi';
-import { ObjectUtils, SplitwiseThrowable, Throwable } from "./models";
+import { ObjectUtils, SplitwiseThrowable, Throwable, ValidationError } from "./models";
 import { GatepassQrData, NinerQrData, OperationResponse, ExecutionResponse } from "./types";
 import { Response as ExpressResponse } from "express";
 import { constants, mongoErrorCodes } from "./constants";
@@ -30,13 +30,17 @@ export const getErrorResponse = (error: Error) => {
         errorCode = 400;
         errorType = constants.errors.validationError;
     }
+    if (error instanceof ValidationError) {
+        errorCode = 400;
+        errorType = constants.errors.validationError;
+    }
     else if (error instanceof Throwable) {
         errorCode = error.statusCode ?? 500;
         errorType = constants.errorsBycode[errorCode] ?? constants.errors.customError;
     }
     else if (axios.isAxiosError(error)) {
         errorCode = error.response?.status ?? 502;
-        errorType = constants.errors.customError;
+        errorType = constants.errorsBycode[errorCode] ?? constants.errors.customError;
     }
     else if (error instanceof MongoError) {
         errorCode = getHttpCode(error);

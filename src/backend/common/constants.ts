@@ -40,6 +40,12 @@ export const constants = {
             parties: 'Parties'
         }
     },
+    deployement: {
+        database: 'Deployment',
+        collections: {
+            keyvault: 'KeyVault'
+        }
+    },
     expense: {
         database: 'Expense',
         collection: {

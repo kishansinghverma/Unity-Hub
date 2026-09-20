@@ -1,4 +1,5 @@
 import { greenApi } from "../common/constants";
+import { Throwable, ValidationError } from "../common/models";
 import { EMandiGatepass, EMandiNiner, ExecutionResponse, GatepassDocumentRequest, NinerDocumentRequest } from "../common/types";
 import { CreateDocumentResponse, DocumentActionResponse } from "../common/types/inbound/response/Documents";
 import { getGatepassQrData, getNinerQrData } from "../common/utils";
@@ -103,24 +104,24 @@ class Documents {
     };
 
     private resolveGatepass = async (request: Exclude<GatepassDocumentRequest, { source: { type: "html" } }>): Promise<EMandiGatepass> => {
-        if (request.source.type === "html") throw new Error("HTML source cannot resolve a gatepass record");
+        if (request.source.type === "html") throw new ValidationError("HTML source cannot resolve a gatepass record");
 
         const response = request.source.type === "latest"
             ? await emandi.getLatestGatepass()
             : await emandi.getGatepassById(request.source.gatepassId, request.source.date);
 
-        if (!response.content) throw new Error("No gatepass record is available");
+        if (!response.content) throw new Throwable("Gatepass record not available!", 404);
         return response.content as EMandiGatepass;
     };
 
     private resolveNiner = async (request: NinerDocumentRequest): Promise<EMandiNiner> => {
-        if (request.source.type === "html") throw new Error("HTML source cannot resolve a niner record");
+        if (request.source.type === "html") throw new ValidationError("HTML source cannot resolve a niner record");
 
         const response = request.source.type === "latest"
             ? await emandi.getLatestNiner()
             : await emandi.getNinerById(request.source.ninerId, request.source.date);
 
-        if (!response.content) throw new Error("No niner record is available");
+        if (!response.content) throw new Throwable("Niner record not available!", 404);
         return response.content as EMandiNiner;
     };
 }

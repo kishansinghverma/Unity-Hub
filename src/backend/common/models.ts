@@ -102,6 +102,16 @@ export class Throwable extends Error {
     }
 }
 
+export class ValidationError extends Error {
+    public statusCode: number;
+    constructor(message: string, stack?: string) {
+        super();
+        this.statusCode = 400;
+        this.message = message;
+        this.stack = stack;
+    }
+}
+
 export class MulterThrowable extends MulterError {
     constructor(message: string) {
         super('LIMIT_UNEXPECTED_FILE');

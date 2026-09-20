@@ -45,8 +45,11 @@ Schemas expose any applicable combination of `params`, `query`, and `body`. The 
 
 ## End-of-Day State
 
+- Typed `errorsBycode` as `Record<number, string>` and removed the lookup cast from `src/backend/common/utils.ts`; unknown statuses still use the generic fallback.
+- Renamed the encryption service to `src/backend/services/keyvault.ts` and added `src/backend/operations/keyvault.ts` for encrypted KeyVault persistence. It exposes `initializeDatabase`, `fetch`, `put`, and `update`; `fetch` returns `null` for a missing key and only decrypted values leave the operation.
+
 - Receipt parsers `parseNinerReceipt` and `parseGatepassReceipt` were removed.
-- Gatepass and Niner document requests support `latest`, `id`, or direct HTML data with `name`, `party`, `tables: string[]`, and `qr`.
+- Gatepass and Niner document requests support `latest`, `id`, or direct HTML data with `party`, `tables: string[]`, and `qr`.
 - `driverMobile` was removed from gatepass and Niner document requests; document sharing uses the eMandi group directly.
 - Niner JSON rendering now passes `EMandiNiner` directly to its EJS template; `NinerPdfData` and `renderNinerByJson` were removed.
 - Rendered-HTML callbacks, diagnostic HTML persistence, and the legacy generic `/api/files/html` flow were removed.
@@ -112,7 +115,7 @@ Schemas expose any applicable combination of `params`, `query`, and `body`. The 
 - Niner JSON rendering passes the eMandi record directly to `template_niner_json.ejs`.
 - QR payload builders intentionally preserve the portal’s punctuation, spacing, missing separators, and static URL suffix.
 - QR generation uses byte mode, error correction Q, mask 2, margin 4, and opaque black/white RGBA colors; niner output is version 8/1140px and gatepass output is version 14/1620px.
-- Document HTML sources now use `name`, `party`, `tables: string[]`, and `qr`; `driverMobile` was removed from gatepass and niner document requests, and WhatsApp sharing uses the eMandi group directly.
+- Document HTML sources now use `party`, `tables: string[]`, and `qr`; `driverMobile` was removed from gatepass and niner document requests, and WhatsApp sharing uses the eMandi group directly.
 - Niner JSON PDFs now pass `EMandiNiner` directly to the EJS template; `NinerPdfData` and `renderNinerByJson` were removed.
 - PDF generation no longer exposes rendered HTML callbacks or saves diagnostic HTML files.
 - Direct HTML document sources use dedicated document templates; latest/ID sources use the corresponding JSON templates.
