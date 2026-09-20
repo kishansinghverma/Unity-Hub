@@ -56,6 +56,8 @@ export class EMandiService {
     };
 
     public getSessionStatus = async (): Promise<ExecutionResponse> => {
+        await this.ensureSession();
+
         const cookies = await this.cookieJar.getCookies(BASE_URL);
         const authenticated = this.isSessionActive();
 
@@ -136,6 +138,7 @@ export class EMandiService {
     };
 
     private authenticate = async (credentials: EmandiCredentials): Promise<EMandiSession> => {
+        this.logger.info('Creating new authenticated session...');
         let lastError: string | undefined = String.empty;
 
         for (let attempt = 1; attempt <= MAX_LOGIN_ATTEMPTS; attempt++) {

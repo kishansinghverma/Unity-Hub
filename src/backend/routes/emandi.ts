@@ -4,14 +4,14 @@ import { emandi } from '../operations/emandi';
 
 const router = express.Router();
 
-router.get('/session', (request, response) => {
-    emandi.getSessionStatus()
+router.post('/init', (request, response) => {
+    emandi.initialize(request.body)
         .then(replySuccess(response))
         .catch(replyError(response));
 });
 
-router.post('/init', (request, response) => {
-    emandi.initialize(request.body)
+router.get('/session', (request, response) => {
+    emandi.getSessionStatus()
         .then(replySuccess(response))
         .catch(replyError(response));
 });

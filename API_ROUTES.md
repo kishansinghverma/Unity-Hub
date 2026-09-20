@@ -6,8 +6,7 @@ All routes are served under the `/api` prefix.
 
 | API route | Functionality |
 | --- | --- |
-| `GET /api/emandi/session` | Check eMandi session status |
-| `POST /api/emandi/session` | Initialize eMandi session |
+| `GET /api/emandi/session` | Return the active eMandi session or create one |
 | `DELETE /api/emandi/session` | Clear eMandi session |
 | `GET /api/emandi/gatepasses` | Fetch gatepass records |
 | `GET /api/emandi/gatepasses/latest` | Fetch the latest gatepass |

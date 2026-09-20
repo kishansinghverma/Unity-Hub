@@ -2,7 +2,7 @@
 
 Last updated: 2026-09-20
 
-Latest operation: corrected EMandi service error-message wording and typos.
+Latest operation: updated `GET /api/emandi/session` to reuse or create the in-memory EMandi session.
 
 ## Current State
 
@@ -17,7 +17,7 @@ The repository is on `main`, synchronized with `origin/main`, with all current w
 
 ## Current API Contract
 
-- eMandi credentials: `POST /api/emandi/init` with only `userName` and `password`; credentials are encrypted through KeyVault, while session status and clearing remain `GET` and `DELETE /api/emandi/session`
+- eMandi credentials: `POST /api/emandi/init` with only `userName` and `password`; credentials are encrypted through KeyVault. `GET /api/emandi/session` returns the active session or creates one from KeyVault, and `DELETE /api/emandi/session` clears it.
 - Portal records: `GET /api/emandi/gatepasses` and `GET /api/emandi/niners`
 - Captcha OCR: `POST /api/vision/captcha`
 - Vehicle tagging: `GET /api/vtag/vehicles/:gatepassId`, `GET /api/vtag/vehicles/types`, and `GET|POST /api/vtag/entries`
@@ -29,7 +29,7 @@ The repository is on `main`, synchronized with `origin/main`, with all current w
 
 Validation keys now include the HTTP method where one resource path supports multiple operations.
 
-The eMandi `/init` body rejects unknown fields. It stores no session or cookie state on disk, does not use environment credentials, and does not refresh active sessions. Authenticated portal requests reuse the in-memory session, creating one from KeyVault only when the session is absent or expired. Remote authentication failures clear the session and retry the original request once.
+The eMandi `/init` body rejects unknown fields. It stores no session or cookie state on disk, does not use environment credentials, and does not refresh active sessions. `GET /session` reuses the in-memory session when active and creates one from KeyVault only when the session is absent or expired. Authenticated portal requests follow the same reuse behavior. Remote authentication failures clear the session and retry the original request once.
 
 `EMandiService.buildRequestOptions` accepts only the active portal request shape: `POST`, headers, and a pre-encoded string body. It does not serialize arbitrary objects or support unused body types.
 

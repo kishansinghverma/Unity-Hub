@@ -1,6 +1,6 @@
 # Repository Guidelines
 
-Last reviewed: 2026-09-20 — corrected EMandi service error-message wording.
+Last reviewed: 2026-09-20 — consolidated EMandi session warm-up into `GET /session`.
 
 ## Project Structure & Module Organization
 
