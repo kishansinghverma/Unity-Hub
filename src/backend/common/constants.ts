@@ -115,7 +115,10 @@ export enum source {
     udp = 'UdpServer',
     file = 'FileHandler',
     vision = 'Vision',
-    emandi = 'EMandi'
+    emandi = 'EMandi',
+    keyvault = 'KeyVault',
+    dispatches = 'Dispatches',
+    expenses = 'Expenses'
 }
 
 export const mimeType: { [key: string]: string } = {

@@ -10,6 +10,11 @@ export type CustomDevice = { [key: string]: { [key: string]: Array<string> } };
 
 export type NestDevice = { [key: string]: { GroupId: string, DeviceId: string } };
 
+export type KeyVaultEntry = {
+    key: string;
+    secret: string;
+};
+
 export type Action = {
     device: string,
     query: string

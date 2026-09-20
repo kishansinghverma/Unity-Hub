@@ -22,7 +22,7 @@ The repository is on `main`, synchronized with `origin/main`, with all current w
 - Captcha OCR: `POST /api/vision/captcha`
 - Vehicle tagging: `GET /api/vtag/vehicles/:gatepassId`, `GET /api/vtag/vehicles/types`, and `GET|POST /api/vtag/entries`
 - Dispatch lists: `GET /api/dispatches/queued` and `GET /api/dispatches/processed`
-- Dispatch management: `GET /api/dispatches/status`, `PUT /api/dispatches/init`, `GET /api/dispatches/peek`, `GET /api/dispatches/pop`, `POST /api/dispatches/push`, `PATCH /api/dispatches/finalize`, `GET /api/dispatches/requeue/:id`, and `DELETE /api/dispatches/:id`
+- Dispatch management: `GET /api/dispatches/status`, `GET /api/dispatches/peek`, `GET /api/dispatches/pop`, `POST /api/dispatches/push`, `PATCH /api/dispatches/finalize`, `GET /api/dispatches/requeue/:id`, and `DELETE /api/dispatches/:id`
 - Parties: `GET|POST /api/dispatches/parties` and `PATCH|DELETE /api/dispatches/parties/:id`
 - Gatepass documents: `POST /api/documents/gatepasses`
 - eMandi records: `GET /api/emandi/gatepasses/latest`, single-record `GET /api/emandi/gatepasses?id=...&date=DD/MM/YYYY`, and filtered `GET /api/emandi/gatepasses?fromDate=...&toDate=...&limit=...`; equivalent query-based routes exist for `/niners`.
@@ -46,7 +46,8 @@ Schemas expose any applicable combination of `params`, `query`, and `body`. The 
 ## End-of-Day State
 
 - Typed `errorsBycode` as `Record<number, string>` and removed the lookup cast from `src/backend/common/utils.ts`; unknown statuses still use the generic fallback.
-- Renamed the encryption service to `src/backend/services/keyvault.ts` and added `src/backend/operations/keyvault.ts` for encrypted KeyVault persistence. It exposes `initializeDatabase`, `fetch`, `put`, and `update`; `fetch` returns `null` for a missing key and only decrypted values leave the operation.
+- Renamed the encryption service to `src/backend/services/keyvault.ts` and added `src/backend/operations/keyvault.ts` for encrypted KeyVault persistence. It exposes `initializeDatabase`, `getSecret`, `setSecret`, and `updateSecret`; `getSecret` returns `null` for a missing key and only decrypted values leave the operation. `src/index.ts` attempts KeyVault initialization before starting the other services and HTTP server, logs failures, and continues startup.
+- `src/index.ts` now initializes the KeyVault, dispatch, and expense databases at startup. Oakter Remote loads its saved catalog or synchronizes it from the remote service during startup; initialization failures are logged without blocking the remaining startup sequence.
 
 - Receipt parsers `parseNinerReceipt` and `parseGatepassReceipt` were removed.
 - Gatepass and Niner document requests support `latest`, `id`, or direct HTML data with `party`, `tables: string[]`, and `qr`.

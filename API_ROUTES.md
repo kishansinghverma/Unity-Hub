@@ -19,7 +19,6 @@ All routes are served under the `/api` prefix.
 | API route | Functionality |
 | --- | --- |
 | `GET /api/dispatches/status` | Check dispatch database status |
-| `PUT /api/dispatches/init` | Initialize dispatch database |
 | `GET /api/dispatches/queued` | List queued dispatches |
 | `GET /api/dispatches/processed` | List processed dispatches |
 | `GET /api/dispatches/peek` | View oldest queued dispatch |
@@ -38,7 +37,6 @@ All routes are served under the `/api` prefix.
 | API route | Functionality |
 | --- | --- |
 | `GET /api/expenses/locations` | List expense locations |
-| `GET /api/expenses/init` | Initialize expense database |
 | `GET /api/expenses/reviewedon` | Get review date |
 | `GET /api/expenses/predictions` | List expense predictions |
 | `GET /api/expenses/descriptions` | List expense descriptions |

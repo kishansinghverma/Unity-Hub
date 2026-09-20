@@ -10,12 +10,6 @@ router.get('/status', (request, response) => {
         .catch(replyError(response));
 });
 
-router.put('/init', (request, response) => {
-    dispatches.initializeDatabase()
-        .then(replySuccess(response))
-        .catch(replyError(response));
-});
-
 router.get('/queued', (request, response) => {
     dispatches.getQueuedDispatches()
         .then(replySuccess(response))

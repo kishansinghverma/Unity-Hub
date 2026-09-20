@@ -92,8 +92,9 @@ class OakterRemoteService {
         return result;
     };
 
-    public initialize = () => {
-        this.logger.success("Oakter Remote Service Ready!");
+    public initialize = async () => {
+        await this.getCatalog();
+        this.logger.info("Oakter Remote Service Ready!");
     };
 }
 

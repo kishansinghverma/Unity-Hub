@@ -1,18 +1,15 @@
 import { Collection, Db, Document } from "mongodb";
-import { greenApi, constants as globalConstants, templates } from "../common/constants";
+import { greenApi, constants as globalConstants, templates, source } from "../common/constants";
 import { MongoDbService } from "../services/mongodb";
-import { String } from "../common/models";
+import { Logger, String } from "../common/models";
 import { getErrorResponse, getHttpCode } from "../common/utils";
 import { whatsAppService } from "../services/whatsapp";
 import { FinalizeDispatchRequest } from "../common/types/inbound/request/Dispatch";
 
 class Dispatches {
     private constants = globalConstants.emandi;
-    private database: MongoDbService;
-
-    constructor() {
-        this.database = new MongoDbService(this.constants.database);
-    }
+    private database = new MongoDbService(this.constants.database);
+    private logger: Logger = new Logger(source.dispatches);
 
     public peekDispatch = () => this.database.getDocument(this.constants.collections.queued, {}, { sort: { createdOn: 1 } });
 
@@ -59,7 +56,8 @@ class Dispatches {
     public deleteParty = (partyId: string) => this.database.deleteDocument(this.constants.collections.parties, partyId);
 
     public initializeDatabase = async () => {
-        // Creates index on collections.
+        this.logger.info('Initializing Index on Database..')
+        
         const operation = async (collection: Collection) => {
             const index = await collection.createIndex({ name: 1, mandi: 1, state: 1 }, { unique: true });
             return { content: { actions: [{ index }] }, statusCode: 200 };

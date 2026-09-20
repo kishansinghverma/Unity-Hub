@@ -1,18 +1,16 @@
 import { Collection, Document } from "mongodb";
-import { constants as invariants } from "../common/constants";
+import { constants as invariants, source } from "../common/constants";
 import { MongoDbService } from "../services/mongodb";
 import { BankStatementRequest, BankTransaction, PaymentAppStatementRequest, PaymentAppTransaction, PredictionRequest } from "../common/types";
 import { splitwise } from "./splitwise";
+import { Logger } from "../common/models";
 
 class Expenses {
     private constants = invariants.expense;
-    private database: MongoDbService;
+    private database = new MongoDbService(this.constants.database);;
+    private logger: Logger = new Logger(source.expenses);
 
-    constructor() {
-        this.database = new MongoDbService(this.constants.database);
-    }
-
-    public getLocations = () => this.database.getDocuments(this.constants.collection.location, {}, { sort: {dateTime: 1} });
+    public getLocations = () => this.database.getDocuments(this.constants.collection.location, {}, { sort: { dateTime: 1 } });
 
     public getBankStatement = () => this.database.getDocuments(this.constants.collection.bankStatement, {}, { sort: { date: 1 } });
 
@@ -106,6 +104,8 @@ class Expenses {
     }
 
     public initializeDatabase = async () => {
+        this.logger.info('Initializing Indexes on Database...');
+
         const createDateIndex = async (collection: Collection) => {
             const index = await collection.createIndex({ date: 1 });
             return { content: { actions: [{ index }] }, statusCode: 200 };

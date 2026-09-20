@@ -1,19 +1,18 @@
 import { Db } from 'mongodb';
-import { constants as globalConstants } from "../common/constants";
-import { ExecutionResponse } from '../common/types';
+import { constants as globalConstants, source } from "../common/constants";
+import { ExecutionResponse, KeyVaultEntry } from '../common/types';
 import { MongoDbService } from '../services/mongodb';
 import { keyVaultService } from '../services/keyvault';
-
-type KeyVaultEntry = {
-    key: string;
-    secret: string;
-};
+import { Logger } from '../common/models';
 
 class KeyVault {
     private constants = globalConstants.deployement;
     private database = new MongoDbService(this.constants.database);
+    private logger: Logger = new Logger(source.keyvault);
 
     public initializeDatabase = () => {
+        this.logger.info('Initializing Indexes on Database...');
+
         const operation = async (database: Db): Promise<ExecutionResponse> => {
             const collectionExists = await database.listCollections({ name: this.constants.collections.keyvault }).hasNext();
             if (!collectionExists) await database.createCollection(this.constants.collections.keyvault);

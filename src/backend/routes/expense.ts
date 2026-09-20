@@ -10,12 +10,6 @@ router.get('/locations', (request, response) => {
         .catch(replyError(response));
 });
 
-router.get('/init', (request, response) => {
-    expenses.initializeDatabase()
-        .then(replySuccess(response))
-        .catch(replyError(response));
-});
-
 router.get('/reviewedon', (request, response) => {
     expenses.getReviewedOnDate()
         .then(replySuccess(response))

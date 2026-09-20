@@ -1,6 +1,6 @@
 # Repository Guidelines
 
-Last reviewed: 2026-09-20 — refined encrypted KeyVault persistence behavior.
+Last reviewed: 2026-09-20 — centralized database and Oakter catalog initialization at startup.
 
 ## Project Structure & Module Organization
 
