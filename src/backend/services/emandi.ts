@@ -46,7 +46,6 @@ export class EMandiService {
 
     public initialize = async (request: EmandiCredentials): Promise<ExecutionResponse> => {
         await this.purgeCurrentSession()
-        
         await this.saveCredential(CREDENTIAL_KEYS.username, request.username);
         await this.saveCredential(CREDENTIAL_KEYS.password, request.password);
 
