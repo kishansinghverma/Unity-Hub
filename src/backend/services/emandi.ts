@@ -69,7 +69,7 @@ export class EMandiService {
         return { content: info, statusCode: 200 };
     };
 
-    public sendRequest = async (config: EmandiRequestConfig): Promise<ExecutionResponse> => {
+    public sendRequest = async (config: EmandiRequestConfig, allowRetry = true): Promise<ExecutionResponse> => {
         await this.ensureSession();
 
         const url = this.getAbsoluteUrl(config.url);
@@ -79,7 +79,13 @@ export class EMandiService {
         const response = await this.fetchWithTimeout(url, requestOptions);
 
         if (this.isAuthenticationFailure(response)) {
-            this.session = null;
+            await this.purgeCurrentSession();
+
+            if (allowRetry) {
+                await this.ensureSession();
+                return this.sendRequest(config, false);
+            }
+
             throw new Throwable("EMandi session has expired, Please try again.", 401);
         }
 

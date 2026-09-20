@@ -2,7 +2,7 @@
 
 Last updated: 2026-09-20
 
-Latest operation: moved eMandi credential initialization to `POST /api/emandi/init` with encrypted KeyVault storage and lazy in-memory session creation.
+Latest operation: added one-time eMandi session re-authentication and request retry after remote session expiry.
 
 ## Current State
 
@@ -29,7 +29,11 @@ The repository is on `main`, synchronized with `origin/main`, with all current w
 
 Validation keys now include the HTTP method where one resource path supports multiple operations.
 
-The eMandi `/init` body rejects unknown fields. It stores no session or cookie state on disk, does not use environment credentials, and does not refresh active sessions. Authenticated portal requests reuse the in-memory session, creating one from KeyVault only when the session is absent or expired; a failed authenticated request is retried once after re-authentication.
+The eMandi `/init` body rejects unknown fields. It stores no session or cookie state on disk, does not use environment credentials, and does not refresh active sessions. Authenticated portal requests reuse the in-memory session, creating one from KeyVault only when the session is absent or expired. Remote authentication failures clear the session and retry the original request once.
+
+`EMandiService.buildRequestOptions` accepts only the active portal request shape: `POST`, headers, and a pre-encoded string body. It does not serialize arbitrary objects or support unused body types.
+
+Coding preference: keep implementations lean and use arrow-function class fields for service and operation methods.
 
 `validator.middleware` runs after body parsing and before route registration. It uses the typed `Validator` in `validationMiddleware.ts` with schemas from `validationSchemas.ts`, validates defined method/path pairs, supports `:id` route patterns, sequentially validates declared `request.params`, `request.body`, and `request.query` sections, writes sanitized values back to the request, and skips undefined paths.
 
@@ -103,6 +107,20 @@ Schemas expose any applicable combination of `params`, `query`, and `body`. The 
 - Existing unrelated worktree changes remain uncommitted and must be preserved.
 
 ## Follow-up Considerations
+
+### eMandi service audit TODO
+
+- [x] Re-authenticate and retry the original request once when the portal reports an expired session, while preventing retry loops.
+- [ ] Await `purgeCurrentSession()` in authentication-failure cleanup paths.
+- [ ] Restore same-origin validation for portal and captcha URLs, or constrain request inputs to trusted relative paths.
+- [ ] Handle non-captcha login failures immediately and preserve the portal’s failure message/status.
+- [ ] Treat a missing OCR code as empty instead of the string `"undefined"`, and validate captcha digits before login.
+- [ ] Map non-timeout network failures to the appropriate `502` error for the global handler.
+- [ ] Clear stale cookies before starting a new authentication attempt.
+- [ ] Coordinate `/init` with in-flight authentication so old credentials cannot recreate a session after credentials change.
+- [ ] Make the two credential writes atomic, or define rollback behavior when one write fails.
+- [ ] Remove the unused `ObjectUtils` import from `src/backend/services/emandi.ts`.
+- [ ] Correct the eMandi service error-message typos and wording.
 
 - Add API-level tests for session, dispatch status transitions, party updates, and document outcomes.
 - Decide whether to retain or remove temporary eMandi cookie persistence before production.

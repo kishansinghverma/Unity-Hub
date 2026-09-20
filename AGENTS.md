@@ -1,6 +1,6 @@
 # Repository Guidelines
 
-Last reviewed: 2026-09-20 — aligned eMandi credential initialization with lazy in-memory sessions.
+Last reviewed: 2026-09-20 — added one-time eMandi session recovery and request retry.
 
 ## Project Structure & Module Organization
 
@@ -17,7 +17,7 @@ Last reviewed: 2026-09-20 — aligned eMandi credential initialization with lazy
 
 ## Coding Style & Naming Conventions
 
-Both projects use strict TypeScript. Use four-space indentation in backend files and two spaces in React code, with semicolons; preserve the existing quote style of the file being edited and avoid unrelated formatting changes. Use `camelCase` for functions and variables, `PascalCase` for components and types, and lowercase filenames such as `dispatches.ts`.
+Both projects use strict TypeScript. Keep implementations lean and responsibility-focused. Use arrow-function class fields for service and operation methods; constructors remain constructor syntax where required by TypeScript. Use four-space indentation in backend files and two spaces in React code, with semicolons; preserve the existing quote style of the file being edited and avoid unrelated formatting changes. Use `camelCase` for functions and variables, `PascalCase` for components and types, and lowercase filenames such as `dispatches.ts`.
 
 Keep route handlers thin; place business logic in `operations/` and integrations in `services/`. Public operation methods should have one clear route binding, and route renames must be synchronized with validation schemas, frontend callers, README, and `HandOff.md`. Create React App's ESLint configuration checks frontend code.
 
@@ -40,6 +40,8 @@ Vehicle-tagging functionality is mounted at `/api/vtag` and proxies the eMandi `
 The Oakter device catalog at `src/backend/static/oak-devices.json` is runtime state and must remain untracked. `GET /devices` checks for the file and, when it is missing, synchronizes from Oakter before returning the hydrated catalog. Later reads use the saved file, while explicit refresh calls `/syncdevices` and renders its response directly.
 
 Keep the Oakter remote contracts aligned: the global `validationMiddleware` validates `POST /api/oakterremote/command` against its schema before the route runs. The frontend expects catalog responses with `Response`, connection responses with `isConnected`, and command responses with `Status`/`Response`; the backend currently forwards the remote command response without normalizing it.
+
+The eMandi portal request builder currently supports only its active request shape: `POST` with request headers and a pre-encoded string body. Keep other request-body serialization out of that builder unless the portal contract gains a new request type.
 
 The remote page displays an initial loading skeleton with a stable outer panel height while the catalog request is pending. Manual refresh preserves the current controls while syncing.
 
