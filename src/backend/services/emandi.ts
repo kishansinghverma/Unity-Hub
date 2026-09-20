@@ -203,9 +203,10 @@ export class EMandiService {
         const base64 = `data:image/png;base64,${buffer.toString("base64")}`;
 
         const ocrResult = await visionService.resolveCaptcha(base64);
-        const digits = ocrResult.content?.text || `${ocrResult.content?.code}`;
+        const code = ocrResult.content?.code;
+        const digits = typeof code === "string" ? code : String.empty;
 
-        if (!digits) throw new Throwable("Auto captcha resolution failed while login", 422);
+        if (!/^\d{4}$/.test(digits)) throw new Throwable("Auto captcha resolution failed while login", 422);
         return digits;
     };
 
