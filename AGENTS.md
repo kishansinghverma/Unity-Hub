@@ -1,6 +1,6 @@
 # Repository Guidelines
 
-Last reviewed: 2026-09-20 — awaited eMandi session cleanup on authentication failure.
+Last reviewed: 2026-09-20 — kept captcha validation in the eMandi consumer instead of the vision service.
 
 ## Project Structure & Module Organization
 

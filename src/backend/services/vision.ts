@@ -42,11 +42,7 @@ class VisionService {
 
             const rawText: string = data.ParsedResults[0].ParsedText || '';
             const digits = rawText.replace(/\D/g, '');
-            const parsedCode = parseInt(digits, 10);
-
-            if (isNaN(parsedCode)) throw new Throwable('Failed to extract digits from captcha', 422);
-            this.logger.success(`Captcha resolved successfully: ${parsedCode}`);
-            return { content: { code: parsedCode, text: digits }, statusCode: 200 };
+            return { content: { code: digits }, statusCode: 200 };
             
         } catch (error: any) {
             if (error instanceof Throwable) throw error;

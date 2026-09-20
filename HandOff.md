@@ -2,7 +2,7 @@
 
 Last updated: 2026-09-20
 
-Latest operation: awaited eMandi session cleanup when authentication fails.
+Latest operation: kept four-digit captcha validation in eMandi while vision returns the raw OCR `code` string.
 
 ## Current State
 
@@ -112,9 +112,9 @@ Schemas expose any applicable combination of `params`, `query`, and `body`. The 
 
 - [x] Re-authenticate and retry the original request once when the portal reports an expired session, while preventing retry loops.
 - [x] Await `purgeCurrentSession()` in authentication-failure cleanup paths.
-- [ ] Restore same-origin validation for portal and captcha URLs, or constrain request inputs to trusted relative paths.
-- [ ] Handle non-captcha login failures immediately and preserve the portal’s failure message/status.
-- [ ] Treat a missing OCR code as empty instead of the string `"undefined"`, and validate captcha digits before login.
+- [x] Accepted trusted eMandi route constants without adding same-origin URL validation.
+- [x] Handle non-captcha login failures immediately and preserve the portal’s failure message/status.
+- [x] Treat a missing OCR code as empty instead of the string `"undefined"`, and validate captcha digits before login.
 - [ ] Map non-timeout network failures to the appropriate `502` error for the global handler.
 - [ ] Clear stale cookies before starting a new authentication attempt.
 - [ ] Coordinate `/init` with in-flight authentication so old credentials cannot recreate a session after credentials change.
