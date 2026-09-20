@@ -1,6 +1,6 @@
 # Repository Guidelines
 
-Last reviewed: 2026-09-20 — coordinated eMandi initialization with in-flight authentication.
+Last reviewed: 2026-09-20 — corrected EMandi service error-message wording.
 
 ## Project Structure & Module Organization
 

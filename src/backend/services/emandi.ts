@@ -50,7 +50,7 @@ export class EMandiService {
         await this.saveCredential(CREDENTIAL_KEYS.password, request.password);
 
         return {
-            content: { initialized: true, message: "eMandi credentials initialized" },
+            content: { initialized: true, message: "EMandi credentials initialized" },
             statusCode: 200
         };
     };
@@ -86,7 +86,7 @@ export class EMandiService {
                 return this.sendRequest(config, false);
             }
 
-            throw new Throwable("EMandi session has expired, Please try again.", 401);
+            throw new Throwable("EMandi session has expired. Please try again.", 401);
         }
 
         const data = await this.parseResponseBody(response);
@@ -262,7 +262,7 @@ export class EMandiService {
         });
 
         if (this.isAuthenticationFailure(response)) {
-            throw new Throwable("EMandi session could not be authentication", 401);
+            throw new Throwable("EMandi session authentication failed", 401);
         }
 
         if (!response.ok) {
@@ -302,7 +302,7 @@ export class EMandiService {
         }
         catch (error) {
             if (error instanceof Error && (error.name === "TimeoutError" || error.name === "AbortError")) {
-                throw new Throwable("EMandi Request Timed OSut", 504);
+                throw new Throwable("EMandi request timed out", 504);
             }
             throw error;
         }

@@ -2,7 +2,7 @@
 
 Last updated: 2026-09-20
 
-Latest operation: coordinated eMandi `/init` with in-flight authentication before replacing credentials.
+Latest operation: corrected EMandi service error-message wording and typos.
 
 ## Current State
 
@@ -119,8 +119,8 @@ Schemas expose any applicable combination of `params`, `query`, and `body`. The 
 - [x] Clear stale cookies before starting a new authentication attempt.
 - [x] Coordinate `/init` with in-flight authentication so old credentials cannot recreate a session after credentials change.
 - [ ] Make the two credential writes atomic, or define rollback behavior when one write fails.
-- [ ] Remove the unused `ObjectUtils` import from `src/backend/services/emandi.ts`.
-- [ ] Correct the eMandi service error-message typos and wording.
+- [x] Remove the unused `ObjectUtils` import from `src/backend/services/emandi.ts`.
+- [x] Correct the eMandi service error-message typos and wording.
 
 - Add API-level tests for session, dispatch status transitions, party updates, and document outcomes.
 - Decide whether to retain or remove temporary eMandi cookie persistence before production.
