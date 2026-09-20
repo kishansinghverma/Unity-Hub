@@ -45,9 +45,10 @@ export class EMandiService {
     }
 
     public initialize = async (request: EmandiCredentials): Promise<ExecutionResponse> => {
+        await this.purgeCurrentSession()
+        
         await this.saveCredential(CREDENTIAL_KEYS.username, request.username);
         await this.saveCredential(CREDENTIAL_KEYS.password, request.password);
-        await this.purgeCurrentSession()
 
         return {
             content: { initialized: true, message: "eMandi credentials initialized" },
@@ -94,6 +95,7 @@ export class EMandiService {
     };
 
     private authenticateFromVault = async (): Promise<void> => {
+        await this.purgeCurrentSession();
         const credentials = await this.getStoredCredentials();
 
         try {
