@@ -6,7 +6,7 @@ import {
     LoginResponse,
     LoginToken,
 } from "../common/types";
-import { Logger, Throwable } from "../common/models";
+import { Logger, String, Throwable } from "../common/models";
 import { eMandiPortal, source } from "../common/constants";
 import { visionService } from "./vision";
 import { keyVault } from "../operations/keyvault";
@@ -55,6 +55,53 @@ export class EMandiService {
         };
     };
 
+    public getSessionStatus = async (): Promise<ExecutionResponse> => {
+        const cookies = await this.cookieJar.getCookies(BASE_URL);
+        const authenticated = this.isSessionActive();
+
+        const info: EMandiSessionInfo = {
+            authenticated,
+            isExpired: !authenticated && !!this.session,
+            cookieCount: cookies.length,
+            ...this.session,
+        };
+
+        return { content: info, statusCode: 200 };
+    };
+
+    public sendRequest = async (config: EmandiRequestConfig): Promise<ExecutionResponse> => {
+        await this.ensureSession();
+
+        const url = this.getAbsoluteUrl(config.url);
+        const requestOptions = this.buildRequestOptions(config);
+        this.logger.log(`[${requestOptions.method}] ${url}`);
+
+        const response = await this.fetchWithTimeout(url, requestOptions);
+
+        if (this.isAuthenticationFailure(response)) {
+            this.session = null;
+            throw new Throwable("EMandi session has expired, Please try again.", 401);
+        }
+
+        const data = await this.parseResponseBody(response);
+        return { content: data, statusCode: response.status };
+    };
+
+    private authenticateFromVault = async (): Promise<void> => {
+        const credentials = await this.getStoredCredentials();
+
+        try {
+            this.session = await this.authenticate(credentials);
+            await this.warmTraderSession();
+        }
+        catch (error) {
+            this.purgeCurrentSession()
+            throw error;
+        }
+    };
+
+    private getAbsoluteUrl = (path: string) => new URL(path, BASE_URL).toString()
+
     private isSessionActive = (): boolean => !!this.session && Date.now() < new Date(this.session.expiresAt).getTime();
 
     private purgeCurrentSession = async (): Promise<void> => {
@@ -75,76 +122,14 @@ export class EMandiService {
         ]);
 
         if (!username || !password) {
-            throw new Throwable("eMandi credentials are not initialized yet.", 401);
+            throw new Throwable("EMandi credentials are not initialized yet.", 401);
         }
 
         return { username: username.secret, password: password.secret };
     };
 
-    public getSessionStatus = async (): Promise<ExecutionResponse> => {
-        const cookies = await this.cookieJar.getCookies(BASE_URL);
-        const authenticated = this.isSessionActive();
-
-        const info: EMandiSessionInfo = {
-            authenticated,
-            isExpired: !authenticated && !!this.session,
-            cookieCount: cookies.length,
-            ...this.session,
-        };
-
-        return { content: info, statusCode: 200 };
-    };
-
-    public sendRequest = async (config: EmandiRequestConfig, allowRetry = true): Promise<ExecutionResponse> => {
-        await this.ensureSession();
-
-        const url = this.resolvePortalUrl(config.url);
-        const requestOptions = this.buildRequestOptions(config);
-        this.logger.log(`[${requestOptions.method}] ${url}`);
-
-        let response: Response;
-        try {
-            response = await this.fetchWithTimeout(url, requestOptions);
-        } catch (error: unknown) {
-            if (error instanceof Throwable) throw error;
-            const message = this.errorMessage(error);
-            this.logger.error(`Network error: ${message}`);
-            throw new Throwable(`Network error connecting to eMandi: ${message}`, 502);
-        }
-
-        if (this.isAuthenticationFailure(response)) {
-            this.session = null;
-
-            if (allowRetry) {
-                this.logger.log("Session expired. Re-authenticating...");
-                await this.ensureSession();
-                return this.sendRequest(config, false);
-            }
-
-            throw new Throwable("eMandi session has expired and could not be recreated.", 401);
-        }
-
-        const data = await this.parseResponseBody(response);
-        return { content: data, statusCode: response.status };
-    };
-
-
-
-    private authenticateFromVault = async (): Promise<void> => {
-        const credentials = await this.getStoredCredentials();
-
-        try {
-            await this.authenticate(credentials);
-            await this.warmTraderSession();
-        }
-        catch (error) {
-            this.purgeCurrentSession()
-            throw error;
-        }
-    };
-
-    private authenticate = async (credentials: EmandiCredentials): Promise<void> => {
-        let lastError = "";
+    private authenticate = async (credentials: EmandiCredentials): Promise<EMandiSession> => {
+        let lastError: string | undefined = String.empty;
 
         for (let attempt = 1; attempt <= MAX_LOGIN_ATTEMPTS; attempt++) {
             try {
@@ -153,36 +138,27 @@ export class EMandiService {
                 const result = await this.submitLogin(credentials, tokens, captchaDigits);
 
                 if (result.succeeded) {
-                    this.session = {
+                    return {
                         username: credentials.username,
                         role: result.role || "merchant",
                         authenticatedAt: new Date().toISOString(),
                         expiresAt: new Date(Date.now() + SESSION_TTL_MS).toISOString(),
                     };
-                    return;
                 }
 
-                if (result.message?.toLowerCase().includes("captcha")) {
-                    this.logger.warning(`Attempt ${attempt}: Captcha rejected — ${result.message}`);
-                    lastError = result.message;
-                    continue;
-                }
-
-                throw new Throwable(result.message || "Authentication failed", 401);
+                if (result.message?.toLowerCase().includes("captcha")) throw new Throwable(result.message || "Captcha resolution failed", 401);
+                
             }
-            catch (error: unknown) {
-                if (error instanceof Throwable && error.statusCode === 401) throw error;
+            catch (error) {
                 lastError = this.errorMessage(error);
-                this.logger.warning(`Attempt ${attempt} failed: ${lastError}`);
             }
         }
 
-        throw new Throwable(`Authentication failed after ${MAX_LOGIN_ATTEMPTS} attempts. Last error: ${lastError || "Captcha resolution failed"}`, 422);
+        throw new Throwable(`EMandi authentication failed. ${lastError}`, 422);
     };
 
     private fetchLoginTokens = async (): Promise<LoginToken> => {
         const url = `${BASE_URL}${eMandiPortal.loginPage}`;
-        this.logger.log(`Fetching login page: ${url}`);
 
         const response = await this.fetchWithTimeout(url, {
             headers: {
@@ -191,29 +167,21 @@ export class EMandiService {
             },
         });
 
-        if (!response.ok) {
-            throw new Throwable(`Failed to load login page (${response.status})`, response.status || 502);
-        }
+        if (!response.ok) throw new Throwable(`Unable to load login page (${response.status})`, response.status || 502);
 
         const html = await response.text();
-
-        const requestToken = this.extract(html, /name="__RequestVerificationToken"[^>]*value="([^"]+)"/i)
-            || this.extract(html, /value="([^"]+)"[^>]*name="__RequestVerificationToken"/i);
+        const requestToken = this.extract(html, /name="__RequestVerificationToken"[^>]*value="([^"]+)"/i) || this.extract(html, /value="([^"]+)"[^>]*name="__RequestVerificationToken"/i);
+        const captchaText = this.extract(html, /name="DNTCaptchaText"[^>]*value="([^"]+)"/i) || this.extract(html, /id="DNTCaptchaText"[^>]*value="([^"]+)"/i);
+        const captchaToken = this.extract(html, /name="DNTCaptchaToken"[^>]*value="([^"]+)"/i) || this.extract(html, /id="DNTCaptchaToken"[^>]*value="([^"]+)"/i);
         const captchaImageUrl = this.extract(html, /id="dntCaptchaImg"[^>]*src="([^"]+)"/i);
-        const captchaText = this.extract(html, /name="DNTCaptchaText"[^>]*value="([^"]+)"/i)
-            || this.extract(html, /id="DNTCaptchaText"[^>]*value="([^"]+)"/i);
-        const captchaToken = this.extract(html, /name="DNTCaptchaToken"[^>]*value="([^"]+)"/i)
-            || this.extract(html, /id="DNTCaptchaToken"[^>]*value="([^"]+)"/i);
 
-        if (!requestToken || !captchaImageUrl || !captchaText || !captchaToken) {
-            throw new Throwable("Failed to parse login page parameters", 502);
-        }
+        if (!requestToken || !captchaImageUrl || !captchaText || !captchaToken) throw new Throwable("Unable to parse login page parameters", 502);
 
         return { requestToken, captchaImageUrl, captchaText, captchaToken };
     };
 
     private resolveCaptcha = async (imageUrl: string): Promise<string> => {
-        const fullUrl = imageUrl.startsWith("http") ? imageUrl : `${BASE_URL}${imageUrl}`;
+        const fullUrl = this.getAbsoluteUrl(imageUrl);
 
         const response = await this.fetchWithTimeout(fullUrl, {
             headers: {
@@ -222,20 +190,15 @@ export class EMandiService {
             },
         });
 
-        if (!response.ok) {
-            throw new Throwable(`Failed to fetch captcha image (${response.status})`, response.status || 502);
-        }
+        if (!response.ok) throw new Throwable(`Unable to fetch EMandi captcha (${response.status})`, response.status || 502);
 
         const buffer = Buffer.from(await response.arrayBuffer());
         const base64 = `data:image/png;base64,${buffer.toString("base64")}`;
 
         const ocrResult = await visionService.resolveCaptcha(base64);
-        const digits = ocrResult.content?.text || String(ocrResult.content?.code || "");
+        const digits = ocrResult.content?.text || `${ocrResult.content?.code}`;
 
-        if (!digits) {
-            throw new Throwable("OCR returned empty captcha digits", 422);
-        }
-
+        if (!digits) throw new Throwable("Auto captcha resolution failed while login", 422);
         return digits;
     };
 
@@ -251,22 +214,20 @@ export class EMandiService {
 
         const response = await this.fetchWithTimeout(`${BASE_URL}${eMandiPortal.loginAction}`, {
             method: "POST",
+            body: form,
             headers: {
                 "X-Requested-With": "XMLHttpRequest",
                 Accept: "*/*",
                 "User-Agent": USER_AGENT,
                 Referer: `${BASE_URL}${eMandiPortal.loginPage}`,
                 Origin: BASE_URL,
-            },
-            body: form,
+            }
         });
 
-        if (!response.ok) {
-            throw new Throwable(`Login request failed (${response.status})`, response.status || 502);
-        }
+        if (!response.ok) throw new Throwable(`EMandi login failed (${response.status})`, response.status || 502);
 
         const result = await response.json().catch(() => null);
-        if (!result) throw new Throwable("Unexpected non-JSON response from login endpoint", 502);
+        if (!result) throw new Throwable("Got unexpected EMandi login response", 502);
         return result as LoginResponse;
     };
 
@@ -274,9 +235,8 @@ export class EMandiService {
         if (this.isSessionActive()) return;
 
         if (!this.authenticationPromise) {
-            this.authenticationPromise = this.authenticateFromVault().finally(() => {
-                this.authenticationPromise = null;
-            });
+            this.authenticationPromise = this.authenticateFromVault()
+                .finally(() => { this.authenticationPromise = null; });
         }
 
         await this.authenticationPromise;
@@ -293,31 +253,23 @@ export class EMandiService {
         });
 
         if (this.isAuthenticationFailure(response)) {
-            throw new Throwable("eMandi session could not be initialized", 401);
+            throw new Throwable("EMandi session could not be authentication", 401);
         }
+
         if (!response.ok) {
-            throw new Throwable(`Failed to initialize eMandi session (${response.status})`, response.status || 502);
+            throw new Throwable(`EMandi session initialization failed (${response.status})`, response.status || 502);
         }
 
         await response.arrayBuffer();
     };
 
-
-
     private isAuthenticationFailure = (response: Response): boolean => {
         if (response.status === 401 || response.status === 403) return true;
 
-        const location = response.headers.get("location") || "";
         const isRedirect = [301, 302, 303, 307].includes(response.status);
+        const location = response.headers.get("location") ?? String.empty;
 
         return isRedirect && /\/Account(?:\/index|\/LogOut)?/i.test(location);
-    };
-
-    private resolvePortalUrl = (path: string): string => {
-        const url = new URL(path, BASE_URL);
-        if (url.origin !== BASE_URL) throw new Throwable("Authenticated requests must target eMandi", 400);
-
-        return url.toString();
     };
 
     private buildRequestOptions = (config: EmandiRequestConfig): RequestInit => ({
@@ -348,7 +300,7 @@ export class EMandiService {
     };
 
     private errorMessage = (error: unknown) => {
-        return error instanceof Error ? error.message : String(error);
+        return error instanceof Error ? error.message : error?.toString();
     };
 
     private extract = (html: string, pattern: RegExp) => {
