@@ -32,7 +32,7 @@ class KeyVault {
         return this.database.executeOperationOnDatabase(operation);
     };
 
-    public fetch = async (key: string): Promise<KeyVaultEntry | null> => {
+    public getSecret = async (key: string): Promise<KeyVaultEntry | null> => {
         const response = await this.database.getDocument(this.constants.collections.keyvault, { key }, {});
         if (!response.content) return null;
 
@@ -43,12 +43,12 @@ class KeyVault {
         };
     };
 
-    public put = (key: string, secret: string) => this.database.insertDocument(this.constants.collections.keyvault, {
+    public setSecret = (key: string, secret: string) => this.database.insertDocument(this.constants.collections.keyvault, {
         key,
         secret: keyVaultService.encrypt(secret)
     });
 
-    public update = async (key: string, secret: string): Promise<ExecutionResponse> => {
+    public updateSecret = async (key: string, secret: string): Promise<ExecutionResponse> => {
         const response = await this.database.patchDocument(
             this.constants.collections.keyvault,
             { $set: { secret: keyVaultService.encrypt(secret) } },
