@@ -41,7 +41,12 @@ export type FormInput = {
     name: string
 }
 
-export type QueuedEntry = {
+export type EntryImages = {
+    vehicleImage?: string;
+    numberPlateImage?: string;
+};
+
+export type QueuedEntry = EntryImages & {
     date: string;
     seller: string;
     weight: string;
@@ -77,5 +82,4 @@ export type WithId<T> = { // replace with withId
     _id: string
 } & T;
 
-export type Nullable<T> = T | undefined; 
- 
+export type Nullable<T> = T | undefined;

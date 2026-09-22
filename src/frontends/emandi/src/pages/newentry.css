@@ -1,0 +1,163 @@
+.entry-photos {
+  color: #334155;
+}
+
+.entry-photo-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.entry-photos-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.entry-photo-card {
+  padding: 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.entry-photo-title {
+  margin-bottom: 8px;
+}
+
+.entry-photo-title > span {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-size: 12px;
+}
+
+.entry-photo-title h3 {
+  margin: 0;
+  font-size: 14px;
+}
+
+.entry-photo-select {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 96px;
+  overflow: hidden;
+  border: 1px dashed #94a3b8;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.entry-photo-select:hover,
+.entry-photo-select:focus-within {
+  border-color: #db2828;
+}
+
+.entry-photo-select:has(input:focus-visible) {
+  outline: 2px solid #db2828;
+  outline-offset: 2px;
+}
+
+.entry-photo-select.has-image {
+  border-color: #15803d;
+  outline-color: #15803d;
+}
+
+.entry-photo-select input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.entry-photo-select input:disabled {
+  cursor: wait;
+}
+
+.entry-photo-select img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.entry-photo-select-text {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.has-image .entry-photo-select-text {
+  position: absolute;
+  bottom: 8px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: #ffffffed;
+  color: #334155;
+  box-shadow: 0 1px 6px #0002;
+}
+
+.entry-photo-edit,
+.entry-photo-remove {
+  position: absolute;
+  right: 6px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 6px;
+  border: 0;
+  border-radius: 6px;
+  background: #fef2f2;
+  color: #b91c1c;
+  cursor: pointer;
+  font: inherit;
+}
+
+.entry-photo-edit {
+  top: 6px;
+  background: #dbeafe;
+  color: #334155;
+}
+
+.entry-photo-remove {
+  bottom: 6px;
+}
+
+.entry-photo-edit:disabled,
+.entry-photo-remove:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+.entry-photo-error {
+  margin-top: 10px;
+  color: #b91c1c;
+  font-size: 12px;
+}
+
+.entry-photo-status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+@media (max-width: 540px) {
+  .entry-photos-grid {
+    grid-template-columns: 1fr;
+  }
+}

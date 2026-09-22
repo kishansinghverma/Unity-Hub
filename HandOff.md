@@ -2,11 +2,21 @@
 
 Last updated: 2026-09-23
 
-Latest operation: prepared handoff after consolidating EMandi session and credential handling.
+Latest operation: added a case-insensitive Base64 data URL header check for JPG/JPEG to both optional image fields. Supplied values must start with `data:image/jpeg;base64,` or `data:image/jpg;base64,`; omit unselected images rather than sending empty strings. Image payload content and size are not checked by the schema. Frontend resizing below 1.5 MiB remains unchanged.
 
 ## Current State
 
-The repository is on `main` at `73d601d`, synchronized with `origin/main`. Only `HandOff.md` and `AGENTS.md` are modified for this handoff; the preceding code change set is committed.
+The repository remains on `main` at `8d493f9`. The earlier documentation edits were preserved; photo UI, request/validation/type changes, focused checks, and documentation updates are now uncommitted. No dependencies or environment variables were added.
+
+## New Entry Photos
+
+- `newentry.tsx` now provides two numbered, independently optional photo cards with previews, replace/remove controls, processing/error states, and mobile stacking. Saving is disabled while a photo is being prepared; failed saves retain images, successful saves clear them.
+- The compact photo section retains its accessible region name and input labels; error descriptions are linked only when present. Removed helper-text styles and the unused camera icon.
+- Native browser decoding/canvas accepts JPG/PNG/WebP files up to 20 MiB and initially produces JPEG data URLs at up to 1600px on the longest edge (quality 0.85). If output is too large, both dimensions shrink by 20% and the original image is redrawn until the JPEG is strictly below 1.5 MiB before Base64 encoding. Invalid/undecodable inputs and encoder failures still show an error; oversized output is never returned. Two prepared photos remain within the existing 5 MB JSON request limit.
+- `createNewEntry` sends optional `vehicleImage` and `numberPlateImage` with the entry to `POST /api/dispatches/push`. The backend checks string datatype and the JPG/JPEG Base64 data URL header, rejects empty strings, and has no payload-content or per-image length checks. `CreateDispatchRequest` types the queue operation. MongoDB stores the image strings with the record.
+- Bulk queued/processed queries project out both image fields. `/peek` and record moves preserve complete records. Finalization currently retains Base64 data.
+- `todo` and a comment at `finalize` track replacing each image field with a URL fetched from the external system after finalization. External endpoint/lookup mapping is still needed; keep image data until URL retrieval and persistence succeed, and support retries. This follow-up is not implemented.
+- Photo-feature verification stubs database and notification I/O; the later obsolete-field cleanup did connect to the configured MongoDB database. Chromium browser checks use local production assets and mocked APIs, validating submitted payloads with the real backend schema.
 
 ## Architecture and Naming
 
@@ -41,9 +51,25 @@ Schemas expose any applicable combination of `params`, `query`, and `body`. The 
 
 ## Verification
 
-- `npx tsc --noEmit` passes on the current `main` tip.
-- `npm run build` passes, including backend TypeScript compilation and the production React build.
-- `git diff --check` passes; only the handoff documentation files are modified.
+- JPG/JPEG header follow-up: `node scripts/check-dispatch-images.cjs`, `npx tsc --noEmit`, `npm run build`, and `git diff --check` passed. Checks cover optional fields, both header spellings, case-insensitivity, malformed/missing headers, and large prefixed strings without a schema size limit. Database I/O was stubbed. Existing build warnings remain; no frontend behavior changed.
+- Image validation simplification: `npx tsc --noEmit`, `npm run build`, `node scripts/check-dispatch-images.cjs`, and `git diff --check` passed. The targeted frontend Jest command passed all 4 tests, including automatic retries at/above the size limit, strict-below-limit output, and cleanup on encoder/decoder failure. Existing build warnings remain. Browser checks were not rerun; frontend canvas behavior was verified with mocked encodes, and database I/O was stubbed.
+- Obsolete-field cleanup: `npx tsc --noEmit`, `npm run build`, `node scripts/check-dispatch-images.cjs`, and `git diff --check` passed. Existing React hook/Browserslist warnings remain. Direct Joi checks accepted normal queue/gatepass/niner requests and rejected the retired field as unknown.
+- Database audit/cleanup ran via `/private/tmp/unity-remove-legacy-contact.cjs audit` and `apply`, using the configured connection outside the sandbox after sandbox access was refused. One queued document was updated with `$unset`; no document values or credentials were printed. All three eMandi collections now have zero matching documents, and their validators do not reference the retired field. Existing backend processes must reload the updated code to enforce the new request contract.
+- Repository search found no remaining source/documentation references. Ignored, untracked historical artifacts under `src/frontends/dist` retain old compiled copies; they are outside the active root build and were left untouched per the generated-file guideline. The active root build was regenerated.
+- Weight/bags revert: `npm run build` passed and refreshed the served production assets, with existing hook/Browserslist warnings. `git diff --check` passed. Restored the prior JSX structure; no new tests or browser checks were run.
+- Weight/bags layout follow-up: `npm test --prefix src/frontends/emandi -- --watchAll=false --runInBand --watchman=false --runTestsByPath src/pages/newentry.test.tsx` passed both tests; `npm run build` passed with existing warnings; `git diff --check` passed. Confirmed Semantic UI's `unstackable` group excludes its mobile stacking rules. Browser checks were not rerun for this layout-only change.
+- Photo wording follow-up: reran the targeted frontend Jest command; all 4 tests passed after giving the overall upload region a distinct accessible name (“वाहन और नंबर प्लेट की फोटो”). `git diff --check` passed. No build/browser rerun for this text-only change.
+- Final color adjustment: changed only the edit-button background to light blue; `git diff --check` passed. Build/tests/browser results below precede this final color-only tweak.
+- Edit/remove positioning follow-up: targeted frontend tests passed (4 total; reran the 2 New Entry tests after adding an edit-picker assertion). `npm run build` passed with existing warnings. Chromium confirmed the pencil opens the correct picker, edit/remove occupy top-right/bottom-right respectively, removal does not open a picker, and save/reset behavior still works. Refreshed the selected-photo screenshot; `git diff --check` passed.
+- Selected-photo styling follow-up: the targeted frontend Jest command passed all 4 tests; `npm run build` passed with existing warnings. The Chromium check passed and confirmed green borders on hover, no ready text, icon-only removal without opening the picker, and unchanged save/reset behavior. Reviewed the refreshed selected-photo screenshot. `git diff --check` passed.
+- Hover styling follow-up: `npm run build` and `git diff --check` passed. Existing hook/Browserslist warnings remain. Tests and browser checks were not rerun for this CSS-only adjustment.
+- Compact layout follow-up: reran the same targeted frontend Jest command (4 tests passed), `npm run build` (passed with existing warnings), and the Chromium check (passed with mocked APIs). Reviewed refreshed desktop/mobile screenshots; all upload controls remain functional. `git diff --check` passed. No backend logic changed in this follow-up.
+- `npx tsc --noEmit` passed for the photo changes.
+- `npm run build` passed, including backend TypeScript and the production frontend. Existing hook warnings remain; Browserslist also reports outdated `caniuse-lite` data.
+- `npm test --prefix src/frontends/emandi -- --watchAll=false --runInBand --watchman=false --runTestsByPath src/pages/newentry.test.tsx src/operations/images.test.ts` passed: 4 tests cover optional uploads, preparation, replacement/removal, invalid/oversized input, payloads, retry retention, and reset. The unrelated legacy `App.test.tsx` was not run.
+- `node scripts/check-dispatch-images.cjs` checks optional string fields, rejection of non-strings/empty strings/invalid headers, acceptance of JPG/JPEG headers and large prefixed strings, queue persistence, finalization retention, and list projections. Database and notification I/O are stubbed.
+- `node /private/tmp/unity-entry-ui-check.cjs` passed using Chromium outside the sandbox: desktop/mobile cards, real PNG-to-JPEG resize (3200x2000 to 1600x1000), backend-schema acceptance, failed-save retention, and successful reset. Screenshots are at `/private/tmp/unity-entry-desktop.png`, `/private/tmp/unity-entry-selected.png`, and `/private/tmp/unity-entry-mobile.png`. Mobile page width has a pre-existing 1px overflow unchanged when the photo section is hidden; the photo section fits the viewport.
+- `git diff --check` passed. Prior verification notes follow:
 - `npm install axios` completed; npm reported 22 audit findings in the dependency tree.
 - Vehicle-tagging sample payloads from `Workspace.postman_collection.json` pass their Joi schemas; the vehicle lookup and type routes correctly require no body schema.
 - The React build reports existing `react-hooks/exhaustive-deps` warnings in `editparty.tsx`, `newentry.tsx`, `parties.tsx`, `processed.tsx`, and `queued.tsx`.
@@ -57,7 +83,7 @@ Schemas expose any applicable combination of `params`, `query`, and `body`. The 
 
 - Receipt parsers `parseNinerReceipt` and `parseGatepassReceipt` were removed.
 - Gatepass and Niner document requests support `latest`, `id`, or direct HTML data with `party`, `tables: string[]`, and `qr`.
-- `driverMobile` was removed from gatepass and Niner document requests; document sharing uses the eMandi group directly.
+- Document sharing uses the eMandi group directly.
 - Niner JSON rendering now passes `EMandiNiner` directly to its EJS template; `NinerPdfData` and `renderNinerByJson` were removed.
 - Rendered-HTML callbacks, diagnostic HTML persistence, and the legacy generic `/api/files/html` flow were removed.
 - The generic HTML EJS template renders `NEM SINGH` for `व्यापारी का पूरा नाम`; document operations still pass the request party, and JSON requests continue rendering the record’s `trader_name`.
@@ -137,7 +163,7 @@ Schemas expose any applicable combination of `params`, `query`, and `body`. The 
 - Niner JSON rendering passes the eMandi record directly to `template_niner_json.ejs`.
 - QR payload builders intentionally preserve the portal’s punctuation, spacing, missing separators, and static URL suffix.
 - QR generation uses byte mode, error correction Q, mask 2, margin 4, and opaque black/white RGBA colors; niner output is version 8/1140px and gatepass output is version 14/1620px.
-- Document HTML sources now use `party`, `tables: string[]`, and `qr`; `driverMobile` was removed from gatepass and niner document requests, and WhatsApp sharing uses the eMandi group directly.
+- Document HTML sources now use `party`, `tables: string[]`, and `qr`; WhatsApp sharing uses the eMandi group directly.
 - Niner JSON PDFs now pass `EMandiNiner` directly to the EJS template; `NinerPdfData` and `renderNinerByJson` were removed.
 - PDF generation no longer exposes rendered HTML callbacks or saves diagnostic HTML files.
 - Direct HTML document sources use dedicated document templates; latest/ID sources use the corresponding JSON templates.

@@ -3,6 +3,10 @@ import { greenApi } from "./constants";
 
 export type ValidationSchema = Partial<Record<'params' | 'query' | 'body', joi.Schema>>;
 
+const entryImage = joi.string().pattern(/^data:image\/(?:jpeg|jpg);base64,/i).messages({
+    'string.pattern.base': '{{#label}} must be a valid jpg/jpeg data'
+}).optional();
+
 export const schemas: Record<string, ValidationSchema> = {
     "POST /api/whatsapp/webhook": {
         body: joi.object({
@@ -35,7 +39,8 @@ export const schemas: Record<string, ValidationSchema> = {
             bags: joi.number().required(),
             vehicleNumber: joi.string().trim().min(6).required(),
             vehicleType: joi.number().max(4).required(),
-            driverMobile: joi.string().regex(/^(\d{10})?$/).empty(''),
+            vehicleImage: entryImage,
+            numberPlateImage: entryImage,
             party: joi.object({
                 name: joi.string().trim().min(3).required(),
                 mandi: joi.string().trim().min(3).required(),
@@ -179,8 +184,7 @@ export const schemas: Record<string, ValidationSchema> = {
             ).required(),
             print: joi.boolean().required(),
             download: joi.boolean().required(),
-            share: joi.boolean().required(),
-            driverMobile: joi.string().regex(/^(\d{10})?$/).empty('').optional()
+            share: joi.boolean().required()
         }).custom((value, helpers) => {
             if ([value.print, value.download, value.share].filter(Boolean).length === 0)
                 return helpers.error('any.invalid');
@@ -209,8 +213,7 @@ export const schemas: Record<string, ValidationSchema> = {
             ).required(),
             print: joi.boolean().required(),
             download: joi.boolean().required(),
-            share: joi.boolean().required(),
-            driverMobile: joi.string().regex(/^(\d{10})?$/).empty('').optional()
+            share: joi.boolean().required()
         }).custom((value, helpers) => {
             if ([value.print, value.download, value.share].filter(Boolean).length === 0)
                 return helpers.error('any.invalid');

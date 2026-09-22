@@ -1,4 +1,5 @@
 Add actionmessages on list pages
 add routes
 Make the operation atomic in updateAtHead
+After a dispatch is finalized, fetch vehicle and number-plate image URLs from the external system and replace the corresponding vehicleImage/numberPlateImage Base64 values in the processed record. Both photos are optional. Keep existing image data until replacement URLs are successfully fetched and saved; allow retry after failures. External lookup contract and record mapping are still needed.
 Implement document action selection in the frontend: show Print, Download, and Share Via WhatsApp checkboxes; keep Share Via WhatsApp selected by default; build the payload on button click; send it to the backend; redirect to the returned download link when available; and display error notifications for failed print/share actions.

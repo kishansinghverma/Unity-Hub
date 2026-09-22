@@ -1,7 +1,8 @@
 import { capitalize, getDate, handleError } from "./utils";
 import { PatchParams, PostParams, States, Url } from "../common/constants";
+import { EntryImages } from "../common/types";
 
-export const createNewEntry = (formData: any) => {
+export const createNewEntry = (formData: any, images: EntryImages = {}) => {
     return fetch(Url.Dispatches, {
         ...PostParams,
         body: JSON.stringify({
@@ -11,7 +12,9 @@ export const createNewEntry = (formData: any) => {
             bags: parseInt(formData.bags),
             party: JSON.parse(formData.party),
             vehicleNumber: formData.vehicleNumber.replace(/\s/g, "").toUpperCase(),
-            vehicleType: parseInt(formData.vehicleType)
+            vehicleType: parseInt(formData.vehicleType),
+            vehicleImage: images.vehicleImage,
+            numberPlateImage: images.numberPlateImage
         })
     });
 }

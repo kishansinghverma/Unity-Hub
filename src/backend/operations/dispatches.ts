@@ -4,7 +4,7 @@ import { MongoDbService } from "../services/mongodb";
 import { Logger, String } from "../common/models";
 import { getErrorResponse, getHttpCode } from "../common/utils";
 import { whatsAppService } from "../services/whatsapp";
-import { FinalizeDispatchRequest } from "../common/types/inbound/request/Dispatch";
+import { CreateDispatchRequest, FinalizeDispatchRequest } from "../common/types/inbound/request/Dispatch";
 
 class Dispatches {
     private constants = globalConstants.emandi;
@@ -15,21 +15,22 @@ class Dispatches {
 
     public popDispatch = () => this.database.moveDocument(this.constants.collections.queued, this.constants.collections.processed, {}, { sort: { createdOn: 1 } });
 
-    public getQueuedDispatches = () => this.database.getDocuments(this.constants.collections.queued, {}, { sort: { createdOn: 1 } });
+    public getQueuedDispatches = () => this.database.getDocuments(this.constants.collections.queued, {}, { sort: { createdOn: 1 }, projection: { vehicleImage: 0, numberPlateImage: 0 } });
 
-    public getProcessedDispatches = () => this.database.getDocuments(this.constants.collections.processed, {}, { sort: { createdOn: 1 } });
+    public getProcessedDispatches = () => this.database.getDocuments(this.constants.collections.processed, {}, { sort: { createdOn: 1 }, projection: { vehicleImage: 0, numberPlateImage: 0 } });
 
     public deleteQueuedDispatch = (recordId: string) => this.database.deleteDocument(this.constants.collections.queued, recordId);
 
     public requeueDispatch = (recordId: string) => this.database.moveDocument(this.constants.collections.processed, this.constants.collections.queued, { _id: String.mongoId(recordId) }, {});
 
-    public queueDispatch = async (record: Document) => {
+    public queueDispatch = async (record: CreateDispatchRequest) => {
         const response = await this.database.insertDocument(this.constants.collections.queued, { ...record, createdOn: String.getEpoch() });
         const notificationResponse = await whatsAppService.sendMessage(greenApi.groupId.emandi, String.getTaggedString(templates.gatepassCreated, record.party)).catch(getErrorResponse);
         response.content.notification = notificationResponse.content;
         return response;
     };
 
+    // TODO: Replace stored image data with external URLs after finalization; retain Base64 until URL retrieval succeeds.
     public finalize = async ({ gatepassId, ninerId, rate }: FinalizeDispatchRequest) => {
         const patchData: Document = {};
         if (gatepassId !== undefined) patchData.gatepassId = gatepassId;
