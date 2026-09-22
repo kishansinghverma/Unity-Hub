@@ -1,19 +1,18 @@
 # Repository Guidelines
 
-Last reviewed: 2026-09-23 — added JPG/JPEG Base64 data URL header checks while keeping image-size enforcement in the frontend.
+Last reviewed: 2026-09-23 — checked frontend dispatch callers and identified incorrect queued-delete and processed-requeue URLs; source fixes remain pending.
 
 ## Project Structure & Module Organization
 
 `src/index.ts` is the backend entry point. Under `src/backend`, HTTP handlers live in `routes/`, domain workflows in `operations/`, integrations and server setup in `services/`, shared helpers in `common/`, and EJS/image resources in `assets/`. The eMandi Create React App is in `src/frontends/emandi`; application code is under `src/` and browser-served files under `public/`. Root builds go to `dist/`. Do not edit generated `dist/`, `build/`, or dependency directories.
 
-## Build, Test, and Development Commands
+## Build and Development Commands
 
 - `npm install`: installs root dependencies and, through `prepare`, frontend dependencies.
 - `npm run start-dev-backend`: runs the TypeScript backend with Nodemon.
 - `npm run start-dev-emandi`: starts the backend and React development server together; the frontend proxies API calls to port 8080.
 - `npm run build`: compiles both applications and copies assets into `dist/`.
 - `npm start`: runs the compiled server from `dist/index.js`; build first.
-- `npm test --prefix src/frontends/emandi -- --watchAll=false`: runs frontend Jest tests once. The root `npm test` is currently a placeholder and intentionally fails.
 
 ## Coding Style & Naming Conventions
 
@@ -31,7 +30,7 @@ Validation errors should explain the violated business rule in plain language. A
 
 Document rendering uses dedicated templates: `template_gatepass_html.ejs`, `template_niner_html.ejs`, `template_gatepass_json.ejs`, and `template_niner_json.ejs`. Do not reintroduce a generic combined document template or server-side receipt parsers. HTML rendering uses the lean `HtmlDocumentData` payload (`tables` and `qr`); the logo is embedded as a Base64 data URL from `assets/logo_emandi.png`.
 
-The dispatch API is mounted at `/api/dispatches` and currently exposes `/status`, `/init`, `/queued`, `/processed`, `/peek`, `/pop`, `/push`, `/finalize`, `/requeue/:id`, `/:id`, and party CRUD under `/parties`. `PATCH /finalize` accepts optional `gatepassId` and `ninerId` strings, including empty strings, plus a non-empty string `rate` or numeric `0`; it always moves the oldest queued record to processed and merges only supplied fields. Keep the route, operation, validation, and documentation contracts aligned.
+The dispatch API is mounted at `/api/dispatches` and currently exposes `/status`, `/queued`, `/processed`, `/peek`, `/pop`, `/push`, `/finalize`, `/requeue/:id`, `/:id`, and party CRUD under `/parties`. Database initialization runs at startup; there is no `/init` route. `PATCH /finalize` accepts optional `gatepassId` and `ninerId` strings, including empty strings, plus a non-empty string `rate` or numeric `0`; it always moves the oldest queued record to processed and merges only supplied fields. Keep the route, operation, validation, and documentation contracts aligned.
 
 New Entry photos are independently optional. `POST /api/dispatches/push` validates `vehicleImage` and `numberPlateImage` as optional strings starting with `data:image/jpeg;base64,` or `data:image/jpg;base64,` (case-insensitive), with no payload-content or per-image size checks. Omit unselected images; empty strings are rejected. The frontend accepts JPG/PNG/WebP source files up to 20 MiB, initially resizes to at most 1600px, and repeatedly reduces dimensions before JPEG encoding until each image is below 1.5 MiB before Base64 encoding. The overall 5 MB JSON request limit remains. Store photos with the queued MongoDB record; bulk queued/processed responses exclude these fields, while `/peek` retains them. Finalization currently preserves Base64 data. The `todo` file tracks replacing it with external image URLs after finalization; never discard image data before replacement URLs have been fetched and saved successfully.
 
@@ -47,9 +46,9 @@ The eMandi portal request builder currently supports only its active request sha
 
 The remote page displays an initial loading skeleton with a stable outer panel height while the catalog request is pending. Manual refresh preserves the current controls while syncing.
 
-## Testing Guidelines
+## Verification Guidelines
 
-Frontend tests use Jest, React Testing Library, and `@testing-library/jest-dom`. Name tests `*.test.ts(x)` beside covered code and test user-visible behavior. No backend framework or coverage threshold is configured; run `npm run build` after backend changes and manually exercise affected endpoints.
+Do not write tests or test files. Do not create temporary or persistent test scripts, test fixtures, or `.cjs` self-checks. Verify changes with TypeScript checks, the production build, `git diff --check`, and manual inspection of affected screens or endpoints as appropriate. No npm test commands are configured.
 
 ## Commit & Pull Request Guidelines
 

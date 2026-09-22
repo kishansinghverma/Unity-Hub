@@ -2,11 +2,11 @@
 
 Last updated: 2026-09-23
 
-Latest operation: added a case-insensitive Base64 data URL header check for JPG/JPEG to both optional image fields. Supplied values must start with `data:image/jpeg;base64,` or `data:image/jpg;base64,`; omit unselected images rather than sending empty strings. Image payload content and size are not checked by the schema. Frontend resizing below 1.5 MiB remains unchanged.
+Latest operation: compared the queued-page delete request with the backend route and checked all three callers of `Url.Dispatches`. The constant is `/api/dispatches/push`, so queued deletion incorrectly sends `DELETE /api/dispatches/push/:id` instead of `DELETE /api/dispatches/:id`. Response handling already matches the backend's `{ _id }` success body. Processed requeue also incorrectly sends `PATCH /api/dispatches/push/:id` with a status body instead of `GET /api/dispatches/requeue/:id`. Creation correctly uses `POST /api/dispatches/push`. Findings only; application fixes remain pending.
 
 ## Current State
 
-The repository remains on `main` at `8d493f9`. The earlier documentation edits were preserved; photo UI, request/validation/type changes, focused checks, and documentation updates are now uncommitted. No dependencies or environment variables were added.
+The repository is on `main` at `b8fdb48`; the working tree was clean before this cleanup. The photo feature and prior application changes are committed. Current changes update guidance, package scripts/configuration, remove test artifacts, and style the Vehicle Number input. No dependencies or environment variables were changed.
 
 ## New Entry Photos
 
@@ -16,7 +16,7 @@ The repository remains on `main` at `8d493f9`. The earlier documentation edits w
 - `createNewEntry` sends optional `vehicleImage` and `numberPlateImage` with the entry to `POST /api/dispatches/push`. The backend checks string datatype and the JPG/JPEG Base64 data URL header, rejects empty strings, and has no payload-content or per-image length checks. `CreateDispatchRequest` types the queue operation. MongoDB stores the image strings with the record.
 - Bulk queued/processed queries project out both image fields. `/peek` and record moves preserve complete records. Finalization currently retains Base64 data.
 - `todo` and a comment at `finalize` track replacing each image field with a URL fetched from the external system after finalization. External endpoint/lookup mapping is still needed; keep image data until URL retrieval and persistence succeed, and support retries. This follow-up is not implemented.
-- Photo-feature verification stubs database and notification I/O; the later obsolete-field cleanup did connect to the configured MongoDB database. Chromium browser checks use local production assets and mocked APIs, validating submitted payloads with the real backend schema.
+- Earlier photo-feature verification used mocked database/notification I/O and Chromium with local production assets. The later obsolete-field cleanup connected to the configured MongoDB database. Those temporary verification scripts have now been removed.
 
 ## Architecture and Naming
 
@@ -51,29 +51,13 @@ Schemas expose any applicable combination of `params`, `query`, and `body`. The 
 
 ## Verification
 
-- JPG/JPEG header follow-up: `node scripts/check-dispatch-images.cjs`, `npx tsc --noEmit`, `npm run build`, and `git diff --check` passed. Checks cover optional fields, both header spellings, case-insensitivity, malformed/missing headers, and large prefixed strings without a schema size limit. Database I/O was stubbed. Existing build warnings remain; no frontend behavior changed.
-- Image validation simplification: `npx tsc --noEmit`, `npm run build`, `node scripts/check-dispatch-images.cjs`, and `git diff --check` passed. The targeted frontend Jest command passed all 4 tests, including automatic retries at/above the size limit, strict-below-limit output, and cleanup on encoder/decoder failure. Existing build warnings remain. Browser checks were not rerun; frontend canvas behavior was verified with mocked encodes, and database I/O was stubbed.
-- Obsolete-field cleanup: `npx tsc --noEmit`, `npm run build`, `node scripts/check-dispatch-images.cjs`, and `git diff --check` passed. Existing React hook/Browserslist warnings remain. Direct Joi checks accepted normal queue/gatepass/niner requests and rejected the retired field as unknown.
-- Database audit/cleanup ran via `/private/tmp/unity-remove-legacy-contact.cjs audit` and `apply`, using the configured connection outside the sandbox after sandbox access was refused. One queued document was updated with `$unset`; no document values or credentials were printed. All three eMandi collections now have zero matching documents, and their validators do not reference the retired field. Existing backend processes must reload the updated code to enforce the new request contract.
-- Repository search found no remaining source/documentation references. Ignored, untracked historical artifacts under `src/frontends/dist` retain old compiled copies; they are outside the active root build and were left untouched per the generated-file guideline. The active root build was regenerated.
-- Weight/bags revert: `npm run build` passed and refreshed the served production assets, with existing hook/Browserslist warnings. `git diff --check` passed. Restored the prior JSX structure; no new tests or browser checks were run.
-- Weight/bags layout follow-up: `npm test --prefix src/frontends/emandi -- --watchAll=false --runInBand --watchman=false --runTestsByPath src/pages/newentry.test.tsx` passed both tests; `npm run build` passed with existing warnings; `git diff --check` passed. Confirmed Semantic UI's `unstackable` group excludes its mobile stacking rules. Browser checks were not rerun for this layout-only change.
-- Photo wording follow-up: reran the targeted frontend Jest command; all 4 tests passed after giving the overall upload region a distinct accessible name (“वाहन और नंबर प्लेट की फोटो”). `git diff --check` passed. No build/browser rerun for this text-only change.
-- Final color adjustment: changed only the edit-button background to light blue; `git diff --check` passed. Build/tests/browser results below precede this final color-only tweak.
-- Edit/remove positioning follow-up: targeted frontend tests passed (4 total; reran the 2 New Entry tests after adding an edit-picker assertion). `npm run build` passed with existing warnings. Chromium confirmed the pencil opens the correct picker, edit/remove occupy top-right/bottom-right respectively, removal does not open a picker, and save/reset behavior still works. Refreshed the selected-photo screenshot; `git diff --check` passed.
-- Selected-photo styling follow-up: the targeted frontend Jest command passed all 4 tests; `npm run build` passed with existing warnings. The Chromium check passed and confirmed green borders on hover, no ready text, icon-only removal without opening the picker, and unchanged save/reset behavior. Reviewed the refreshed selected-photo screenshot. `git diff --check` passed.
-- Hover styling follow-up: `npm run build` and `git diff --check` passed. Existing hook/Browserslist warnings remain. Tests and browser checks were not rerun for this CSS-only adjustment.
-- Compact layout follow-up: reran the same targeted frontend Jest command (4 tests passed), `npm run build` (passed with existing warnings), and the Chromium check (passed with mocked APIs). Reviewed refreshed desktop/mobile screenshots; all upload controls remain functional. `git diff --check` passed. No backend logic changed in this follow-up.
-- `npx tsc --noEmit` passed for the photo changes.
-- `npm run build` passed, including backend TypeScript and the production frontend. Existing hook warnings remain; Browserslist also reports outdated `caniuse-lite` data.
-- `npm test --prefix src/frontends/emandi -- --watchAll=false --runInBand --watchman=false --runTestsByPath src/pages/newentry.test.tsx src/operations/images.test.ts` passed: 4 tests cover optional uploads, preparation, replacement/removal, invalid/oversized input, payloads, retry retention, and reset. The unrelated legacy `App.test.tsx` was not run.
-- `node scripts/check-dispatch-images.cjs` checks optional string fields, rejection of non-strings/empty strings/invalid headers, acceptance of JPG/JPEG headers and large prefixed strings, queue persistence, finalization retention, and list projections. Database and notification I/O are stubbed.
-- `node /private/tmp/unity-entry-ui-check.cjs` passed using Chromium outside the sandbox: desktop/mobile cards, real PNG-to-JPEG resize (3200x2000 to 1600x1000), backend-schema acceptance, failed-save retention, and successful reset. Screenshots are at `/private/tmp/unity-entry-desktop.png`, `/private/tmp/unity-entry-selected.png`, and `/private/tmp/unity-entry-mobile.png`. Mobile page width has a pre-existing 1px overflow unchanged when the photo section is hidden; the photo section fits the viewport.
-- `git diff --check` passed. Prior verification notes follow:
-- `npm install axios` completed; npm reported 22 audit findings in the dependency tree.
-- Vehicle-tagging sample payloads from `Workspace.postman_collection.json` pass their Joi schemas; the vehicle lookup and type routes correctly require no body schema.
-- The React build reports existing `react-hooks/exhaustive-deps` warnings in `editparty.tsx`, `newentry.tsx`, `parties.tsx`, `processed.tsx`, and `queued.tsx`.
-- The root `npm test` remains an intentional failing placeholder; no backend test framework is configured.
+- Queued-delete review: read the page, shared URL/method constants, every `Url.Dispatches` caller, backend route/operation, and response helper. Confirmed path mismatches by inspection; no requests, tests, or builds were run. `git diff --check` passed for the documentation update.
+- Dispatch route review: inspected the router, operations, validation schemas, Express mount, and startup binding. Documentation-only changes; `git diff --check` passed. No tests were created or run, and no endpoints were invoked.
+- Policy: do not write tests, test files, or temporary/persistent test scripts. Use TypeScript checks, builds, diff checks, and manual screen/endpoint inspection instead. Both npm test commands were removed.
+- Cleanup verification: `npx tsc --noEmit`, `npm run build`, and `git diff --check` passed. The repository scan found no remaining test files, test-script directories, or CJS files outside dependencies/generated outputs; both session-created temporary CJS helpers were deleted. No tests were written or run for this cleanup. Existing hook/Browserslist warnings remain.
+- Earlier builds passed with existing React hook dependency warnings and outdated Browserslist data. Earlier browser checks confirmed image selection/replacement/removal, resize, save failure retention, and successful reset; the corresponding test files/scripts are no longer available.
+- Prior database cleanup removed the obsolete contact field from one queued record; Queued, Processed, and Parties then had zero matching records and no collection-validator references. No credentials or record contents were printed. Existing backend processes must reload updated code to enforce the current request contract.
+- Ignored, untracked historical output under `src/frontends/dist` is outside the active root build and remains untouched per the generated-file guideline. Earlier browser checks found a pre-existing 1px mobile page overflow unchanged by hiding the photo section.
 
 ## End-of-Day State
 
@@ -96,7 +80,7 @@ Schemas expose any applicable combination of `params`, `query`, and `body`. The 
 - Dispatch route names, operation method names, validation schemas, frontend push URL, README, and handoff documentation now use the same contract, including `GET /api/dispatches/pop`.
 - `PATCH /api/dispatches/finalize` accepts optional `gatepassId` and `ninerId` strings, including empty strings, plus a non-empty string `rate` or numeric `0`; it always moves the oldest queued record to processed and merges only supplied fields.
 - `FinalizeDispatchRequest` is defined at `src/backend/common/types/inbound/request/Dispatch.ts` and is used by `operations/dispatches.ts`.
-- Every public method in `operations/dispatches.ts` currently has a route binding; no dead public dispatch operation was found.
+- Dispatch workflow methods have route bindings; `initializeDatabase` is called at startup and has no HTTP route.
 - Repository conventions now document the dedicated four-template document rendering flow, lean HTML payloads, request-type placement, and the current dispatch route/finalization contract.
 - Vision functionality is exposed through `POST /api/vision/captcha`; eMandi login uses `visionService.resolveCaptcha`, and document QR generation uses `vision.generateQR`.
 - Vehicle-tagging requests use dedicated request types, a thin route/operation layer, and `vehicleTaggingService` to send requests directly with Axios. The GET tagging filter preserves the collection’s JSON body, including string `InstrumentType`.
@@ -148,12 +132,10 @@ Schemas expose any applicable combination of `params`, `query`, and `body`. The 
 - [x] Remove the unused `ObjectUtils` import from `src/backend/services/emandi.ts`.
 - [x] Correct the eMandi service error-message typos and wording.
 
-- Add API-level tests for session, dispatch status transitions, party updates, and document outcomes.
 - Decide whether to retain or remove temporary eMandi cookie persistence before production.
 - Protect raw-HTML document generation and print/share side effects with authentication and authorization.
 - Add cleanup for generated PDFs in `src/backend/static`.
 - Make the operation atomic in `updateAtHead`.
-- Add API-level coverage for invalid path parameters and query/body combinations.
 - Stored PDF HTML may expose QR data and personal information; restrict access or add cleanup outside debugging.
 - Niner and gatepass JSON document rendering use their dedicated EJS templates with typed record mappings, QR generation, and download/print/share handling.
 - The portal is responsible for matching `search[value]`; the backend returns the sole result from the `limit=1` response.
