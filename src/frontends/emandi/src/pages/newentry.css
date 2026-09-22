@@ -1,3 +1,7 @@
+.custom-form input[name="vehicleNumber"] {
+  text-transform: uppercase;
+}
+
 .entry-photos {
   color: #334155;
 }
