@@ -1,12 +1,12 @@
 # Project Handoff
 
-Last updated: 2026-09-21
+Last updated: 2026-09-23
 
-Latest operation: aligned finalize validation with frontend zero-rate and empty-ID payloads.
+Latest operation: prepared handoff after consolidating EMandi session and credential handling.
 
 ## Current State
 
-The repository is on `main`, synchronized with `origin/main`, with all current work unstaged. The active change set combines a gatepass-document workflow, a REST-oriented API refactor, frontend caller updates, and contributor documentation. Preserve these uncommitted changes when continuing work.
+The repository is on `main` at `73d601d`, synchronized with `origin/main`. Only `HandOff.md` and `AGENTS.md` are modified for this handoff; the preceding code change set is committed.
 
 ## Architecture and Naming
 
@@ -29,7 +29,7 @@ The repository is on `main`, synchronized with `origin/main`, with all current w
 
 Validation keys now include the HTTP method where one resource path supports multiple operations.
 
-The eMandi `/init` body rejects unknown fields. It stores no session or cookie state on disk, does not use environment credentials, and does not refresh active sessions. `GET /session` reuses the in-memory session when active and creates one from KeyVault only when the session is absent or expired. Authenticated portal requests follow the same reuse behavior. Remote authentication failures clear the session and retry the original request once.
+The eMandi `/init` body rejects unknown fields. It stores no session or cookie state on disk, does not use environment credentials, and does not refresh active sessions. `GET /session` reuses the in-memory session when active and creates one from KeyVault only when the session is absent or expired. Authenticated portal requests follow the same reuse behavior. Remote authentication failures clear the session and retry the original request once. There is no separate `POST /session` warm-up route.
 
 `EMandiService.buildRequestOptions` accepts only the active portal request shape: `POST`, headers, and a pre-encoded string body. It does not serialize arbitrary objects or support unused body types.
 
@@ -41,9 +41,9 @@ Schemas expose any applicable combination of `params`, `query`, and `body`. The 
 
 ## Verification
 
-- `npm run build` passes after the direct vtag Axios change, including backend TypeScript compilation and the production React build.
-- `npx tsc --noEmit` passes.
-- `git diff --check` passes.
+- `npx tsc --noEmit` passes on the current `main` tip.
+- `npm run build` passes, including backend TypeScript compilation and the production React build.
+- `git diff --check` passes; only the handoff documentation files are modified.
 - `npm install axios` completed; npm reported 22 audit findings in the dependency tree.
 - Vehicle-tagging sample payloads from `Workspace.postman_collection.json` pass their Joi schemas; the vehicle lookup and type routes correctly require no body schema.
 - The React build reports existing `react-hooks/exhaustive-deps` warnings in `editparty.tsx`, `newentry.tsx`, `parties.tsx`, `processed.tsx`, and `queued.tsx`.
@@ -104,7 +104,7 @@ Schemas expose any applicable combination of `params`, `query`, and `body`. The 
 - The frontend follow-up remains in `todo`: add the three action checkboxes, default Share Via WhatsApp to selected, submit the combined payload, redirect to `downloadUrl`, and notify for failed print/share actions.
 - Remote contract review: `/devices`, `/syncdevices`, and `/isconnected` match the frontend assumptions. Global `validationMiddleware` applies the `/command` request schema before the route runs. `commandId` is now string-only in backend validation and service signatures; the frontend normalizes catalog command IDs with `String(...)` before sending them. The frontend still assumes forwarded remote fields `Status` and `Response` without a backend response type or normalization.
 - The remote page now shows an initial skeleton and maintains a minimum-height outer panel while `/devices` loads; manual refresh keeps the existing catalog visible.
-- Existing unrelated worktree changes remain uncommitted and must be preserved.
+- The production build reports existing `react-hooks/exhaustive-deps` warnings in `editparty.tsx`, `newentry.tsx`, `parties.tsx`, `processed.tsx`, and `queued.tsx`.
 
 ## Follow-up Considerations
 
@@ -118,7 +118,7 @@ Schemas expose any applicable combination of `params`, `query`, and `body`. The 
 - [ ] Map non-timeout network failures to the appropriate `502` error for the global handler.
 - [x] Clear stale cookies before starting a new authentication attempt.
 - [x] Coordinate `/init` with in-flight authentication so old credentials cannot recreate a session after credentials change.
-- [ ] Make the two credential writes atomic, or define rollback behavior when one write fails.
+- [x] Consolidate the EMandi username and password into one encrypted `EmandiCredentials` KeyVault secret.
 - [x] Remove the unused `ObjectUtils` import from `src/backend/services/emandi.ts`.
 - [x] Correct the eMandi service error-message typos and wording.
 
@@ -133,6 +133,7 @@ Schemas expose any applicable combination of `params`, `query`, and `body`. The 
 - The portal is responsible for matching `search[value]`; the backend returns the sole result from the `limit=1` response.
 - Axios is a runtime dependency used by vtag because native Node `fetch` rejects GET requests with bodies; the collection’s GET tagging payload is now sent through Axios.
 - `EMandiQuery` includes optional `id` and `date`; operations decide between single-record and collection retrieval.
+- EMandi no longer reads the legacy `emandi.username` or `emandi.password` KeyVault entries; existing legacy entries, if present, are stale and unused.
 - Niner JSON rendering passes the eMandi record directly to `template_niner_json.ejs`.
 - QR payload builders intentionally preserve the portal’s punctuation, spacing, missing separators, and static URL suffix.
 - QR generation uses byte mode, error correction Q, mask 2, margin 4, and opaque black/white RGBA colors; niner output is version 8/1140px and gatepass output is version 14/1620px.

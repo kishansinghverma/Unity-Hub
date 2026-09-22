@@ -1,6 +1,6 @@
 # Repository Guidelines
 
-Last reviewed: 2026-09-21 — aligned finalize validation with frontend zero-rate and empty-ID payloads.
+Last reviewed: 2026-09-23 — prepared handoff after consolidating EMandi session and credential handling.
 
 ## Project Structure & Module Organization
 
