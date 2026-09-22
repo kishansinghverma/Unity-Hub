@@ -29,7 +29,7 @@ export const vehicleType: { [key: string]: string } = {
 
 export const Url = {
     Parties: "/api/dispatches/parties",
-    Dispatches: "/api/dispatches/push",
+    Dispatches: "/api/dispatches",
     Processed: "/api/dispatches/processed",
     Queued: "/api/dispatches/queued",
     NotificationUrl: "/api/whatsapp/sendtext/unityhub",

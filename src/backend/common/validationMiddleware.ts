@@ -28,7 +28,6 @@ export const validationMiddleware = async (request: Request, response: Response,
     if (!schema) return next();
 
     try {
-        if (schema.params) request.params = await validator.validate(schema.params, request.params);
         if (schema.query) request.query = await validator.validate(schema.query, request.query);
         if (schema.body) request.body = await validator.validate(schema.body, request.body);
 

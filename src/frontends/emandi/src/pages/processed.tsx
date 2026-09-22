@@ -3,7 +3,7 @@ import { Table } from "semantic-ui-react";
 import { CustomTable, EmptyTable, TablePagination } from "../common/components";
 import { ProcessedEntry, Record } from "../common/types";
 import { TableRenderer, getDate, handleError, handleJsonResponse } from "../operations/utils";
-import { PatchParams, Url } from "../common/constants";
+import { Url } from "../common/constants";
 import { Undo2 } from "lucide-react";
 
 export const ProcessedPage: React.FC = () => {
@@ -14,12 +14,9 @@ export const ProcessedPage: React.FC = () => {
         records.set(filteredRecords);
     }
 
-    const requeue = (id: string | undefined) => {
+    const requeue = (id: string) => {
         isFetching.set(true);
-        fetch(`${Url.Dispatches}/${id}`, {
-            ...PatchParams,
-            body: JSON.stringify({ status: 'queued' })
-        })
+        fetch(`${Url.Dispatches}/requeue/${id}`)
             .then(handleJsonResponse)
             .then(filterRecords)
             .catch(handleError)

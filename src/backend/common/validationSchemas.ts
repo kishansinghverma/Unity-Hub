@@ -1,7 +1,7 @@
 import joi from 'joi';
 import { greenApi } from "./constants";
 
-export type ValidationSchema = Partial<Record<'params' | 'query' | 'body', joi.Schema>>;
+export type ValidationSchema = Partial<Record<'query' | 'body', joi.Schema>>;
 
 const entryImage = joi.string().pattern(/^data:image\/(?:jpeg|jpg);base64,/i).messages({
     'string.pattern.base': '{{#label}} must be a valid jpg/jpeg data'
@@ -61,16 +61,6 @@ export const schemas: Record<string, ValidationSchema> = {
             ).optional()
         }).unknown(false)
     },
-    "GET /api/dispatches/requeue/:id": {
-        params: joi.object({
-            id: joi.string().trim().min(1).required()
-        })
-    },
-    "DELETE /api/dispatches/:id": {
-        params: joi.object({
-            id: joi.string().trim().min(1).required()
-        })
-    },
     "POST /api/dispatches/parties": {
         body: joi.object({
             name: joi.string().trim().min(3).required(),
@@ -82,9 +72,6 @@ export const schemas: Record<string, ValidationSchema> = {
         })
     },
     "PATCH /api/dispatches/parties/:id": {
-        params: joi.object({
-            id: joi.string().trim().min(1).required()
-        }),
         body: joi.object({
             name: joi.string().trim().min(3).required(),
             mandi: joi.string().trim().min(3).required(),
@@ -98,11 +85,6 @@ export const schemas: Record<string, ValidationSchema> = {
         body: joi.object({
             base64string: joi.string().required()
         })
-    },
-    "GET /api/vtag/vehicles/:gatepassId": {
-        params: joi.object({
-            gatepassId: joi.string().trim().min(1).required()
-        }).unknown(false)
     },
     "GET /api/vtag/entries": {
         body: joi.object({

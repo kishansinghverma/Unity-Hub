@@ -3,7 +3,7 @@ import { PatchParams, PostParams, States, Url } from "../common/constants";
 import { EntryImages } from "../common/types";
 
 export const createNewEntry = (formData: any, images: EntryImages = {}) => {
-    return fetch(Url.Dispatches, {
+    return fetch(`${Url.Dispatches}/push`, {
         ...PostParams,
         body: JSON.stringify({
             date: getDate(),

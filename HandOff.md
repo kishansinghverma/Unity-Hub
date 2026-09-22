@@ -2,11 +2,11 @@
 
 Last updated: 2026-09-23
 
-Latest operation: compared the queued-page delete request with the backend route and checked all three callers of `Url.Dispatches`. The constant is `/api/dispatches/push`, so queued deletion incorrectly sends `DELETE /api/dispatches/push/:id` instead of `DELETE /api/dispatches/:id`. Response handling already matches the backend's `{ _id }` success body. Processed requeue also incorrectly sends `PATCH /api/dispatches/push/:id` with a status body instead of `GET /api/dispatches/requeue/:id`. Creation correctly uses `POST /api/dispatches/push`. Findings only; application fixes remain pending.
+Latest operation: removed Joi path-parameter validation at the user's request. Deleted the three parameter-only schemas, removed params from the party-update schema and schema type, and removed route-level validator bindings and parameter handling from middleware. Global body/query validation remains, including the party-update body. Missing required segments normally return 404 unless another route matches; supplied values are no longer trimmed or rejected by Joi and reach handlers/downstream code. Earlier frontend dispatch URL fixes remain intact.
 
 ## Current State
 
-The repository is on `main` at `b8fdb48`; the working tree was clean before this cleanup. The photo feature and prior application changes are committed. Current changes update guidance, package scripts/configuration, remove test artifacts, and style the Vehicle Number input. No dependencies or environment variables were changed.
+The repository is on `main` at `792904c`. Current changes fix frontend dispatch URLs/methods and remove backend path-parameter validation, with accompanying documentation. Existing staged and unstaged work was preserved. No dependencies or environment variables were changed.
 
 ## New Entry Photos
 
@@ -45,12 +45,15 @@ The eMandi `/init` body rejects unknown fields. It stores no session or cookie s
 
 Coding preference: keep implementations lean and use arrow-function class fields for service and operation methods.
 
-`validator.middleware` runs after body parsing and before route registration. It uses the typed `Validator` in `validationMiddleware.ts` with schemas from `validationSchemas.ts`, validates defined method/path pairs, supports `:id` route patterns, sequentially validates declared `request.params`, `request.body`, and `request.query` sections, writes sanitized values back to the request, and skips undefined paths.
+Global `validationMiddleware` runs after body parsing and before route matching. It uses the typed `Validator` with schemas from `validationSchemas.ts`, matches method/path pairs including `:id` patterns, and validates declared query/body sections with sanitized values written back. Path parameters are left to Express route matching and downstream handling; no route-level validator bindings remain. Undefined schemas are skipped.
 
-Schemas expose any applicable combination of `params`, `query`, and `body`. The middleware validates each declared section independently.
+Schemas expose `query`, `body`, or both. The middleware validates each declared section independently.
 
 ## Verification
 
+- Path-validation removal: `npx tsc --noEmit`, `npm run build`, and `git diff --check` passed. Existing React hook/Browserslist warnings remain. Inspected schema references, route bindings, and the Express 404 fallback; body/query validation remains global. No live mutation requests, tests, or test scripts were used.
+- Earlier route-level parameter-validation checks passed before that validation was removed at the user's request. Their whitespace-ID rejection results no longer describe current behavior.
+- Dispatch caller fixes: reviewed every `Url.Dispatches` reference against the backend router; create, delete, and requeue now match its paths and methods. `npx tsc --noEmit -p src/frontends/emandi/tsconfig.json`, `npm run build`, and `git diff --check` passed. Existing hook/Browserslist warnings remain. No tests or test scripts were created, and no live create/delete/requeue requests were sent.
 - Queued-delete review: read the page, shared URL/method constants, every `Url.Dispatches` caller, backend route/operation, and response helper. Confirmed path mismatches by inspection; no requests, tests, or builds were run. `git diff --check` passed for the documentation update.
 - Dispatch route review: inspected the router, operations, validation schemas, Express mount, and startup binding. Documentation-only changes; `git diff --check` passed. No tests were created or run, and no endpoints were invoked.
 - Policy: do not write tests, test files, or temporary/persistent test scripts. Use TypeScript checks, builds, diff checks, and manual screen/endpoint inspection instead. Both npm test commands were removed.

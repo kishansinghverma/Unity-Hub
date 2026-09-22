@@ -1,6 +1,6 @@
 # Repository Guidelines
 
-Last reviewed: 2026-09-23 — checked frontend dispatch callers and identified incorrect queued-delete and processed-requeue URLs; source fixes remain pending.
+Last reviewed: 2026-09-23 — removed Joi path-parameter validation; retained global body/query validation.
 
 ## Project Structure & Module Organization
 
@@ -28,9 +28,13 @@ When multiple independent actions are requested, attempt each selected action in
 
 Validation errors should explain the violated business rule in plain language. Add explicit Joi messages for custom cross-field rules instead of exposing generic `any.invalid` messages.
 
+Global `validationMiddleware` validates only declared body/query schemas, including bodies on parameterized routes such as party updates. Do not add Joi path-parameter validation or route-level validator bindings. Express requires path segments for route matching; missing segments return 404 unless another route matches. Supplied parameters pass unchanged to handlers and downstream code.
+
 Document rendering uses dedicated templates: `template_gatepass_html.ejs`, `template_niner_html.ejs`, `template_gatepass_json.ejs`, and `template_niner_json.ejs`. Do not reintroduce a generic combined document template or server-side receipt parsers. HTML rendering uses the lean `HtmlDocumentData` payload (`tables` and `qr`); the logo is embedded as a Base64 data URL from `assets/logo_emandi.png`.
 
 The dispatch API is mounted at `/api/dispatches` and currently exposes `/status`, `/queued`, `/processed`, `/peek`, `/pop`, `/push`, `/finalize`, `/requeue/:id`, `/:id`, and party CRUD under `/parties`. Database initialization runs at startup; there is no `/init` route. `PATCH /finalize` accepts optional `gatepassId` and `ninerId` strings, including empty strings, plus a non-empty string `rate` or numeric `0`; it always moves the oldest queued record to processed and merges only supplied fields. Keep the route, operation, validation, and documentation contracts aligned.
+
+The frontend `Url.Dispatches` constant is the `/api/dispatches` base path. Creation appends `/push` with POST, queued deletion appends `/:id` with DELETE, and processed requeue appends `/requeue/:id` with GET and no body.
 
 New Entry photos are independently optional. `POST /api/dispatches/push` validates `vehicleImage` and `numberPlateImage` as optional strings starting with `data:image/jpeg;base64,` or `data:image/jpg;base64,` (case-insensitive), with no payload-content or per-image size checks. Omit unselected images; empty strings are rejected. The frontend accepts JPG/PNG/WebP source files up to 20 MiB, initially resizes to at most 1600px, and repeatedly reduces dimensions before JPEG encoding until each image is below 1.5 MiB before Base64 encoding. The overall 5 MB JSON request limit remains. Store photos with the queued MongoDB record; bulk queued/processed responses exclude these fields, while `/peek` retains them. Finalization currently preserves Base64 data. The `todo` file tracks replacing it with external image URLs after finalization; never discard image data before replacement URLs have been fetched and saved successfully.
 
