@@ -114,6 +114,7 @@ export enum source {
     whatsapp = 'WhatsApp',
     udp = 'UdpServer',
     file = 'FileHandler',
+    s3storage = 'S3Storage',
     vision = 'Vision',
     emandi = 'EMandi',
     keyvault = 'KeyVault',

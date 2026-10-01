@@ -1,6 +1,6 @@
 # Repository Guidelines
 
-Last reviewed: 2026-09-23 — removed Joi path-parameter validation; retained global body/query validation.
+Last reviewed: 2026-10-01 — moved Oakter runtime catalog from `static` to `assets`; added backend `s3service.ts`; multipart `/dispatches/push` backend wiring remains pending.
 
 ## Project Structure & Module Organization
 
@@ -42,7 +42,7 @@ Vision functionality is mounted at `/api/vision`; captcha OCR is exposed at `POS
 
 Vehicle-tagging functionality is mounted at `/api/vtag` and proxies the eMandi `VehicleTaggingAPI` with direct Axios calls. The local vehicle lookup is `GET /vehicles/:gatepassId`; it sends the upstream `GetVehicleNumberByGatepass` request with `InstrumentType: 1` fixed by the backend. Vehicle master data is exposed at `GET /vehicles/types`, and the local tagging collection and creation routes are `GET /entries` and `POST /entries`. The GET filter request is accepted as JSON and forwarded upstream as a JSON GET body.
 
-The Oakter device catalog at `src/backend/static/oak-devices.json` is runtime state and must remain untracked. `GET /devices` checks for the file and, when it is missing, synchronizes from Oakter before returning the hydrated catalog. Later reads use the saved file, while explicit refresh calls `/syncdevices` and renders its response directly.
+The Oakter device catalog at `src/backend/assets/oak-devices.json` is runtime state and must remain untracked. `GET /devices` checks for the file and, when it is missing, synchronizes from Oakter before returning the hydrated catalog. Later reads use the saved file, while explicit refresh calls `/syncdevices` and renders its response directly.
 
 Keep the Oakter remote contracts aligned: the global `validationMiddleware` validates `POST /api/oakterremote/command` against its schema before the route runs. The frontend expects catalog responses with `Response`, connection responses with `isConnected`, and command responses with `Status`/`Response`; the backend currently forwards the remote command response without normalizing it.
 

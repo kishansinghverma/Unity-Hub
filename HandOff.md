@@ -1,8 +1,8 @@
 # Project Handoff
 
-Last updated: 2026-09-23
+Last updated: 2026-10-01
 
-Latest operation: removed Joi path-parameter validation at the user's request. Deleted the three parameter-only schemas, removed params from the party-update schema and schema type, and removed route-level validator bindings and parameter handling from middleware. Global body/query validation remains, including the party-update body. Missing required segments normally return 404 unless another route matches; supplied values are no longer trimmed or rejected by Joi and reach handlers/downstream code. Earlier frontend dispatch URL fixes remain intact.
+Latest operation: moved Oakter runtime device catalog persistence from `src/backend/static/oak-devices.json` to `src/backend/assets/oak-devices.json` so the daily static-directory cleanup does not remove it. Also retains previously added `s3service.ts` as an unwired standalone storage service.
 
 ## Current State
 
@@ -10,10 +10,16 @@ The repository is on `main` at `792904c`. Current changes fix frontend dispatch 
 
 ## New Entry Photos
 
-- `newentry.tsx` now provides two numbered, independently optional photo cards with previews, replace/remove controls, processing/error states, and mobile stacking. Saving is disabled while a photo is being prepared; failed saves retain images, successful saves clear them.
-- The compact photo section retains its accessible region name and input labels; error descriptions are linked only when present. Removed helper-text styles and the unused camera icon.
-- Native browser decoding/canvas accepts JPG/PNG/WebP files up to 20 MiB and initially produces JPEG data URLs at up to 1600px on the longest edge (quality 0.85). If output is too large, both dimensions shrink by 20% and the original image is redrawn until the JPEG is strictly below 1.5 MiB before Base64 encoding. Invalid/undecodable inputs and encoder failures still show an error; oversized output is never returned. Two prepared photos remain within the existing 5 MB JSON request limit.
-- `createNewEntry` sends optional `vehicleImage` and `numberPlateImage` with the entry to `POST /api/dispatches/push`. The backend checks string datatype and the JPG/JPEG Base64 data URL header, rejects empty strings, and has no payload-content or per-image length checks. `CreateDispatchRequest` types the queue operation. MongoDB stores the image strings with the record.
+- `newentry.tsx` keeps two independently optional photo cards with previews and replace/remove actions, but now stores raw `File` objects instead of Base64 strings.
+- Client-side validation now allows image uploads from mobile formats by accepting `image/*` (plus `.heic/.heif` extensions) and rejects files over 20 MiB with a user-facing message.
+- `createNewEntry` now sends `multipart/form-data` to `POST /api/dispatches/push`, posting text fields and optional `vehicleImage`/`numberPlateImage` files in one request.
+- Backend is intentionally unchanged in this operation; until backend multipart parsing/validation is added, this frontend request format is not yet consumable by the current JSON/Base64 dispatch endpoint.
+
+## Storage Service
+
+- Added `src/backend/services/s3service.ts` as a standalone backend service class with `uploadFile(path, file, contentType, upsert)`, `downloadFile(path)`, `deleteFile(path)`, and `deleteOnSchedule(days, prefix)`.
+- `deleteOnSchedule` recursively lists objects under the optional prefix, filters files older than the provided day window (default `7`), and deletes them in batches.
+- No cron scheduler hook or route/operation integration is included yet by request.
 - Bulk queued/processed queries project out both image fields. `/peek` and record moves preserve complete records. Finalization currently retains Base64 data.
 - `todo` and a comment at `finalize` track replacing each image field with a URL fetched from the external system after finalization. External endpoint/lookup mapping is still needed; keep image data until URL retrieval and persistence succeed, and support retries. This follow-up is not implemented.
 - Earlier photo-feature verification used mocked database/notification I/O and Chromium with local production assets. The later obsolete-field cleanup connected to the configured MongoDB database. Those temporary verification scripts have now been removed.
@@ -107,8 +113,8 @@ Schemas expose `query`, `body`, or both. The middleware validates each declared 
 - Emandi gatepass and niner query validation now report `id and date must be provided together` when only one paired parameter is supplied.
 - Current working preferences: keep functions responsibility-focused, separate HTML/JSON document creation helpers, execute independent document actions without early returns, return structured per-action statuses, and use explicit business-oriented validation messages.
 - Current architecture preference: keep route handlers thin, operations responsible for workflows, services responsible for integrations, Express request/response types under `common/types/inbound/{request,response}`, and backend API request/response types under `common/types/outbound/{request,response}`.
-- Remote controls now load from `GET /api/oakterremote/devices`, which reads backend `static/oak-devices.json`; `POST /api/oakterremote/syncdevices` updates that file, then the frontend renders the sync response.
-- `src/backend/static/oak-devices.json` is intentionally untracked runtime state. `GET /devices` checks for the file through `getCatalog()` and calls `syncCatalog()` when it is missing; `syncCatalog()` uses `fetchCatalogFromRemote()` to hydrate and store the upstream catalog. Later reads reuse the saved file, while explicit refresh uses the sync response directly.
+- Remote controls now load from `GET /api/oakterremote/devices`, which reads backend `assets/oak-devices.json`; `POST /api/oakterremote/syncdevices` updates that file, then the frontend renders the sync response.
+- `src/backend/assets/oak-devices.json` is intentionally untracked runtime state. `GET /devices` checks for the file through `getCatalog()` and calls `syncCatalog()` when it is missing; `syncCatalog()` uses `fetchCatalogFromRemote()` to hydrate and store the upstream catalog. Later reads reuse the saved file, while explicit refresh uses the sync response directly.
 - Verification after the remote catalog flow update: `npx tsc --noEmit` passed, `npm run build` passed with only the existing React hook warnings, and `git diff --check` passed.
 - The obsolete tracked `src/frontends/emandi/src/static/commands.json` copy was removed; the backend runtime catalog is now the only source.
 - Verification after the catalog cleanup: `npx tsc --noEmit` passed, `npm run build` passed with only the existing React hook warnings, and `git diff --check` passed.

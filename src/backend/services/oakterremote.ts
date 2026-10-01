@@ -14,7 +14,7 @@ class OakterRemoteService {
     private sessionId = process.env.OAKTER_SESSION_ID;
     private oakRemoteId = process.env.OAKTER_REMOTE_ID;
     private oakRemoteAuthToken = process.env.OAKTER_AUTH_TOKEN;
-    private deviceCatalogPath = path.join(__dirname, "../static/oak-devices.json");
+    private deviceCatalogPath = path.join(__dirname, "../assets/oak-devices.json");
 
     constructor() {
         this.logger = new Logger(source.oakterremote);

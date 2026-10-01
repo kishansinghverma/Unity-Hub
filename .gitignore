@@ -4,3 +4,4 @@ dist
 .DS_Store
 src/frontends/emandi/build
 src/backend/static/
+src/backend/assets/oak-devices.json

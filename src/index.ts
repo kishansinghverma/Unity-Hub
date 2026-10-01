@@ -15,10 +15,10 @@ const initializeResource = async (name: string, initialize: () => Promise<unknow
 };
 
 const initialize = async () => {
-    await initializeResource('KeyVault', keyVault.initializeDatabase);
-    await initializeResource('Dispatches', dispatches.initializeDatabase);
-    await initializeResource('Expenses', expenses.initializeDatabase);
-    await initializeResource('Oakter Remote', oakterRemoteService.initialize);
+    initializeResource('KeyVault', keyVault.initializeDatabase);
+    initializeResource('Dispatches', dispatches.initializeDatabase);
+    initializeResource('Expenses', expenses.initializeDatabase);
+    initializeResource('Oakter Remote', oakterRemoteService.initialize);
 
     // assistantService.initialize();
     // mqttService.initialize();
