@@ -28,10 +28,10 @@ export const vehicleType: { [key: string]: string } = {
 };
 
 export const Url = {
-    Parties: "/api/dispatches/parties",
-    Dispatches: "/api/dispatches",
-    Processed: "/api/dispatches/processed",
-    Queued: "/api/dispatches/queued",
+    Parties: "/api/gatepasses/parties",
+    Dispatches: "/api/gatepasses",
+    Processed: "/api/gatepasses/processed",
+    Queued: "/api/gatepasses/queued",
     NotificationUrl: "/api/whatsapp/sendtext/unityhub",
     OakterRemoteCommand: "/api/oakterremote/command",
     OakterRemoteDevices: "/api/oakterremote/devices",

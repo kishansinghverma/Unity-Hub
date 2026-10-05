@@ -72,14 +72,6 @@ export const NewEntry: React.FC = () => {
         });
     };
 
-    useEffect(() => {
-        imagePreviewsRef.current = imagePreviews;
-    }, [imagePreviews]);
-
-    useEffect(() => () => {
-        Object.values(imagePreviewsRef.current).forEach(preview => preview && URL.revokeObjectURL(preview));
-    }, []);
-
     const handleSubmit = (event: BaseSyntheticEvent) => {
         if (isFormLoading.get()) return;
         if (isFormValid(event)) {
@@ -107,6 +99,14 @@ export const NewEntry: React.FC = () => {
             .catch(handleError)
             .finally(() => isMandiLoading.set(false));
     }
+
+    useEffect(() => {
+        imagePreviewsRef.current = imagePreviews;
+    }, [imagePreviews]);
+
+    useEffect(() => () => {
+        Object.values(imagePreviewsRef.current).forEach(preview => preview && URL.revokeObjectURL(preview));
+    }, []);
 
     useEffect(fetchParties, []);
 
@@ -172,7 +172,7 @@ export const NewEntry: React.FC = () => {
                         placeholder="आढ़तिया फर्म का नाम"
                         options={mandiOptions.get()}
                         loading={isMandiLoading.get()}
-                        onChange={triggerValidation} 
+                        onChange={triggerValidation}
                     />
                 </Form.Field>
                 <section className="entry-photos" aria-label="वाहन और नंबर प्लेट की फोटो">

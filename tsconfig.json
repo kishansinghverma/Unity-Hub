@@ -1,16 +1,20 @@
 {
   "compilerOptions": {
-    "target": "es2016",
-    "module": "commonjs",
-    "outDir": "./dist",
-    "rootDir": "./src",
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "sourceMap": true,
-    "resolveJsonModule": true,
-    "lib": ["ES2021.String", "DOM"]
+    "skipLibCheck": true,
+    "noEmit": true,
+    "types": ["node"]
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "src/frontends/*"]
+  "include": ["src/backend/**/*.ts", "tsup.config.ts"],
+  "exclude": ["node_modules", "dist", "src/frontends"]
 }
