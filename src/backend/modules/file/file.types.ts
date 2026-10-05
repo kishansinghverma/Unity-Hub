@@ -1,0 +1,71 @@
+export type GatepassPayload = {
+  id: string;
+  book_number: string;
+  serial_number: string;
+  dateofissue: string;
+  timeofissue: string;
+  nine_r_id: string;
+  dist_todestination: string;
+  home_center: string;
+  center_code?: string;
+  crop_name_hi: string;
+  crop_name: string;
+  crop_weight: string;
+  trader_name: string;
+  vehicle: string;
+  vehicle_no: string;
+  kreta_mandi: string;
+  kreta_mandiName?: string;
+  crop_type: string;
+  bundle_no: string;
+  qty_parameter?: string;
+  latitude: string;
+  longitude: string;
+  taggingDate: string;
+  dateofdestination: string;
+  estimated_travel_time: string;
+  avg_speed: string;
+  qr: string;
+};
+
+export type NinerPayload = {
+  book_number: string;
+  serial_number: string;
+  dateofissue: string;
+  mandi_name: string;
+  trade_mandi: string;
+  trader_license_number: string;
+  vikreta_details: string;
+  trader_name: string;
+  buyer_state: string;
+  buyer_license_no: string;
+  kreta_details: string;
+  vehicleName: string;
+  vehicle_no: string;
+  crop_name_hi?: string;
+  crop_code: string;
+  crop_type: string;
+  crop_weight: string;
+  crop_rate: string;
+  crop_amount: string;
+  mandi_fee?: string;
+  dev_fee?: string;
+  weighing_fee?: string;
+  commission_fee?: string;
+  porter_fee?: string;
+  tax?: string;
+  agent_fee?: string;
+  other_fee?: string;
+  total_tax: string;
+  total_amount: string;
+  six_r_id: string;
+  qr: string;
+};
+
+export type GatepassResponse = GatepassPayload & { created_at: string };
+export type NinerResponse = NinerPayload & { mandi_name_eng: string; crop_name_eng: string };
+
+export type FileUpload = {
+  buffer: Buffer;
+  filename: string;
+};

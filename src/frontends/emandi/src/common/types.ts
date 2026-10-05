@@ -42,8 +42,8 @@ export type FormInput = {
 }
 
 export type EntryImages = {
-    vehicleImage?: string;
-    numberPlateImage?: string;
+    vehicleImage?: File;
+    numberPlateImage?: File;
 };
 
 export type QueuedEntry = EntryImages & {
