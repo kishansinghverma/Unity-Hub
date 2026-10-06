@@ -153,7 +153,7 @@ export const RemotePage = () => {
 
     const syncDevices = () => {
         setIsRefreshingDevices(true);
-        fetch(Url.OakterRemoteSyncDevices, PostParams)
+        fetch(Url.OakterRemoteSyncDevices)
             .then((response) => handleJsonResponse<RemoteDevice[]>(response))
             .then((json) => {
                 updateDevices(json);
