@@ -7,6 +7,6 @@ export const oakterRemoteRoutes: FastifyPluginAsync = async (app) => {
 
   app.get('/status', async () => operations.status());
   app.get('/devices', async () => operations.devices());
-  app.post('/sync', async () => operations.sync());
+  app.get('/sync', async () => operations.sync());
   app.post<{ Body: OakterCommandRequest }>('/commands', async (request) => operations.command(request.body));
 };
