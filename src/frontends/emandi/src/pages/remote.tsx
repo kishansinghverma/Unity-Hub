@@ -173,6 +173,7 @@ export const RemotePage = () => {
 
     const issueCommand = (commandId: string, remoteId: number | string) => {
         fetch(Url.OakterRemoteCommand, { ...PostParams, body: JSON.stringify({ commandId, remoteId }) })
+            .then(response => handleJsonResponse<string>(response))
             .catch(handleError);
     };
 
@@ -291,7 +292,7 @@ export const RemotePage = () => {
         };
 
         checkConnection();
-        const timerId = window.setInterval(checkConnection, 10000);
+        const timerId = window.setInterval(checkConnection, 15000);
         return () => {
             isMounted = false;
             window.clearInterval(timerId);

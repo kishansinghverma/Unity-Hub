@@ -19,7 +19,7 @@ export class OakterRemoteService {
 
   isConnected = async (): Promise<boolean> => {
     const response = await this.http.post<OakterResponse>(this.renewSessionUrl, this.connectionPayload());
-    if (response.status >= 400) throw new UpstreamApiError(`Oakter request failed (${response.status})`, response.status);
+    if (response.status >= 400) throw new UpstreamApiError(`Oakter request failed`, response.status);
     if (!this.isConnectionResponse(response.data)) throw new UpstreamApiError('Invalid Oakter connection response', 502);
     return response.data.RenewSessionResult.ESPDevices[0]?.Connected ?? false;
   };
@@ -31,6 +31,7 @@ export class OakterRemoteService {
       if (!content.Status) throw new ServerError(typeof content.Response === 'string' ? content.Response : 'Oakter catalog request failed');
       return content.Response;
     }
+    
     return this.syncCatalog();
   };
 
@@ -49,7 +50,7 @@ export class OakterRemoteService {
     const payload: OakterCommandPayload = { Header: this.header(), RemoteId: request.remoteId, CommandId: request.commandId, OakRemoteId: this.remoteId };
     const response = await this.sendRequest(OakterRemote.Routes.sendCommand, payload);
     if (!this.isCommandResponse(response)) throw new UpstreamApiError('Invalid Oakter command response', 502);
-    if (!response.Status) throw new ServerError(response.Response);
+    if (!response.Status) throw new UpstreamApiError(response.Response, 502);
     return response.Response;
   };
 
