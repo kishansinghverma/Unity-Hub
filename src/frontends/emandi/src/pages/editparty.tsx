@@ -37,8 +37,8 @@ export const EditPartyForm: React.FC<{ party: Record<Party>, callbackFunction: (
         if (e.target.value) {
             isDistanceLoading.set(true);
             getDistance(e.target.value)
-                .then(response => handleJsonResponse(response, "Distance Not Available!"))
-                .then((data: DistanceResponse) => {
+                .then(response => handleJsonResponse<DistanceResponse>(response, "Distance Not Available!"))
+                .then((data) => {
                     const calculatedDistance = Math.ceil(data.resourceSets[0].resources[0].travelDistance);
                     formState.set({ ...formState.get(), distance: calculatedDistance });
                     validateField({ ...elementRef.current?.props, value: calculatedDistance.toString() } as InputOnChangeData);

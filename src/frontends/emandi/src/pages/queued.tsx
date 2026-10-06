@@ -17,7 +17,7 @@ export const QueuedPage: React.FC = () => {
     const deleteRecord = (id: string) => {
         isFetching.set(true);
         fetch(`${Url.Dispatches}/${id}`, DeleteParams)
-            .then(handleJsonResponse)
+            .then((response) => handleJsonResponse<Record<QueuedEntry>>(response))
             .then(filterRecords)
             .catch(handleError)
             .finally(() => { isFetching.set(false) });

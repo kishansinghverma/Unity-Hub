@@ -42,9 +42,9 @@ type RemoteDevice = {
     CommandList: RemoteCommand[];
 };
 
-type CommandResponse = {
-    Response: RemoteDevice[];
-};
+type Status = {
+    isConnected: boolean;
+}
 
 type DeviceCategory = "airconditioner" | "speaker" | "projector" | "tv" | "generic";
 
@@ -140,9 +140,9 @@ export const RemotePage = () => {
     const [isRefreshingDevices, setIsRefreshingDevices] = useState(false);
     const repeatIntervalRef = useRef<number | null>(null);
 
-    const updateDevices = (response: CommandResponse) => {
-        if (!Array.isArray(response.Response)) throw new Error("Invalid device catalog received from server");
-        setDevices(response.Response.map(device => ({
+    const updateDevices = (response: RemoteDevice[]) => {
+        if (!Array.isArray(response)) throw new Error("Invalid device catalog received from server");
+        setDevices(response.map(device => ({
             ...device,
             CommandList: device.CommandList.map(command => ({
                 ...command,
@@ -154,8 +154,8 @@ export const RemotePage = () => {
     const syncDevices = () => {
         setIsRefreshingDevices(true);
         fetch(Url.OakterRemoteSyncDevices, PostParams)
-            .then(handleJsonResponse)
-            .then((json: CommandResponse) => {
+            .then((response) => handleJsonResponse<RemoteDevice[]>(response))
+            .then((json) => {
                 updateDevices(json);
                 toast.success("Devices refreshed");
             })
@@ -165,16 +165,14 @@ export const RemotePage = () => {
 
     useEffect(() => {
         fetch(Url.OakterRemoteDevices)
-            .then(handleJsonResponse)
-            .then((json: CommandResponse) => updateDevices(json))
+            .then((response) => handleJsonResponse<RemoteDevice[]>(response))
+            .then(updateDevices)
             .catch(handleError)
             .finally(() => setIsLoadingDevices(false));
     }, []);
 
     const issueCommand = (commandId: string, remoteId: number | string) => {
         fetch(Url.OakterRemoteCommand, { ...PostParams, body: JSON.stringify({ commandId, remoteId }) })
-            .then(handleJsonResponse)
-            .then(json => { if (!json.Status) throw new Error(json.Response) })
             .catch(handleError);
     };
 
@@ -282,7 +280,7 @@ export const RemotePage = () => {
         let isMounted = true;
         const checkConnection = () => {
             fetch(Url.OakterRemoteIsConnected)
-                .then(handleJsonResponse)
+                .then(response => handleJsonResponse<Status>(response))
                 .then((json) => {
                     const isConnected = Boolean(json?.isConnected);
                     if (isMounted) setConnectionStatus(isConnected ? "connected" : "disconnected");

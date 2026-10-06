@@ -38,8 +38,8 @@ export const NewParty: React.FC = () => {
         if (e.target.value) {
             isDistanceLoading.set(true);
             getDistance(e.target.value)
-                .then(response => handleJsonResponse(response, "Distance Not Available!"))
-                .then((data: DistanceResponse) => {
+                .then(response => handleJsonResponse<DistanceResponse>(response, "Distance Not Available!"))
+                .then((data) => {
                     const calculatedDistance = Math.ceil(data.resourceSets[0].resources[0].travelDistance).toString();
                     distance.set(calculatedDistance);
                     validateField({ ...elementRef.current?.props, value: calculatedDistance } as InputOnChangeData);

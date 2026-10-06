@@ -17,14 +17,29 @@ export const getRandom = (length: number) => Math.random().toString(36).substrin
 
 export const triggerValidation = (e: BaseSyntheticEvent, field: InputOnChangeData | DropdownProps) => validateField(field);
 
-export const handleResponse = (response: Response, errorMessage?: string) => {
-    if (!response.ok)
-        throw new Error(`Error ${response.status} : ${errorMessage ? errorMessage : HttpStatusCode[response.status]}`);
+export const handleResponse = async (response: Response, customError?: string): Promise<void> => {
+    if (response.ok) return;
+    if (customError) throw new Error(`Error ${response.status} : ${customError}`);
+
+    const json = await response.json().catch(() => undefined);
+    const genericError = HttpStatusCode[response.status];
+    const errorMessage = json?.isError ? (json?.message ?? genericError): genericError;
+    throw new Error(`Error ${response.status} : ${errorMessage}`);
 }
 
-export const handleJsonResponse = (response: Response, errorMessage?: string) => {
-    handleResponse(response, errorMessage);
-    return response.json();
+export const handleJsonResponse = async <T>(response: Response, customError?: string): Promise<T> => {
+    await handleResponse(response, customError);
+
+    const data = await response.json().catch(() => undefined);
+    
+    if (typeof data === 'object') {
+        if ((typeof data.content === 'object') || (typeof data.content === 'string'))
+            return data.content as T;
+
+        return data as T;
+    }
+
+    throw new Error("The server returned an unexpected response.");
 }
 
 export const getFormData = (event: BaseSyntheticEvent) => {
@@ -139,10 +154,11 @@ export class TableRenderer<T> {
     public render = () => {
         this.isFetching.set(true);
         fetch(this.url)
-            .then(handleJsonResponse)
-            .then((data: Array<Record<T>>) => {
-                this.records.set(this.sortDescending ? data.reverse() : data);
-                this.pageCount.set(Math.ceil(data.length / this.pageSize));
+            .then((response) => handleJsonResponse<Array<Record<T>>>(response))
+            .then((data) => {
+                const records = data ?? [];
+                this.records.set(this.sortDescending ? records.reverse() : records);
+                this.pageCount.set(Math.ceil(records.length / this.pageSize));
             })
             .catch(handleError)
             .finally(() => { this.isFetching.set(false) });

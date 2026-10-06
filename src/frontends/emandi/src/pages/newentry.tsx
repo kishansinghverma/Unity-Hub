@@ -94,8 +94,8 @@ export const NewEntry: React.FC = () => {
     const fetchParties = () => {
         isMandiLoading.set(true);
         fetch(Url.Parties)
-            .then(handleJsonResponse)
-            .then((response: Array<WithIdRecord<Party>>) => mandiOptions.set(response.map(MandiOptionsMapper)))
+            .then((response) => handleJsonResponse<Array<WithIdRecord<Party>>>(response))
+            .then((response) => mandiOptions.set((response.map(MandiOptionsMapper))))
             .catch(handleError)
             .finally(() => isMandiLoading.set(false));
     }

@@ -21,7 +21,7 @@ export const Parties: React.FC = () => {
     const deleteParty = (partyId: string) => {
         isFetching.set(true);
         fetch(`${Url.Parties}/${partyId}`, DeleteParams)
-            .then(handleJsonResponse)
+            .then((response) => handleJsonResponse<Record<Party>>(response))
             .then(filterRecords)
             .then(() => toast.success("पार्टी सफलतापूर्वक हटा दी गई है।"))
             .catch(handleError)

@@ -17,7 +17,7 @@ export const ProcessedPage: React.FC = () => {
     const requeue = (id: string) => {
         isFetching.set(true);
         fetch(`${Url.Dispatches}/requeue/${id}`)
-            .then(handleJsonResponse)
+            .then((response) => handleJsonResponse<Record<ProcessedEntry>>(response))
             .then(filterRecords)
             .catch(handleError)
             .finally(() => isFetching.set(false));
