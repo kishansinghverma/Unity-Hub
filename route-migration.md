@@ -96,7 +96,9 @@ MQTT printing remains deferred. WhatsApp webhook/inbound processing also remains
 
 ## Frontend Impact
 
-The existing frontend currently calls old paths such as `/api/dispatches`, `/api/vtag`, and `/api/oakterremote`. It will still be served at `/emandi` and `/remote`, but those API calls will fail until the frontend route constants and request payloads are migrated.
+The active frontend calls the migrated gatepass and Oakter Remote routes and unwraps successful `ActionResponse.content` values through its shared response helper. It is served at `/emandi` and `/remote`.
+
+The frontend does not currently consume the E-Mandi document, vehicle-tagging, file, or WhatsApp file routes.
 
 ## Frontend-Consumed Route Matrix
 
@@ -104,20 +106,19 @@ These are the routes actually called by the current React frontend. Routes liste
 
 | Frontend request | NodeExpress route | Status | Required change |
 | --- | --- | --- | --- |
-| `GET /api/dispatches/queued` | `GET /api/gatepasses/queued` | Available under new path | Change `Url.Queued`; unwrap `content` from `ActionResponse`. |
-| `GET /api/dispatches/processed` | `GET /api/gatepasses/processed` | Available under new path | Change `Url.Processed`; unwrap `content`. |
-| `GET /api/dispatches/requeue/:id` | `GET /api/gatepasses/requeue/:id` | Available under new path | Change base URL; update response handling. |
-| `DELETE /api/dispatches/:id` | `DELETE /api/gatepasses/:id` | Available under new path | Change base URL; update response handling. |
-| `GET /api/dispatches/parties` | `GET /api/gatepasses/parties` | Available under new path | Change `Url.Parties`; unwrap `content`. |
-| `POST /api/dispatches/parties` | `POST /api/gatepasses/parties` | Available under new path | Change URL; verify lowercase NodeExpress field names and response handling. |
-| `PATCH /api/dispatches/parties/:id` | `PATCH /api/gatepasses/parties/:id` | Available under new path | Change URL; verify request schema and response handling. |
-| `DELETE /api/dispatches/parties/:id` | `DELETE /api/gatepasses/parties/:id` | Available under new path | Change URL; update response handling. |
-| `POST /api/dispatches/push` | `POST /api/gatepasses/push` | Available under new path | Change URL; verify multipart field names and response handling. |
-| `POST /api/whatsapp/sendtext/unityhub` | Same route | Path available | Frontend sends `Message`; NodeExpress expects `message`. Unwrap `content`. |
-| `GET /api/oakterremote/devices` | `GET /api/oakter-remote/devices` | Available under new path | Change URL; NodeExpress returns the catalog in `content`. |
-| `POST /api/oakterremote/syncdevices` | `POST /api/oakter-remote/sync` | Available under new path | Change URL; update response handling. |
-| `POST /api/oakterremote/command` | `POST /api/oakter-remote/commands` | Available under new path | Change URL; verify `commandId` and `remoteId` types; unwrap `content`. |
-| `GET /api/oakterremote/isconnected` | `GET /api/oakter-remote/status` | Available under new path | Change URL; update response field handling. |
+| `GET /api/gatepasses/queued` | `GET /api/gatepasses/queued` | Compatible | Shared response helper unwraps `content`. |
+| `GET /api/gatepasses/processed` | `GET /api/gatepasses/processed` | Compatible | Shared response helper unwraps `content`. |
+| `GET /api/gatepasses/requeue/:id` | `GET /api/gatepasses/requeue/:id` | Compatible | Response is handled as an enveloped gatepass record. |
+| `DELETE /api/gatepasses/:id` | `DELETE /api/gatepasses/:id` | Compatible | Response is handled as an enveloped gatepass record. |
+| `GET /api/gatepasses/parties` | `GET /api/gatepasses/parties` | Compatible | Shared response helper unwraps `content`. |
+| `POST /api/gatepasses/parties` | `POST /api/gatepasses/parties` | Compatible | Sends numeric `stateCode` and `distance` fields. |
+| `PATCH /api/gatepasses/parties/:id` | `PATCH /api/gatepasses/parties/:id` | Compatible | Sends the backend party field names and numeric fields. |
+| `DELETE /api/gatepasses/parties/:id` | `DELETE /api/gatepasses/parties/:id` | Compatible | Response is handled as an enveloped party record. |
+| `POST /api/gatepasses/push` | `POST /api/gatepasses/push` | Compatible | Sends ISO date-time and `vehicleImage`/`plateImage` multipart fields. |
+| `GET /api/oakter-remote/devices` | `GET /api/oakter-remote/devices` | Compatible | Shared response helper unwraps the catalog from `content`. |
+| `GET /api/oakter-remote/sync` | `GET /api/oakter-remote/sync` | Compatible | Shared response helper unwraps the catalog from `content`. |
+| `POST /api/oakter-remote/commands` | `POST /api/oakter-remote/commands` | Compatible | Sends `commandId` and `remoteId`; response is read from `content`. |
+| `GET /api/oakter-remote/status` | `GET /api/oakter-remote/status` | Compatible | Reads `content.isConnected`. |
 
 ### Frontend-Only External Request
 
@@ -125,7 +126,7 @@ These are the routes actually called by the current React frontend. Routes liste
 
 ### Current Exact Availability
 
-Without frontend changes, only `POST /api/whatsapp/sendtext/unityhub` has the same path. Its body casing is still incompatible. Every dispatch and Oakter request currently returns `404` because the old prefixes and route names are not registered by NodeExpress.
+All routes currently called by the active frontend use registered NodeExpress paths and compatible request/response handling. The frontend has no active caller for the WhatsApp text helper; gatepass notifications are sent by the backend during gatepass creation.
 
 ### Common Response Change
 
@@ -139,16 +140,16 @@ The existing frontend expects raw arrays or objects. NodeExpress wraps successfu
 }
 ```
 
-The frontend response helper must unwrap `content` before existing pages consume the result.
+The frontend response helper unwraps `content` before pages consume successful responses. Empty `204` responses are handled by the existing response flow without a response body.
 
 ## Detailed Contract Changes
 
 ### `POST /api/gatepasses/push`
 
-The frontend currently sends multipart fields:
+The frontend sends these multipart fields:
 
 ```text
-date              DD-MM-YYYY string
+date              ISO date-time string
 seller            string
 weight            numeric string
 bags              numeric string
@@ -156,7 +157,7 @@ party             JSON string
 vehicleNumber     string
 vehicleType       numeric string
 vehicleImage      file, optional
-numberPlateImage  file, optional
+plateImage        file, optional
 ```
 
 NodeExpress expects:
@@ -173,13 +174,13 @@ vehicleImage  file, optional
 plateImage    file, optional
 ```
 
-Required frontend changes:
+Current compatibility details:
 
-- Send `date` as an ISO date-time with timezone offset.
-- Rename `numberPlateImage` to `plateImage`.
-- Keep `weight`, `bags`, and `vehicleType` numeric values or numeric strings; NodeExpress normalizes them to numbers.
-- Keep the existing party fields, but ensure the multipart `party` value is valid JSON.
-- Read the successful response from `response.content`; the inserted ID is under `content.insertedId`.
+- `date` is sent with `new Date().toISOString()`.
+- Image fields are named `vehicleImage` and `plateImage`.
+- `weight`, `bags`, and `vehicleType` are sent as numeric strings; NodeExpress normalizes them to numbers.
+- `party` is sent as the JSON string produced by the party selector.
+- Successful responses are unwrapped by the shared response helper.
 
 ### Party Routes
 
@@ -189,34 +190,22 @@ The party request fields are largely compatible:
 name, mandi, state, stateCode, distance, licenceNumber
 ```
 
-Differences:
+Compatibility details:
 
 - NodeExpress validates strict object keys and rejects unknown fields.
 - `stateCode` and `distance` must be numbers in JSON requests.
 - `licenceNumber` may be omitted or an empty string; NodeExpress sanitizes an empty value.
-- Create, update, and delete responses are wrapped in `ActionResponse`; the frontend currently expects the raw response.
+- Create, update, and delete responses are wrapped in `ActionResponse`; the frontend unwraps them through the shared response helper.
 
 ### Queue and Processed Lists
 
-- NodeExpress returns the array under `content`; UnityHub pages currently cast the root JSON value directly to an array.
-- NodeExpress stores `weight`, `bags`, and `vehicleType` as numbers; the frontend types currently describe them as strings.
+- NodeExpress returns the array under `content`; the frontend unwraps it before rendering.
+- NodeExpress stores `weight`, `bags`, and `vehicleType` as numbers; some frontend display types still describe them as strings, but no runtime conversion is required for current rendering.
 - `peek` returns `204` with no body when empty, while `pop`, `requeue`, and delete use `404` with no body when no record exists.
 
-### `POST /api/whatsapp/sendtext/unityhub`
+### WhatsApp notifications
 
-The frontend currently sends:
-
-```json
-{ "Message": "..." }
-```
-
-NodeExpress requires:
-
-```json
-{ "message": "..." }
-```
-
-The response is also wrapped under `content`.
+The frontend does not call `/api/whatsapp/sendtext/unityhub`. Gatepass creation sends its notification from the backend through the WhatsApp operation.
 
 ### Oakter Remote
 
@@ -228,7 +217,7 @@ The command request fields remain conceptually the same:
 
 NodeExpress additionally requires positive numeric identifiers and rejects extra fields.
 
-Response differences:
+Frontend compatibility:
 
 - `devices`: UnityHub consumes `response.Response`; NodeExpress exposes the catalog in `response.content`.
 - `sync`: UnityHub consumes `response.Response`; NodeExpress exposes the synchronized catalog in `response.content`.
