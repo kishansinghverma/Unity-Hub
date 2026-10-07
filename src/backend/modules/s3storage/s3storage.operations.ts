@@ -16,4 +16,6 @@ export class S3StorageOperation {
     const fileName = `VehicleTagging/${StringUtils.Capitalize(imageType)}/${gatepassId}.${extension}`;
     return this.s3StorageService.upload(fileName, image.buffer, contentType);
   }
+
+  download = (path: string): Promise<Buffer> => this.s3StorageService.download(path);
 }

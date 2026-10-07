@@ -5,6 +5,7 @@ import { imagingValidationSchemas } from '../../modules/imaging/imaging.schema.j
 import { emandiValidationSchemas } from '../../modules/emandi/emandi.schema.js';
 import { vehicleTaggingValidationSchemas } from '../../modules/vehicleTagging/vehicleTagging.schema.js';
 import { oakterRemoteValidationSchemas } from '../../modules/oakterRemote/oakterRemote.schema.js';
+import { s3StorageValidationSchemas } from '../../modules/s3storage/s3storage.schema.js';
 
 type RouteValidation = {
   body?: z.ZodType;
@@ -18,5 +19,6 @@ export const validationSchemas: Record<string, RouteValidation> = {
   ...imagingValidationSchemas,
   ...emandiValidationSchemas,
   ...vehicleTaggingValidationSchemas,
-  ...oakterRemoteValidationSchemas
+  ...oakterRemoteValidationSchemas,
+  ...s3StorageValidationSchemas
 };
