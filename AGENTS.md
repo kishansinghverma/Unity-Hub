@@ -1,6 +1,6 @@
 # Repository Instructions
 
-Last reviewed: 2026-10-06 — fully synchronized with NodeExpress working conventions, adapted to Unity-Hub paths.
+Last reviewed: 2026-10-07 — synchronized with the current NodeExpress backend and migrated E-Mandi frontend.
 
 ## Working Style
 
@@ -69,6 +69,7 @@ Last reviewed: 2026-10-06 — fully synchronized with NodeExpress working conven
 - Background jobs belong in services without HTTP routes or operations and must follow the application lifecycle.
 - Backend serves built frontend at `/emandi` and `/remote`.
 - Frontend API migration details are tracked in `route-migration.md`.
+- The active frontend uses the migrated gatepass and Oakter Remote routes; it does not currently consume E-Mandi document, vehicle-tagging, file, or WhatsApp file routes.
 - `README.md` provides quick-start commands; `Architecture.md` is the source of truth for technical layout.
 
 ## Verification

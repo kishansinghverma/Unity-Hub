@@ -65,6 +65,7 @@ Route → Operation → Service → Database or external API
 - Routes bind HTTP endpoints only.
 - Operations orchestrate use cases and return typed operation responses.
 - Services own persistence, domain behavior, and external API integration.
+- Long-running listeners and background jobs are owned by services and follow the application lifecycle.
 
 ## Module Shape
 
@@ -121,7 +122,7 @@ POST   /api/vehicle-tagging/entries
 
 GET    /api/oakter-remote/status
 GET    /api/oakter-remote/devices
-POST   /api/oakter-remote/sync
+GET    /api/oakter-remote/sync
 POST   /api/oakter-remote/commands
 ```
 
@@ -137,7 +138,9 @@ POST   /api/oakter-remote/commands
 
 - Backend serves the built React app at `/emandi` and `/remote`.
 - Frontend source remains at `src/frontends/emandi`.
-- Frontend API constants still use legacy endpoints; migration is tracked in `route-migration.md`.
+- The active frontend uses the migrated `/api/gatepasses` and `/api/oakter-remote` routes.
+- Successful frontend API responses unwrap the centralized `ActionResponse.content` envelope.
+- The frontend currently does not consume the E-Mandi document, vehicle-tagging, file, or WhatsApp file routes.
 
 ## Runtime and Build
 
