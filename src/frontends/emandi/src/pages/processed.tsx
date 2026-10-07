@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Table } from "semantic-ui-react";
 import { CustomTable, EmptyTable, TablePagination } from "../common/components";
 import { ProcessedEntry, Record } from "../common/types";
-import { TableRenderer, getDate, handleError, handleJsonResponse } from "../operations/utils";
+import { formatDisplayDate, TableRenderer, getDate, handleError, handleJsonResponse } from "../operations/utils";
 import { Url } from "../common/constants";
 import { Undo2 } from "lucide-react";
 
@@ -47,7 +47,7 @@ export const ProcessedPage: React.FC = () => {
                     <Table.Body>
                         {getPaginated().map((record, index) => (
                             <Table.Row key={`row-${index}`}>
-                                <Table.Cell>{record.date}</Table.Cell>
+                                <Table.Cell>{formatDisplayDate(record.date)}</Table.Cell>
                                 <Table.Cell>{record.seller}</Table.Cell>
                                 <Table.Cell>{record.vehicleNumber}</Table.Cell>
                                 <Table.Cell>{record.party.name}, {record.party.mandi}</Table.Cell>

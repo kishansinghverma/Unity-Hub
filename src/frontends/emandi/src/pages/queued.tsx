@@ -3,7 +3,7 @@ import { Table } from "semantic-ui-react";
 import { CustomTable, EmptyTable, TablePagination } from "../common/components";
 import { QueuedEntry, Record } from "../common/types";
 import { DeleteParams, Url, vehicleType } from "../common/constants";
-import { handleJsonResponse, handleError, TableRenderer } from "../operations/utils";
+import { formatDisplayDate, handleJsonResponse, handleError, TableRenderer } from "../operations/utils";
 import { Trash2 } from "lucide-react";
 
 export const QueuedPage: React.FC = () => {
@@ -45,7 +45,7 @@ export const QueuedPage: React.FC = () => {
                     <Table.Body>
                         {getPaginated().map((record, index) => (
                             <Table.Row key={`row-${index}`}>
-                                <Table.Cell>{record.date}</Table.Cell>
+                                <Table.Cell>{formatDisplayDate(record.date)}</Table.Cell>
                                 <Table.Cell>{record.seller}</Table.Cell>
                                 <Table.Cell>{record.vehicleNumber}</Table.Cell>
                                 <Table.Cell>{vehicleType[record.vehicleType]}</Table.Cell>

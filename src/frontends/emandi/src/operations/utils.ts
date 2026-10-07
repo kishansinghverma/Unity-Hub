@@ -80,6 +80,17 @@ export const getDate = (epoch?: number) => {
     return `${day}-${month}-${year}`;
 }
 
+export const formatDisplayDate = (value: string) => {
+    const formattedDate = value.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
+    if (formattedDate)
+        return `${formattedDate[1].padStart(2, '0')}-${formattedDate[2].padStart(2, '0')}-${formattedDate[3]}`;
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return value;
+
+    return `${String(date.getUTCDate()).padStart(2, '0')}-${String(date.getUTCMonth() + 1).padStart(2, '0')}-${date.getUTCFullYear()}`;
+}
+
 export const getDateTime = (epoch?: number) => (`${getDate(epoch)}, ${epoch ? new Date(epoch).toLocaleTimeString() : new Date().toLocaleTimeString()}`);
 
 export const capitalize = (str: string) => {
