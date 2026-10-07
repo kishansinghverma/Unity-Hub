@@ -4,7 +4,7 @@ import { EntryImages } from "../common/types";
 
 export const createNewEntry = (formData: any, images: EntryImages = {}) => {
     const payload = new FormData();
-    payload.append('date', getDate());
+    payload.append('date', new Date().toISOString());
     payload.append('seller', capitalize(formData.seller));
     payload.append('weight', parseInt(formData.weight).toString());
     payload.append('bags', parseInt(formData.bags).toString());
