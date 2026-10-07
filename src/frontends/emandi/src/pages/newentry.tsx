@@ -26,8 +26,7 @@ export const NewEntry: React.FC = () => {
     ];
 
     const isSupportedImage = (file: File) => {
-        if (file.type.startsWith("image/")) return true;
-        return /\.(jpe?g|png|heic|heif|avif|webp)$/i.test(file.name);
+        return /\.(jpe?g|png|heic|heif)$/i.test(file.name);
     };
 
     const clearImage = (field: keyof EntryImages) => {
@@ -183,7 +182,7 @@ export const NewEntry: React.FC = () => {
                                 <div className={`entry-photo-select${images[field] ? " has-image" : ""}`}>
                                     <input
                                         type="file"
-                                        accept="image/*,.heic,.heif"
+                                        accept=".jpg,.jpeg,.png,.heic,.heif"
                                         aria-label={title}
                                         aria-describedby={imageError?.field === field ? `${field}-error` : undefined}
                                         disabled={isFormLoading.get()}

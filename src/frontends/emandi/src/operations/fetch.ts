@@ -12,7 +12,7 @@ export const createNewEntry = (formData: any, images: EntryImages = {}) => {
     payload.append('vehicleNumber', formData.vehicleNumber.replace(/\s/g, "").toUpperCase());
     payload.append('vehicleType', parseInt(formData.vehicleType).toString());
     if (images.vehicleImage) payload.append('vehicleImage', images.vehicleImage);
-    if (images.numberPlateImage) payload.append('numberPlateImage', images.numberPlateImage);
+    if (images.numberPlateImage) payload.append('plateImage', images.numberPlateImage);
 
     return fetch(`${Url.Dispatches}/push`, {
         method: PostParams.method,
