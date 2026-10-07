@@ -7,10 +7,6 @@ export const CustomForm: React.FC<React.PropsWithChildren> = ({ children }) => (
     <div className="custom-form"> {children} </div>
 );
 
-export const Div: React.FC<React.PropsWithChildren & React.HTMLAttributes<HTMLDivElement>> = ({ children, ...props }) => (
-    <div {...props}>{children}</div>
-);
-
 export const CustomSelect: React.FC<DropdownProps> = (props) => {
     const elementId = getRandom(8);
 

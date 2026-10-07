@@ -1,11 +1,5 @@
 import { SelectOption } from "./types";
 
-export enum SharingStatus {
-    Unknown = -1,
-    Shared = 1,
-    NotShared = 0
-};
-
 export const pages = {
     root: { route: '/emandi' },
     newEntry: { label: 'New', route: '/emandi/new' },
@@ -32,7 +26,6 @@ export const Url = {
     Dispatches: "/api/gatepasses",
     Processed: "/api/gatepasses/processed",
     Queued: "/api/gatepasses/queued",
-    NotificationUrl: "/api/whatsapp/sendtext/unityhub",
     OakterRemoteCommand: "/api/oakter-remote/commands",
     OakterRemoteDevices: "/api/oakter-remote/devices",
     OakterRemoteSyncDevices: "/api/oakter-remote/sync",

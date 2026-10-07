@@ -1,4 +1,4 @@
-import { capitalize, getDate, handleError } from "./utils";
+import { capitalize } from "./utils";
 import { PatchParams, PostParams, States, Url } from "../common/constants";
 import { EntryImages } from "../common/types";
 
@@ -52,11 +52,4 @@ export const updateParty = (formData: any) => {
 
 export const getDistance = (destination: string) => {
     return fetch(`${Url.Distance}=${destination}`);
-}
-
-export const notifyViaWhatsApp = async (message: string) => {
-    fetch(Url.NotificationUrl, {
-        ...PostParams,
-        body: JSON.stringify({ Message: message })
-    }).catch(handleError);
 }

@@ -36,11 +36,6 @@ export type SelectOption = {
     text: string
 }
 
-export type FormInput = {
-    value: string,
-    name: string
-}
-
 export type EntryImages = {
     vehicleImage?: File;
     numberPlateImage?: File;
@@ -61,10 +56,6 @@ export type ProcessedEntry = {
     rate: any;
 } & QueuedEntry;
 
-export type ILoaderComponent = {
-    isLoading: boolean
-}
-
 export type Resource = {
     travelDistance: number;
 }
@@ -77,9 +68,3 @@ export type DistanceResponse = {
     resourceSets: ResourceSet[];
     statusCode: number;
 }
-
-export type WithId<T> = { // replace with withId
-    _id: string
-} & T;
-
-export type Nullable<T> = T | undefined;

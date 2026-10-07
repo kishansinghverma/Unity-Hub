@@ -9,3 +9,4 @@
 - Add shared external-response utilities equivalent to Unity-Hub's `GetJsonResponse` and `ValidateResponse`.
 - Update the distance calculation API.
 - Add vehicle-number minimum-length validation through the field-level validity pattern used by the form components.
+- Resolve the frontend React Hook dependency warnings reported by ESLint.
