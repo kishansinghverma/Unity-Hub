@@ -10,3 +10,4 @@
 - Update the distance calculation API.
 - Add vehicle-number minimum-length validation through the field-level validity pattern used by the form components.
 - Resolve the frontend React Hook dependency warnings reported by ESLint.
+- Implement a scheduled cleaner for supabase to clean images.age >= 7

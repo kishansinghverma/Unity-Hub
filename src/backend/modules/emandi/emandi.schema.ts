@@ -1,10 +1,11 @@
 import { z } from 'zod';
 
 const actionsSchema = z.object({ print: z.boolean(), download: z.boolean(), share: z.boolean() }).strict();
+const recordDateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must use YYYY-MM-DD format');
 
 const recordSourceSchema = z.discriminatedUnion('source', [
   z.object({ source: z.literal('latest'), actions: actionsSchema }).strict(),
-  z.object({ source: z.literal('id'), data: z.object({ id: z.string().min(1), date: z.string().min(1) }).strict(), actions: actionsSchema }).strict()
+  z.object({ source: z.literal('id'), data: z.object({ id: z.string().min(1), date: recordDateSchema }).strict(), actions: actionsSchema }).strict()
 ]);
 
 const gatepassPayloadSchema = z.object({
