@@ -8,7 +8,18 @@ import { RouterPage } from './pages/router';
 function App() {
   return (
     <div className='page'>
-      <ToastContainer />
+      <ToastContainer
+        position="top-right"
+        autoClose={3500}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <BrowserRouter>
         <RouterPage />
       </BrowserRouter>
