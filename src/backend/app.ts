@@ -23,6 +23,7 @@ import { emandiRoutes } from './modules/emandi/emandi.routes.js';
 import { vehicleTaggingRoutes } from './modules/vehicleTagging/vehicleTagging.routes.js';
 import { oakterRemoteRoutes } from './modules/oakterRemote/oakterRemote.routes.js';
 import { s3StorageRoutes } from './modules/s3storage/s3storage.routes.js';
+import { expenseRoutes } from './modules/expense/expense.routes.js';
 
 export async function buildApp(config: Env = loadEnv()) {
   const app = Fastify({
@@ -100,6 +101,7 @@ export async function buildApp(config: Env = loadEnv()) {
     await app.register(vehicleTaggingRoutes, { prefix: '/api/vehicle-tagging' });
     await app.register(oakterRemoteRoutes, { prefix: '/api/oakter-remote' });
     await app.register(s3StorageRoutes, { prefix: '/api/s3' });
+    await app.register(expenseRoutes, { prefix: '/api/expenses' });
 
     return app;
   } catch (error) {

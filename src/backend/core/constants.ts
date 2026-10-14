@@ -64,6 +64,12 @@ export const MongoDatabases = {
       keyVault: 'KeyVault',
     },
   },
+  Expense: {
+    database: 'Expense',
+    collections: {
+      location: 'Location',
+    },
+  },
 } as const;
 
 export const WhatsApp = {

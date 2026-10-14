@@ -21,6 +21,8 @@ import type { Logger } from '../logging/logger.js';
 import { OakterRemoteOperation } from '../../modules/oakterRemote/oakterRemote.operations.js';
 import { OakterRemoteService } from '../../modules/oakterRemote/oakterRemote.service.js';
 import { CronJobsService } from '../../modules/cronJobs/cronJobs.service.js';
+import { ExpenseOperation } from '../../modules/expense/expense.operations.js';
+import { ExpenseService } from '../../modules/expense/expense.service.js';
 
 export interface AppCradle {
   config: Env;
@@ -45,6 +47,8 @@ export interface AppCradle {
   oakterRemoteService: OakterRemoteService;
   oakterRemoteOperation: OakterRemoteOperation;
   cronJobsService: CronJobsService;
+  expenseService: ExpenseService;
+  expenseOperation: ExpenseOperation;
 }
 
 export function buildContainer(config: Env, logger: Logger) {
@@ -75,7 +79,9 @@ export function buildContainer(config: Env, logger: Logger) {
     vehicleTaggingOperation: asClass(VehicleTaggingOperation).singleton(),
     oakterRemoteService: asClass(OakterRemoteService).singleton(),
     oakterRemoteOperation: asClass(OakterRemoteOperation).singleton(),
-    cronJobsService: asClass(CronJobsService).singleton()
+    cronJobsService: asClass(CronJobsService).singleton(),
+    expenseService: asClass(ExpenseService).singleton(),
+    expenseOperation: asClass(ExpenseOperation).singleton()
   });
 
   return container;
