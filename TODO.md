@@ -10,4 +10,5 @@
 - Update the distance calculation API.
 - Add vehicle-number minimum-length validation through the field-level validity pattern used by the form components.
 - Resolve the frontend React Hook dependency warnings reported by ESLint.
-- Implement a scheduled cleaner for supabase to clean images.age >= 7
+- Cleanup Supabase on cron (delete images with age >= 7 days).
+- Capture coordinates from the browser Geolocation API and add backend support to receive and persist them on `POST /api/gatepasses/push`.
