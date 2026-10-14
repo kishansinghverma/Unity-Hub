@@ -24,6 +24,7 @@ import { vehicleTaggingRoutes } from './modules/vehicleTagging/vehicleTagging.ro
 import { oakterRemoteRoutes } from './modules/oakterRemote/oakterRemote.routes.js';
 import { s3StorageRoutes } from './modules/s3storage/s3storage.routes.js';
 import { expenseRoutes } from './modules/expense/expense.routes.js';
+import { healthRoutes } from './modules/health/health.routes.js';
 
 export async function buildApp(config: Env = loadEnv()) {
   const app = Fastify({
@@ -102,6 +103,7 @@ export async function buildApp(config: Env = loadEnv()) {
     await app.register(oakterRemoteRoutes, { prefix: '/api/oakter-remote' });
     await app.register(s3StorageRoutes, { prefix: '/api/s3' });
     await app.register(expenseRoutes, { prefix: '/api/expenses' });
+    await app.register(healthRoutes, { prefix: '/api/health' });
 
     return app;
   } catch (error) {

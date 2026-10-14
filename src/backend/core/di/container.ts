@@ -23,6 +23,7 @@ import { OakterRemoteService } from '../../modules/oakterRemote/oakterRemote.ser
 import { CronJobsService } from '../../modules/cronJobs/cronJobs.service.js';
 import { ExpenseOperation } from '../../modules/expense/expense.operations.js';
 import { ExpenseService } from '../../modules/expense/expense.service.js';
+import { HealthOperation } from '../../modules/health/health.operations.js';
 
 export interface AppCradle {
   config: Env;
@@ -49,6 +50,7 @@ export interface AppCradle {
   cronJobsService: CronJobsService;
   expenseService: ExpenseService;
   expenseOperation: ExpenseOperation;
+  healthOperation: HealthOperation;
 }
 
 export function buildContainer(config: Env, logger: Logger) {
@@ -81,7 +83,8 @@ export function buildContainer(config: Env, logger: Logger) {
     oakterRemoteOperation: asClass(OakterRemoteOperation).singleton(),
     cronJobsService: asClass(CronJobsService).singleton(),
     expenseService: asClass(ExpenseService).singleton(),
-    expenseOperation: asClass(ExpenseOperation).singleton()
+    expenseOperation: asClass(ExpenseOperation).singleton(),
+    healthOperation: asClass(HealthOperation).singleton()
   });
 
   return container;
