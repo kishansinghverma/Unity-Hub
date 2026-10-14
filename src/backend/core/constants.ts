@@ -74,7 +74,7 @@ export const MongoDatabases = {
 export const WhatsApp = {
   GreenApi: {
     Routes: {
-      sendMessage: 'sendMessageX',
+      sendMessage: 'sendMessage',
       sendFileByUrl: 'sendFileByUrl',
       uploadFile: 'uploadFile'
     },
