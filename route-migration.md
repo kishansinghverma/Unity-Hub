@@ -122,7 +122,7 @@ These are the routes actually called by the current React frontend. Routes liste
 
 ### Frontend-Only External Request
 
-`getDistance()` calls the external Bing Maps URL directly. It is not a UnityHub or NodeExpress backend route and does not require backend migration.
+`getDistance()` calls the external DistanceMatrix.ai API directly. It is not a UnityHub or NodeExpress backend route and does not require backend migration.
 
 ### Current Exact Availability
 

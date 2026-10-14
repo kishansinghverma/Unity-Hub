@@ -1,5 +1,11 @@
 import { capitalize } from "./utils";
-import { PatchParams, PostParams, States, Url } from "../common/constants";
+import {
+    DistanceMatrixApiKey,
+    PatchParams,
+    PostParams,
+    States,
+    Url
+} from "../common/constants";
 import { EntryImages } from "../common/types";
 
 export const createNewEntry = (formData: any, images: EntryImages = {}) => {
@@ -50,6 +56,45 @@ export const updateParty = (formData: any) => {
     };
 }
 
-export const getDistance = (destination: string) => {
-    return fetch(`${Url.Distance}=${destination}`);
-}
+export const getDistance = async (destination: string): Promise<number> => {
+    const trimmed = destination.trim();
+    if (!trimmed) {
+        throw new Error("Destination cannot be empty.");
+    }
+
+    const cleaned = trimmed
+        .replace(/[\u093C]/g, "")
+        .replace(/\s+(mandi|market|subji\s+mandi|grain\s+mandi|मंडी|बाजार|सब्जी\s+मंडी|अनाज\s+मंडी)$/i, "")
+        .trim();
+
+    const isCoordinate = /^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?$/.test(cleaned || trimmed);
+    const destinationQuery = isCoordinate || /india|भारत/i.test(cleaned || trimmed)
+        ? (cleaned || trimmed)
+        : `${cleaned || trimmed}, India`;
+
+    const queryKey = encodeURIComponent(DistanceMatrixApiKey);
+    const target = encodeURIComponent(destinationQuery);
+    const url = `${Url.DistanceMatrix}?origins=Sadabad,%20India&destinations=${target}&key=${queryKey}`;
+
+    const response = await fetch(url);
+    if (!response.ok) {
+        throw new Error("Unable to calculate driving route to destination.");
+    }
+
+    const data = await response.json();
+    if (data.status !== "OK") {
+        throw new Error(data.error_message || "Unable to locate destination mandi.");
+    }
+
+    const element = data?.rows?.[0]?.elements?.[0];
+    if (!element || element.status !== "OK") {
+        throw new Error(`Location not found for "${trimmed}".`);
+    }
+
+    const distanceMeters = element?.distance?.value;
+    if (typeof distanceMeters !== "number") {
+        throw new Error("Distance information not available.");
+    }
+
+    return Math.ceil(distanceMeters / 1000);
+};

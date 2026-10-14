@@ -251,6 +251,13 @@
     font-size: 0.92rem;
 }
 
+.modern-parties-table th,
+.modern-parties-table td {
+    padding: 0.95rem 1.15rem;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
 .modern-parties-table th {
     background: #f8fafc;
     color: #475569;
@@ -258,10 +265,8 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    padding: 0.95rem 1.15rem;
     text-align: left;
     border-bottom: 1.5px solid #e2e8f0;
-    white-space: nowrap;
 }
 
 .modern-parties-table th.center {
@@ -269,11 +274,9 @@
 }
 
 .modern-parties-table td {
-    padding: 0.95rem 1.15rem;
     border-bottom: 1px solid #f1f5f9;
     color: #1e293b;
     font-weight: 600;
-    vertical-align: middle;
 }
 
 .modern-parties-table tr:last-child td {
@@ -434,6 +437,8 @@
     flex-direction: column;
     gap: 1.15rem;
     transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    min-width: 0;
+    max-width: 100%;
 }
 
 .party-card:hover {
@@ -448,6 +453,8 @@
     display: flex;
     align-items: flex-start;
     gap: 0.85rem;
+    min-width: 0;
+    width: 100%;
 }
 
 .party-card-avatar {
@@ -468,8 +475,9 @@
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
-    flex: 1;
+    flex: 1 1 0;
     min-width: 0;
+    width: 100%;
 }
 
 .party-card-name {
@@ -481,6 +489,8 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    min-width: 0;
+    max-width: 100%;
 }
 
 .party-card-state {
@@ -571,27 +581,65 @@
 }
 
 /* Pagination */
-.parties-pagination {
+.parties-pagination-wrap {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-    padding: 0.95rem 1.4rem;
-    background: #f8fafc;
-    border-top: 1.5px solid #e2e8f0;
-    gap: 1rem;
-    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.65rem;
+    padding: 0.75rem 0.25rem;
+    text-align: center;
 }
 
-.parties-pagination-info {
-    font-size: 0.86rem;
+.pagination-stats {
+    font-size: 0.88rem;
     font-weight: 600;
     color: #64748b;
+    text-align: center;
 }
 
-.parties-pagination-controls {
-    display: flex;
+.pagination-controls {
+    display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
+    justify-content: center;
+    gap: 0.35rem;
+    background: #ffffff;
+    padding: 4px;
+    border-radius: 12px;
+    border: 1.5px solid #e2e8f0;
+}
+
+.pagination-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 34px;
+    height: 34px;
+    padding: 0 0.5rem;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: #475569;
+    font-size: 0.85rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.pagination-btn:hover:not(:disabled):not(.active) {
+    background: #f1f5f9;
+    color: #0f172a;
+}
+
+.pagination-btn.active {
+    background: #059669;
+    color: #ffffff;
+}
+
+.pagination-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
 }
 
 .btn-pagination {
@@ -764,7 +812,20 @@
     }
 
     .parties-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .party-card {
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    .party-card-name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        min-width: 0;
+        max-width: 100%;
     }
 
     .parties-scroll-wrap {
@@ -773,12 +834,6 @@
 
     .modern-parties-table {
         min-width: 680px;
-    }
-
-    .modern-parties-table th:first-child,
-    .modern-parties-table td:first-child {
-        min-width: 250px;
-        width: 42%;
     }
 
     .ui.modal > .actions,

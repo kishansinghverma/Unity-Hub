@@ -24,7 +24,7 @@ import { Modal, ModalActions, ModalContent, ModalHeader } from "semantic-ui-reac
 import { toast } from "react-toastify";
 import { DeleteParams, pages, Url } from "../../common/constants";
 import { Party, Record as WithIdRecord } from "../../common/types";
-import { handleError, handleJsonResponse } from "../../operations/utils";
+import { getPageWindow, handleError, handleJsonResponse } from "../../operations/utils";
 import { EditPartyForm } from "../editparty/editparty";
 import "./parties.css";
 
@@ -269,130 +269,116 @@ export const Parties: React.FC = () => {
                             </tbody>
                         </table>
                     </div>
-
-                    <footer className="parties-pagination">
-                        <span className="parties-pagination-info">
-                            पेज {currentPage} / {totalPages} (कुल {filteredRecords.length} में से {(currentPage - 1) * pageSize + 1} - {Math.min(currentPage * pageSize, filteredRecords.length)})
-                        </span>
-                        <div className="parties-pagination-controls">
-                            <button
-                                type="button"
-                                className="btn-pagination"
-                                disabled={currentPage <= 1}
-                                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                            >
-                                <ChevronLeft size={16} />
-                                <span>पिछला</span>
-                            </button>
-                            <button
-                                type="button"
-                                className="btn-pagination"
-                                disabled={currentPage >= totalPages}
-                                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                            >
-                                <span>अगला</span>
-                                <ChevronRight size={16} />
-                            </button>
-                        </div>
-                    </footer>
                 </div>
             ) : (
-                <>
-                    <div className="parties-grid">
-                        {paginatedRecords.map((record) => (
-                            <div className="party-card" key={record._id}>
-                                <div className="party-card-header">
-                                    <div className="party-card-avatar">
-                                        <Building2 size={22} />
-                                    </div>
-                                    <div className="party-card-heading">
-                                        <h3 className="party-card-name" title={record.name}>
-                                            {record.name}
-                                        </h3>
-                                        <span className="party-card-state">
-                                            {record.state || "—"}
-                                        </span>
-                                    </div>
+                <div className="parties-grid">
+                    {paginatedRecords.map((record) => (
+                        <div className="party-card" key={record._id}>
+                            <div className="party-card-header">
+                                <div className="party-card-avatar">
+                                    <Building2 size={22} />
                                 </div>
-
-                                <div className="party-card-info-list">
-                                    <div className="party-card-info-row">
-                                        <span className="party-card-info-label">
-                                            <MapPin size={14} style={{ color: "#059669" }} />
-                                            <span>मंडी</span>
-                                        </span>
-                                        <span className="party-card-info-val">{record.mandi}</span>
-                                    </div>
-
-                                    <div className="party-card-info-row">
-                                        <span className="party-card-info-label">
-                                            <Route size={14} style={{ color: "#0284c7" }} />
-                                            <span>दूरी</span>
-                                        </span>
-                                        <span className="party-card-info-val">{record.distance} कि.मी.</span>
-                                    </div>
-
-                                    <div className="party-card-info-row">
-                                        <span className="party-card-info-label">
-                                            <FileBadge size={14} style={{ color: "#64748b" }} />
-                                            <span>लाइसेंस</span>
-                                        </span>
-                                        <span className="party-card-info-val">
-                                            {record.licenceNumber || "—"}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div className="party-card-footer">
-                                    <button
-                                        type="button"
-                                        className="btn-card-action edit"
-                                        onClick={() => handleEditParty(record)}
-                                    >
-                                        <Pencil size={14} />
-                                        <span>संशोधित करें</span>
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className="btn-card-action delete"
-                                        onClick={() => setPartyToDelete(record)}
-                                    >
-                                        <Trash2 size={14} />
-                                        <span>हटाएं</span>
-                                    </button>
+                                <div className="party-card-heading">
+                                    <h3 className="party-card-name" title={record.name}>
+                                        {record.name}
+                                    </h3>
+                                    <span className="party-card-state">
+                                        {record.state || "—"}
+                                    </span>
                                 </div>
                             </div>
+
+                            <div className="party-card-info-list">
+                                <div className="party-card-info-row">
+                                    <span className="party-card-info-label">
+                                        <MapPin size={14} style={{ color: "#059669" }} />
+                                        <span>मंडी</span>
+                                    </span>
+                                    <span className="party-card-info-val">{record.mandi}</span>
+                                </div>
+
+                                <div className="party-card-info-row">
+                                    <span className="party-card-info-label">
+                                        <Route size={14} style={{ color: "#0284c7" }} />
+                                        <span>दूरी</span>
+                                    </span>
+                                    <span className="party-card-info-val">{record.distance} कि.मी.</span>
+                                </div>
+
+                                <div className="party-card-info-row">
+                                    <span className="party-card-info-label">
+                                        <FileBadge size={14} style={{ color: "#64748b" }} />
+                                        <span>लाइसेंस</span>
+                                    </span>
+                                    <span className="party-card-info-val">
+                                        {record.licenceNumber || "—"}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div className="party-card-footer">
+                                <button
+                                    type="button"
+                                    className="btn-card-action edit"
+                                    onClick={() => handleEditParty(record)}
+                                >
+                                    <Pencil size={14} />
+                                    <span>संशोधित करें</span>
+                                </button>
+                                <button
+                                    type="button"
+                                    className="btn-card-action delete"
+                                    onClick={() => setPartyToDelete(record)}
+                                >
+                                    <Trash2 size={14} />
+                                    <span>हटाएं</span>
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            {/* Pagination */}
+            {filteredRecords.length > 0 && totalPages > 1 && (
+                <div className="parties-pagination-wrap">
+                    <div className="pagination-stats">
+                        कुल {filteredRecords.length} पार्टियां • पृष्ठ {currentPage} / {totalPages}
+                    </div>
+
+                    <div className="pagination-controls">
+                        <button
+                            type="button"
+                            className="pagination-btn"
+                            disabled={currentPage <= 1}
+                            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                            title="पिछला पृष्ठ"
+                        >
+                            <ChevronLeft size={16} />
+                        </button>
+
+                        {getPageWindow(currentPage, totalPages).map((pageNumber) => (
+                            <button
+                                key={pageNumber}
+                                type="button"
+                                className={`pagination-btn ${pageNumber === currentPage ? "active" : ""}`}
+                                onClick={() => setCurrentPage(pageNumber)}
+                            >
+                                {pageNumber}
+                            </button>
                         ))}
-                    </div>
 
-                    <div className="parties-table-card" style={{ marginTop: "1rem" }}>
-                        <footer className="parties-pagination">
-                            <span className="parties-pagination-info">
-                                पेज {currentPage} / {totalPages} (कुल {filteredRecords.length} में से {(currentPage - 1) * pageSize + 1} - {Math.min(currentPage * pageSize, filteredRecords.length)})
-                            </span>
-                            <div className="parties-pagination-controls">
-                                <button
-                                    type="button"
-                                    className="btn-pagination"
-                                    disabled={currentPage <= 1}
-                                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                                >
-                                    <ChevronLeft size={16} />
-                                    <span>पिछला</span>
-                                </button>
-                                <button
-                                    type="button"
-                                    className="btn-pagination"
-                                    disabled={currentPage >= totalPages}
-                                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                                >
-                                    <span>अगला</span>
-                                    <ChevronRight size={16} />
-                                </button>
-                            </div>
-                        </footer>
+                        <button
+                            type="button"
+                            className="pagination-btn"
+                            disabled={currentPage >= totalPages}
+                            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                            title="अगला पृष्ठ"
+                        >
+                            <ChevronRight size={16} />
+                        </button>
                     </div>
-                </>
+                </div>
             )}
 
             {/* Edit Party Modal */}

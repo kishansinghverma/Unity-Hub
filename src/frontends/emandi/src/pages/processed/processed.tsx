@@ -16,7 +16,7 @@ import {
 import { toast } from "react-toastify";
 import { ProcessedEntry, Record as WithIdRecord } from "../../common/types";
 import { Url, vehicleType } from "../../common/constants";
-import { formatDisplayDate, handleError, handleJsonResponse } from "../../operations/utils";
+import { formatDisplayDate, getPageWindow, handleError, handleJsonResponse } from "../../operations/utils";
 import "./processed.css";
 
 const formatVehicleNumber = (plate: string): string => {
@@ -389,7 +389,7 @@ export const ProcessedPage: React.FC = () => {
                             <ChevronLeft size={16} />
                         </button>
 
-                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNumber) => (
+                        {getPageWindow(currentPage, totalPages).map((pageNumber) => (
                             <button
                                 key={pageNumber}
                                 type="button"

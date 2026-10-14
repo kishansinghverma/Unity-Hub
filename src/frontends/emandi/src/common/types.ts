@@ -55,16 +55,3 @@ export type ProcessedEntry = {
     paymentMode: string;
     rate: any;
 } & QueuedEntry;
-
-export type Resource = {
-    travelDistance: number;
-}
-
-export type ResourceSet = {
-    resources: Resource[];
-}
-
-export type DistanceResponse = {
-    resourceSets: ResourceSet[];
-    statusCode: number;
-}

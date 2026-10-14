@@ -79,6 +79,13 @@ export const formatDisplayDate = (value: string) => {
     return `${String(date.getUTCDate()).padStart(2, '0')}-${String(date.getUTCMonth() + 1).padStart(2, '0')}-${date.getUTCFullYear()}`;
 }
 
+export const getPageWindow = (currentPage: number, totalPages: number, maxPages = 5): number[] => {
+    const windowSize = Math.min(maxPages, totalPages);
+    const half = Math.floor(windowSize / 2);
+    const start = Math.max(1, Math.min(currentPage - half, totalPages - windowSize + 1));
+    return Array.from({ length: windowSize }, (_, i) => start + i);
+};
+
 export const capitalize = (str: string) => {
     if (!str) return '';
     let tokens = str.trim().split(' ');

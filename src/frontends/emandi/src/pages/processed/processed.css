@@ -406,6 +406,13 @@
     font-size: 0.92rem;
 }
 
+.modern-processed-table th,
+.modern-processed-table td {
+    padding: 0.95rem 1.1rem;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
 .modern-processed-table th {
     background: #f8fafc;
     color: #475569;
@@ -413,10 +420,8 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    padding: 0.95rem 1.1rem;
     text-align: left;
     border-bottom: 1.5px solid #e2e8f0;
-    white-space: nowrap;
 }
 
 .modern-processed-table th.center {
@@ -424,11 +429,9 @@
 }
 
 .modern-processed-table td {
-    padding: 0.95rem 1.1rem;
     border-bottom: 1px solid #f1f5f9;
     color: #1e293b;
     font-weight: 600;
-    vertical-align: middle;
 }
 
 .modern-processed-table tr:last-child td {
@@ -519,22 +522,25 @@
 /* Pagination Row */
 .processed-pagination-wrap {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 1rem;
-    padding: 0.5rem 0.25rem;
+    justify-content: center;
+    gap: 0.65rem;
+    padding: 0.75rem 0.25rem;
+    text-align: center;
 }
 
 .pagination-stats {
     font-size: 0.88rem;
     font-weight: 600;
     color: #64748b;
+    text-align: center;
 }
 
 .pagination-controls {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.35rem;
     background: #ffffff;
     padding: 4px;
@@ -625,18 +631,6 @@
 
     .modern-processed-table {
         min-width: 960px;
-    }
-
-    .modern-processed-table th:first-child,
-    .modern-processed-table td:first-child {
-        min-width: 130px;
-        white-space: nowrap;
-    }
-
-    .modern-processed-table th:nth-child(2),
-    .modern-processed-table td:nth-child(2) {
-        min-width: 260px;
-        width: 28%;
     }
 }
 
