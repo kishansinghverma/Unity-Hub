@@ -131,7 +131,7 @@ export const Parties: React.FC = () => {
 
                     <Link to={pages.addParty.route} className="btn-parties-add">
                         <Plus size={16} />
-                        <span>नई पार्टी</span>
+                        <span>पार्टी</span>
                     </Link>
                 </div>
 

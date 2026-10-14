@@ -3,12 +3,14 @@ import {
     Check,
     ChevronLeft,
     ChevronRight,
+    CreditCard,
     Inbox,
     LayoutGrid,
     List,
     Loader2,
     RotateCcw,
     Search,
+    Truck,
     Undo2
 } from "lucide-react";
 import { toast } from "react-toastify";
@@ -247,11 +249,33 @@ export const ProcessedPage: React.FC = () => {
                                     </p>
                                     <div className="card-sub-row">
                                         <span className="card-vehicle-type">
-                                            {getVehicleLabel(record.vehicleType)}
+                                            <Truck size={13} />
+                                            <span>{getVehicleLabel(record.vehicleType)}</span>
                                         </span>
                                         <span className="card-payment-badge">
-                                            {record.paymentMode ?? "Postpaid"}
+                                            <CreditCard size={13} />
+                                            <span>{record.paymentMode ?? "Postpaid"}</span>
                                         </span>
+                                        <span className="badge-processed">
+                                            <Check size={13} />
+                                            <span>जारी</span>
+                                        </span>
+                                        {canRequeue && (
+                                            <button
+                                                type="button"
+                                                className="btn-card-requeue"
+                                                onClick={() => requeueRecord(record._id)}
+                                                disabled={isRequeuing}
+                                                title="कतार में वापस भेजें (Re-Queue)"
+                                            >
+                                                {isRequeuing ? (
+                                                    <Loader2 size={13} className="spin" />
+                                                ) : (
+                                                    <Undo2 size={13} />
+                                                )}
+                                                <span>Re-Queue</span>
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
 
@@ -275,30 +299,6 @@ export const ProcessedPage: React.FC = () => {
                                         <span className="metric-label">शुल्क</span>
                                         <span className="metric-value">{calculateAmount(record.rate, record.weight)}</span>
                                     </div>
-                                </div>
-
-                                <div className="card-footer-row">
-                                    {canRequeue && (
-                                        <button
-                                            type="button"
-                                            className="btn-card-requeue"
-                                            onClick={() => requeueRecord(record._id)}
-                                            disabled={isRequeuing}
-                                            title="कतार में वापस भेजें (Re-Queue)"
-                                        >
-                                            {isRequeuing ? (
-                                                <Loader2 size={16} className="spin" />
-                                            ) : (
-                                                <Undo2 size={16} />
-                                            )}
-                                            <span>Re-Queue</span>
-                                        </button>
-                                    )}
-
-                                    <span className="badge-processed">
-                                        <Check size={16} />
-                                        <span>जारी</span>
-                                    </span>
                                 </div>
                             </div>
                         );

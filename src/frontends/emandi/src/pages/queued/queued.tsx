@@ -134,9 +134,17 @@ export const QueuedPage: React.FC = () => {
         <div className="queued-page-wrapper">
             {/* Header Card */}
             <div className="queued-header-card">
-                <div className="header-title-group">
-                    <h1>जारी होने वाले गेटपास</h1>
-                    <p>गेटपास के लिए प्रतीक्षारत वाहनों की सूची</p>
+                <div className="queued-header-top-row">
+                    <div className="header-title-group">
+                        <h1>जारी होने वाले गेटपास</h1>
+                        <p>गेटपास के लिए प्रतीक्षारत वाहनों की सूची</p>
+                    </div>
+
+                    {/* New Gatepass CTA */}
+                    <Link to={pages.newEntry.route} className="btn-header-primary">
+                        <Plus size={18} />
+                        <span>गेटपास</span>
+                    </Link>
                 </div>
 
                 <div className="header-controls">
@@ -184,12 +192,6 @@ export const QueuedPage: React.FC = () => {
                             <RotateCcw size={18} className={isFetching ? "spin" : ""} />
                         </button>
                     </div>
-
-                    {/* New Gatepass CTA */}
-                    <Link to={pages.newEntry.route} className="btn-header-primary">
-                        <Plus size={18} />
-                        <span>नया गेटपास</span>
-                    </Link>
                 </div>
             </div>
 
@@ -204,7 +206,7 @@ export const QueuedPage: React.FC = () => {
                             ? "गेटपास लोड हो रहे हैं..."
                             : searchQuery
                             ? "कोई परिणाम नहीं मिला"
-                            : "कोई नया गेटपास कतार में नहीं है"}
+                            : "कोई नया गेटपास जारी होने के लिए नहीं है"}
                     </h2>
                     <p className="empty-subtitle">
                         {isFetching
@@ -213,12 +215,6 @@ export const QueuedPage: React.FC = () => {
                             ? `"${searchQuery}" के लिए कोई गेटपास रिकॉर्ड नहीं मिला।`
                             : "सभी गेटपास प्रोसेस हो चुके हैं या नया गेटपास अनुरोध दर्ज करें।"}
                     </p>
-                    {!isFetching && !searchQuery && (
-                        <Link to={pages.newEntry.route} className="btn-header-primary" style={{ marginTop: "0.5rem" }}>
-                            <Plus size={18} />
-                            <span>नया गेटपास बनाएं</span>
-                        </Link>
-                    )}
                 </div>
             ) : viewMode === "grid" ? (
                 /* Grid View */
