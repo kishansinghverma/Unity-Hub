@@ -152,36 +152,38 @@ export const QueuedPage: React.FC = () => {
                         />
                     </div>
 
-                    {/* View Switcher (Grid / List) */}
-                    <div className="view-mode-toggle" role="group" aria-label="View Mode">
+                    {/* Actions Group (View Toggle + Refresh) */}
+                    <div className="header-actions-group">
+                        <div className="view-mode-toggle" role="group" aria-label="View Mode">
+                            <button
+                                type="button"
+                                className={`view-toggle-btn ${viewMode === "grid" ? "active" : ""}`}
+                                onClick={() => setViewMode("grid")}
+                                title="ग्रिड व्यू (Grid View)"
+                            >
+                                <LayoutGrid size={18} />
+                            </button>
+                            <button
+                                type="button"
+                                className={`view-toggle-btn ${viewMode === "list" ? "active" : ""}`}
+                                onClick={() => setViewMode("list")}
+                                title="लिस्ट व्यू (List View)"
+                            >
+                                <List size={18} />
+                            </button>
+                        </div>
+
+                        {/* Refresh Button */}
                         <button
                             type="button"
-                            className={`view-toggle-btn ${viewMode === "grid" ? "active" : ""}`}
-                            onClick={() => setViewMode("grid")}
-                            title="ग्रिड व्यू (Grid View)"
+                            className="btn-header-action"
+                            onClick={fetchRecords}
+                            disabled={isFetching}
+                            title="रिफ्रेश करें"
                         >
-                            <LayoutGrid size={18} />
-                        </button>
-                        <button
-                            type="button"
-                            className={`view-toggle-btn ${viewMode === "list" ? "active" : ""}`}
-                            onClick={() => setViewMode("list")}
-                            title="लिस्ट व्यू (List View)"
-                        >
-                            <List size={18} />
+                            <RotateCcw size={18} className={isFetching ? "spin" : ""} />
                         </button>
                     </div>
-
-                    {/* Refresh Button */}
-                    <button
-                        type="button"
-                        className="btn-header-action"
-                        onClick={fetchRecords}
-                        disabled={isFetching}
-                        title="रिफ्रेश करें"
-                    >
-                        <RotateCcw size={18} className={isFetching ? "spin" : ""} />
-                    </button>
 
                     {/* New Gatepass CTA */}
                     <Link to={pages.newEntry.route} className="btn-header-primary">
@@ -236,10 +238,10 @@ export const QueuedPage: React.FC = () => {
                                 </div>
 
                                 <div className="card-entity-details">
-                                    <h2 className="card-seller-name">
+                                    <h2 className="card-party-name">
                                         {formatPartyDetails(record.party)}
                                     </h2>
-                                    <p className="card-party-name">{record.seller}</p>
+                                    <p className="card-seller-name">{record.seller}</p>
                                 </div>
 
                                 <div className="card-metrics-box">

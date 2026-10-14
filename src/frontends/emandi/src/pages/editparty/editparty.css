@@ -1,0 +1,503 @@
+.editparty-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: #0f172a;
+    padding: 0.25rem 0;
+}
+
+.editparty-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.85rem;
+}
+
+.editparty-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.editparty-field.full-width {
+    grid-column: 1 / -1;
+}
+
+.editparty-label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.editparty-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.editparty-required {
+    color: #e11d48;
+    font-weight: 800;
+}
+
+.editparty-field-hint {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #94a3b8;
+}
+
+/* Input Controls */
+.editparty-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.editparty-input-icon {
+    position: absolute;
+    z-index: 10;
+    left: 0.85rem;
+    color: #64748b;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    transition: color 0.18s ease;
+}
+
+.editparty-input {
+    width: 100%;
+    height: 42px;
+    padding: 0 0.9rem 0 2.5rem;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: #0f172a;
+    background: rgba(248, 250, 252, 0.75);
+    border: 1.5px solid #cbd5e1;
+    border-radius: 11px;
+    outline: none;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+    font-family: inherit;
+}
+
+.editparty-input.with-suffix {
+    padding-right: 5rem;
+}
+
+.editparty-input.uppercase {
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-weight: 700;
+}
+
+.editparty-input.uppercase::placeholder {
+    text-transform: none;
+    letter-spacing: normal;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-weight: 500;
+}
+
+.editparty-input::placeholder {
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+.editparty-input:hover:not(:disabled) {
+    border-color: #94a3b8;
+}
+
+.editparty-input:focus {
+    border-color: #059669;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.14);
+}
+
+.editparty-input:disabled {
+    background: #f1f5f9;
+    color: #94a3b8;
+    cursor: not-allowed;
+}
+
+.editparty-unit-badge {
+    position: absolute;
+    right: 0.7rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: #475569;
+    background: #f1f5f9;
+    padding: 0.22rem 0.55rem;
+    border-radius: 7px;
+    pointer-events: none;
+    border: 1px solid #e2e8f0;
+}
+
+/* Custom Semantic Dropdown Integration */
+.editparty-select-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.editparty-select-wrap .ui.selection.dropdown {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    min-height: 42px;
+    height: 42px;
+    padding: 0 2rem 0 2.5rem !important;
+    display: flex !important;
+    align-items: center;
+    font-size: 0.92rem;
+    font-weight: 600;
+    font-family: inherit;
+    color: #0f172a;
+    background: rgba(248, 250, 252, 0.75);
+    border: 1.5px solid #cbd5e1;
+    border-radius: 11px !important;
+    outline: none;
+    transition: all 0.18s ease;
+}
+
+.editparty-field:has(.ui.selection.dropdown.visible) {
+    position: relative;
+    z-index: 20;
+}
+
+.editparty-select-wrap .editparty-input-icon {
+    top: 50%;
+    transform: translateY(-50%);
+    visibility: visible;
+    opacity: 1;
+}
+
+.editparty-select-wrap .ui.selection.dropdown:hover {
+    border-color: #94a3b8;
+}
+
+.editparty-select-wrap .ui.selection.active.dropdown,
+.editparty-select-wrap .ui.selection.dropdown:focus {
+    border-color: #059669 !important;
+    background: #ffffff !important;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.14) !important;
+}
+
+.editparty-select-wrap .ui.selection.dropdown > .text {
+    color: #0f172a !important;
+    font-weight: 600;
+    line-height: normal;
+    margin: 0;
+}
+
+.editparty-select-wrap .ui.selection.dropdown > .default.text {
+    color: #94a3b8 !important;
+    font-weight: 500;
+    line-height: normal;
+    margin: 0;
+}
+
+.editparty-select-wrap .ui.search.selection.dropdown > input.search {
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 42px !important;
+    padding: 0 2.4rem 0 2.5rem !important;
+    color: #0f172a !important;
+    font: inherit !important;
+    line-height: 42px !important;
+    box-sizing: border-box !important;
+}
+
+.editparty-select-wrap .ui.selection.dropdown > .dropdown.icon,
+.editparty-select-wrap .ui.selection.dropdown > .remove.icon {
+    top: 50% !important;
+    right: 0.8rem !important;
+    transform: translateY(-50%) !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    color: #64748b;
+}
+
+.editparty-select-wrap .ui.selection.dropdown .menu {
+    z-index: 30 !important;
+    border-radius: 12px !important;
+    border: 1.5px solid #cbd5e1 !important;
+    box-shadow: 0 14px 30px -6px rgba(15, 23, 42, 0.16) !important;
+    margin-top: 4px !important;
+    max-height: 200px;
+}
+
+.editparty-select-wrap .ui.selection.dropdown .menu > .item {
+    padding: 0.65rem 0.9rem !important;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #1e293b;
+    border-top: 1px solid #f1f5f9 !important;
+}
+
+.editparty-select-wrap .ui.selection.dropdown .menu > .item:hover {
+    background: #f0fdf4 !important;
+    color: #047857 !important;
+}
+
+.editparty-select-wrap .ui.selection.dropdown .menu > .item.selected,
+.editparty-select-wrap .ui.selection.dropdown .menu > .item.active {
+    background: #ecfdf5 !important;
+    color: #059669 !important;
+    font-weight: 700;
+}
+
+/* Checkbox Card */
+.editparty-checkbox-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    padding: 0.75rem 0.9rem;
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    user-select: none;
+}
+
+.editparty-checkbox-card:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+}
+
+.editparty-checkbox-card.checked {
+    background: #eff6ff;
+    border-color: #93c5fd;
+}
+
+.editparty-checkbox-input {
+    width: 17px;
+    height: 17px;
+    margin-top: 0.15rem;
+    accent-color: #059669;
+    cursor: pointer;
+}
+
+.editparty-checkbox-label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #1e293b;
+    cursor: pointer;
+}
+
+.editparty-checkbox-desc {
+    font-size: 0.74rem;
+    font-weight: 500;
+    color: #64748b;
+}
+
+/* Validation states */
+.editparty-field.has-error .editparty-input,
+.editparty-field.has-error .editparty-select-wrap .ui.selection.dropdown {
+    border-color: #f43f5e !important;
+    background: #fff5f5 !important;
+}
+
+.editparty-field.has-error .editparty-input:focus,
+.editparty-field.has-error .editparty-select-wrap .ui.selection.dropdown:focus {
+    box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.15) !important;
+}
+
+.editparty-field.has-error .editparty-input-icon {
+    color: #f43f5e;
+}
+
+.editparty-error-msg {
+    margin: 0.12rem 0 0;
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: #e11d48;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+/* Modal styling refinement */
+.ui.modal {
+    border-radius: 20px !important;
+    overflow: hidden !important;
+    box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25) !important;
+    border: 1px solid rgba(226, 232, 240, 0.9) !important;
+}
+
+.ui.modal > .header.form-header {
+    padding: 1.1rem 1.4rem !important;
+    font-size: 1.15rem !important;
+    font-weight: 800 !important;
+    color: #0f172a !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    background: linear-gradient(145deg, #ffffff, #f8fafc) !important;
+}
+
+.ui.modal > .content {
+    padding: 1.25rem 1.4rem !important;
+    background: #ffffff !important;
+}
+
+.ui.modal > .actions,
+.editparty-modal-actions {
+    padding: 0.9rem 1.4rem !important;
+    border-top: 1px solid #e2e8f0 !important;
+    background: #f8fafc !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 0.75rem !important;
+}
+
+.btn-modal-cancel {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    height: 40px;
+    padding: 0 1.15rem;
+    font-size: 0.88rem;
+    font-weight: 700;
+    font-family: inherit;
+    color: #64748b;
+    background: #ffffff;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+
+.btn-modal-cancel:hover {
+    color: #0f172a;
+    background: #f1f5f9;
+    border-color: #94a3b8;
+    transform: translateY(-1px);
+}
+
+.btn-modal-submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    height: 40px;
+    padding: 0 1.4rem;
+    font-size: 0.88rem;
+    font-weight: 800;
+    font-family: inherit;
+    color: #ffffff;
+    background: linear-gradient(135deg, #059669, #0d9488);
+    border: 0;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow:
+        0 10px 20px -4px rgba(5, 150, 105, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.btn-modal-submit:hover {
+    transform: translateY(-1px);
+    box-shadow:
+        0 14px 26px -4px rgba(5, 150, 105, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* Fallback overrides for Semantic UI Button components in modal actions */
+.ui.modal > .actions .button.negative {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 40px !important;
+    padding: 0 1.15rem !important;
+    font-size: 0.88rem !important;
+    font-weight: 700 !important;
+    font-family: inherit !important;
+    color: #64748b !important;
+    background: #ffffff !important;
+    border: 1.5px solid #cbd5e1 !important;
+    border-radius: 12px !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    transition: all 0.18s ease !important;
+}
+
+.ui.modal > .actions .button.negative:hover {
+    color: #0f172a !important;
+    background: #f1f5f9 !important;
+    border-color: #94a3b8 !important;
+}
+
+.ui.modal > .actions .button.positive {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 40px !important;
+    padding: 0 1.4rem !important;
+    font-size: 0.88rem !important;
+    font-weight: 800 !important;
+    font-family: inherit !important;
+    color: #ffffff !important;
+    background: linear-gradient(135deg, #059669, #0d9488) !important;
+    border: 0 !important;
+    border-radius: 12px !important;
+    margin: 0 !important;
+    box-shadow:
+        0 10px 20px -4px rgba(5, 150, 105, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
+    transition: transform 0.18s ease, box-shadow 0.18s ease !important;
+}
+
+.ui.modal > .actions .button.positive:hover {
+    background: linear-gradient(135deg, #059669, #0d9488) !important;
+    transform: translateY(-1px) !important;
+    box-shadow:
+        0 14px 26px -4px rgba(5, 150, 105, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+}
+
+@media (max-width: 768px) {
+    .editparty-grid-2 {
+        grid-template-columns: 1fr;
+    }
+
+    .ui.modal > .actions,
+    .ui.modal > .actions.editparty-modal-actions,
+    .editparty-modal-actions {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        justify-content: flex-end !important;
+        align-items: center !important;
+        gap: 0.65rem !important;
+        padding: 0.85rem 1.15rem !important;
+    }
+
+    .editparty-modal-actions .btn-modal-cancel,
+    .editparty-modal-actions .btn-modal-submit,
+    .editparty-modal-actions .btn-modal-delete,
+    .ui.modal > .actions .btn-modal-cancel,
+    .ui.modal > .actions .btn-modal-submit,
+    .ui.modal > .actions .btn-modal-delete,
+    .ui.modal > .actions > .button {
+        display: inline-flex !important;
+        width: auto !important;
+        flex: 1 1 0 !important;
+        margin: 0 !important;
+        text-align: center !important;
+        justify-content: center !important;
+        white-space: nowrap !important;
+    }
+}
+
+

@@ -1,9 +1,9 @@
 import { Routes, Route, Link } from "react-router-dom";
 import { MainPage } from "./mainpage";
 import { NewEntry } from "./newentry/newentry";
-import { NewParty } from "./newparty";
-import { Parties } from "./parties";
-import { ProcessedPage } from "./processed";
+import { NewParty } from "./newparty/newparty";
+import { Parties } from "./parties/parties";
+import { ProcessedPage } from "./processed/processed";
 import { QueuedPage } from "./queued/queued";
 import { RemotePage } from "./remote/remote";
 import { Button, Header, HeaderContent, Icon } from "semantic-ui-react";
