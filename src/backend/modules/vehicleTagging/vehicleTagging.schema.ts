@@ -22,7 +22,7 @@ const taggingRequestSchema = z.object({
   vehicleNumber: z.string().min(1),
   latitude: z.string().min(1),
   longitude: z.string().min(1),
-  ipAddress: z.string().min(1),
+  ipAddress: z.string().min(1).nullable(),
   vehicleImage: z.string().min(1),
   vehicleFullImage: z.string().min(1)
 }).strict();
