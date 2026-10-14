@@ -269,6 +269,31 @@ export const NewEntry: React.FC = () => {
             .finally(() => setIsMandiLoading(false));
     }, []);
 
+    useEffect(() => {
+        if (!("geolocation" in navigator)) {
+            console.warn("Geolocation is not supported by this browser.");
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                console.log("Captured coordinates:", {
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude,
+                    accuracy: position.coords.accuracy
+                });
+            },
+            (error) => {
+                console.warn("Failed to obtain location:", error.message);
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 60000
+            }
+        );
+    }, []);
+
     const getFieldStateClass = (name: FieldName): string => {
         if (!touched[name]) return "";
         return errors[name] ? "has-error" : "is-valid";
