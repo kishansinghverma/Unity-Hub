@@ -5,7 +5,7 @@ import { BaseSyntheticEvent } from "react";
 import { InputOnChangeData, DropdownProps, CheckboxProps } from "semantic-ui-react";
 import { Party, Record } from "../common/types";
 
-export const handleError = (error: Error) => toast.error(error.message);
+export const handleError = (error: unknown) => toast.error(error instanceof Error ? error.message : String(error));
 
 export const trimInput = (e: BaseSyntheticEvent) => { e.currentTarget.value = e.target.value.trim() };
 

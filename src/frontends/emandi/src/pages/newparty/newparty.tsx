@@ -15,9 +15,9 @@ import {
 import { Dropdown, DropdownProps } from "semantic-ui-react";
 import { toast } from "react-toastify";
 import { pages, States } from "../../common/constants";
-import { DistanceResponse, SelectOption } from "../../common/types";
+import { SelectOption } from "../../common/types";
 import { createNewParty, getDistance } from "../../operations/fetch";
-import { handleError, handleJsonResponse, handleResponse } from "../../operations/utils";
+import { handleError, handleResponse } from "../../operations/utils";
 import "./newparty.css";
 
 type FormFields = {
@@ -157,11 +157,9 @@ export const NewParty: React.FC = () => {
         if (trimmedMandi) {
             setIsDistanceLoading(true);
             getDistance(trimmedMandi)
-                .then((res) => handleJsonResponse<DistanceResponse>(res, "Distance Not Available!"))
-                .then((data) => {
-                    const travelDistance = data.resourceSets?.[0]?.resources?.[0]?.travelDistance;
-                    if (travelDistance !== undefined && travelDistance !== null) {
-                        const calculatedDistance = Math.ceil(travelDistance).toString();
+                .then((distance) => {
+                    if (distance !== undefined && distance !== null) {
+                        const calculatedDistance = distance.toString();
                         setValues((prev) => {
                             const updated = { ...prev, distance: calculatedDistance };
                             setErrors((prevErrors) => ({
@@ -462,9 +460,6 @@ export const NewParty: React.FC = () => {
                                     />
                                     <div className="newparty-checkbox-label">
                                         <span>लाइसेंस नंबर की आवश्यकता नहीं है</span>
-                                        <span className="newparty-checkbox-desc">
-                                            यदि पार्टी के पास अभी वैध लाइसेंस नहीं है तो इसे चुनें
-                                        </span>
                                     </div>
                                 </label>
                             </div>

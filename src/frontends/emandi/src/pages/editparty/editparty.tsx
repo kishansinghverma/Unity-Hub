@@ -11,9 +11,9 @@ import {
 import { Dropdown, DropdownProps } from "semantic-ui-react";
 import { toast } from "react-toastify";
 import { States } from "../../common/constants";
-import { DistanceResponse, Party, Record, SelectOption } from "../../common/types";
+import { Party, Record as WithIdRecord, SelectOption } from "../../common/types";
 import { getDistance, updateParty } from "../../operations/fetch";
-import { handleError, handleJsonResponse, handleResponse } from "../../operations/utils";
+import { handleError, handleResponse } from "../../operations/utils";
 import "./editparty.css";
 
 type FormFields = {
@@ -36,8 +36,8 @@ const stateOptions: Array<SelectOption> = Object.keys(States).map((key) => ({
 }));
 
 type EditPartyFormProps = {
-    party: Record<Party>;
-    callbackFunction: (record: Record<Party>) => void;
+    party: WithIdRecord<Party>;
+    callbackFunction: (record: WithIdRecord<Party>) => void;
 };
 
 export const EditPartyForm: React.FC<EditPartyFormProps> = ({ party, callbackFunction }) => {
@@ -170,11 +170,9 @@ export const EditPartyForm: React.FC<EditPartyFormProps> = ({ party, callbackFun
         if (trimmedMandi && trimmedMandi.toLowerCase() !== party.mandi.toLowerCase()) {
             setIsDistanceLoading(true);
             getDistance(trimmedMandi)
-                .then((res) => handleJsonResponse<DistanceResponse>(res, "Distance Not Available!"))
-                .then((data) => {
-                    const travelDistance = data.resourceSets?.[0]?.resources?.[0]?.travelDistance;
-                    if (travelDistance !== undefined && travelDistance !== null) {
-                        const calculatedDistance = Math.ceil(travelDistance).toString();
+                .then((distance) => {
+                    if (distance !== undefined && distance !== null) {
+                        const calculatedDistance = distance.toString();
                         setValues((prev) => {
                             const updated = { ...prev, distance: calculatedDistance };
                             setErrors((prevErrors) => ({
@@ -226,7 +224,7 @@ export const EditPartyForm: React.FC<EditPartyFormProps> = ({ party, callbackFun
             const response = await executeRequest();
             await handleResponse(response);
             toast.success("पार्टी सफलतापूर्वक संशोधित हो गई।");
-            callbackFunction(data as Record<Party>);
+            callbackFunction(data as WithIdRecord<Party>);
         } catch (error) {
             handleError(error);
         } finally {
