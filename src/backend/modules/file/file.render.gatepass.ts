@@ -1,14 +1,21 @@
+import { existsSync } from 'node:fs';
+import path from 'node:path';
 import PDFDocument from 'pdfkit';
 import { LogSource } from '../../core/logging/log-sources.js';
 import type { Logger, ScopedLogger } from '../../core/logging/logger.js';
 import type { Cell } from '../emandi/emandi.types.js';
 import type { GatepassPayload } from './file.types.js';
 
+const assetRoot = [
+  path.resolve('dist/backend/assets'),
+  path.resolve('src/backend/assets')
+].find(existsSync) ?? path.resolve('src/backend/assets');
+
 export class GatepassRenderer {
   private readonly margin = 36;
-  private readonly logoPath = new URL('../../assets/logo_emandi.png', import.meta.url);
-  private readonly regularFontPath = new URL('../../assets/anek-deva-regular.ttf', import.meta.url);
-  private readonly boldFontPath = new URL('../../assets/anek-deva-bold.ttf', import.meta.url);
+  private readonly logoPath = path.join(assetRoot, 'logo_emandi.png');
+  private readonly regularFontPath = path.join(assetRoot, 'anek-deva-regular.ttf');
+  private readonly boldFontPath = path.join(assetRoot, 'anek-deva-bold.ttf');
   private readonly logger: ScopedLogger;
 
   constructor({ logger }: { logger: Logger }) {
@@ -40,7 +47,7 @@ export class GatepassRenderer {
     const textX = this.margin + imageSize + 10;
     const textWidth = width - 2 * (imageSize + 10);
     document.rect(6, 6, document.page.width - 12, document.page.height - 12).lineWidth(0.6).strokeColor('#000').stroke();
-    document.image(this.logoPath.pathname, this.margin, this.margin, { fit: [imageSize, imageSize] });
+    document.image(this.logoPath, this.margin, this.margin, { fit: [imageSize, imageSize] });
     document.image(this.decodeDataUrl(payload.qr), document.page.width - this.margin - imageSize, this.margin, { fit: [imageSize, imageSize] });
     const heading = 'कृषि उत्पादन मंडी समिति ';
     const headingWidth = document.font('AnekDevanagariRegular').fontSize(10).widthOfString(heading);
@@ -134,8 +141,8 @@ export class GatepassRenderer {
   private generatePdf = async (draw: (document: PDFKit.PDFDocument) => void): Promise<Buffer> => {
     this.logger.info('Rendering Gatepass Pdf...');
     const document = new PDFDocument({ size: 'A4', layout: 'landscape', margin: this.margin });
-    document.registerFont('AnekDevanagariRegular', this.regularFontPath.pathname);
-    document.registerFont('AnekDevanagariBold', this.boldFontPath.pathname);
+    document.registerFont('AnekDevanagariRegular', this.regularFontPath);
+    document.registerFont('AnekDevanagariBold', this.boldFontPath);
     const chunks: Buffer[] = [];
     document.on('data', (chunk: Buffer) => chunks.push(chunk));
     const completed = new Promise<Buffer>((resolve, reject) => { document.on('end', () => resolve(Buffer.concat(chunks))); document.on('error', reject); });

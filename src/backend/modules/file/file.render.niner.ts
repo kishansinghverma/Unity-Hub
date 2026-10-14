@@ -1,15 +1,22 @@
+import { existsSync } from 'node:fs';
+import path from 'node:path';
 import PDFDocument from 'pdfkit';
 import { LogSource } from '../../core/logging/log-sources.js';
 import type { Logger, ScopedLogger } from '../../core/logging/logger.js';
 import type { Cell, TextOptions } from '../emandi/emandi.types.js';
 import type { NinerPayload } from './file.types.js';
 
+const assetRoot = [
+  path.resolve('dist/backend/assets'),
+  path.resolve('src/backend/assets')
+].find(existsSync) ?? path.resolve('src/backend/assets');
+
 export class NinerRenderer {
   private readonly margin = 36;
   private readonly padding = 4;
-  private readonly logoPath = new URL('../../assets/logo_emandi.png', import.meta.url);
-  private readonly regularFontPath = new URL('../../assets/anek-deva-regular.ttf', import.meta.url);
-  private readonly boldFontPath = new URL('../../assets/anek-deva-bold.ttf', import.meta.url);
+  private readonly logoPath = path.join(assetRoot, 'logo_emandi.png');
+  private readonly regularFontPath = path.join(assetRoot, 'anek-deva-regular.ttf');
+  private readonly boldFontPath = path.join(assetRoot, 'anek-deva-bold.ttf');
   private readonly logger: ScopedLogger;
 
   constructor({ logger }: { logger: Logger }) {
@@ -56,7 +63,7 @@ export class NinerRenderer {
   private drawHeader = (document: PDFKit.PDFDocument, payload: NinerPayload, left: number, width: number, imageSize: number): number => {
     const textX = left + imageSize + 10;
     const textWidth = width - 2 * (imageSize + 10);
-    document.image(this.logoPath.pathname, left, left, { fit: [imageSize, imageSize] });
+    document.image(this.logoPath, left, left, { fit: [imageSize, imageSize] });
     document.image(this.decodeDataUrl(payload.qr), left + width - imageSize, left, { fit: [imageSize, imageSize] });
     const heading = 'कृषि उत्पादन मंडी समिति ';
     document.font('AnekDevanagariRegular').fontSize(9);
@@ -131,8 +138,8 @@ export class NinerRenderer {
   private generatePdf = async (draw: (document: PDFKit.PDFDocument) => void): Promise<Buffer> => {
     this.logger.info('Rendering Niner Pdf...');
     const document = new PDFDocument({ size: 'A4', layout: 'landscape', margin: this.margin });
-    document.registerFont('AnekDevanagariRegular', this.regularFontPath.pathname);
-    document.registerFont('AnekDevanagariBold', this.boldFontPath.pathname);
+    document.registerFont('AnekDevanagariRegular', this.regularFontPath);
+    document.registerFont('AnekDevanagariBold', this.boldFontPath);
     const chunks: Buffer[] = [];
     document.on('data', (chunk: Buffer) => chunks.push(chunk));
     const completed = new Promise<Buffer>((resolve, reject) => { document.on('end', () => resolve(Buffer.concat(chunks))); document.on('error', reject); });

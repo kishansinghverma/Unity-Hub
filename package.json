@@ -13,8 +13,9 @@
     "build": "npm run build:backend && npm run build:frontend && npm run copy:assets && npm run copy:frontend",
     "build:backend": "tsc --noEmit && tsup",
     "build:frontend": "npm run build --prefix src/frontends/emandi",
-    "copy:assets": "mkdir -p dist/backend && cp -R src/backend/assets dist/backend/assets",
-    "copy:frontend": "mkdir -p dist/frontends && cp -R src/frontends/emandi/build dist/frontends/emandi",
+    "copy:assets": "mkdir -p dist/backend && rm -rf dist/backend/assets && cp -R src/backend/assets dist/backend/assets",
+    "copy:frontend": "mkdir -p dist/frontends && rm -rf dist/frontends/emandi && cp -R src/frontends/emandi/build dist/frontends/emandi",
+    "deploy": "npm install && npm run build",
     "start": "node dist/backend/main.js",
     "prepare": "npm run install-emandi",
     "install-emandi": "npm install --prefix src/frontends/emandi"
