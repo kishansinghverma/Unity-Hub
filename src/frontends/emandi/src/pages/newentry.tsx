@@ -112,6 +112,7 @@ export const NewEntry: React.FC = () => {
     const [mandiOptions, setMandiOptions] = useState<SelectOption[]>([]);
     const [isMandiLoading, setIsMandiLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [dropdownResetKey, setDropdownResetKey] = useState(0);
 
     const [images, setImages] = useState<EntryImages>({});
     const [imagePreviews, setImagePreviews] = useState<Partial<Record<keyof EntryImages, string>>>({});
@@ -175,6 +176,7 @@ export const NewEntry: React.FC = () => {
         setValues(initialFormValues);
         setTouched({});
         setErrors({});
+        setDropdownResetKey((current) => current + 1);
         clearAllImages();
     };
 
@@ -273,72 +275,72 @@ export const NewEntry: React.FC = () => {
     };
 
     return (
-        <div className="ne-v1-wrapper">
-            <div className="ne-v1-card">
-                <header className="ne-v1-header">
-                    <div className="ne-v1-header-main">
-                        <div className="ne-v1-brand-icon" aria-hidden="true">
+        <div className="wrapper">
+            <div className="card">
+                <header className="header">
+                    <div className="header-main">
+                        <div className="brand-icon" aria-hidden="true">
                             <FileCheck2 size={26} strokeWidth={2} />
                         </div>
-                        <div className="ne-v1-title-group">
+                        <div className="title-group">
                             <h1>नया गेटपास बनाएं</h1>
                             <p>ई-मंडी आवक एवं वाहन प्रविष्टि फॉर्म</p>
                         </div>
                     </div>
                 </header>
 
-                <form className="ne-v1-form" onSubmit={handleSubmit} autoComplete="off" noValidate>
+                <form className="form" onSubmit={handleSubmit} autoComplete="off" noValidate>
                     {/* Section 1: Seller & Commodity Details */}
-                    <section className="ne-v1-section" aria-label="किसान एवं माल का विवरण">
-                        <div className="ne-v1-section-header">
-                            <h2 className="ne-v1-section-title">
+                    <section className="section" aria-label="किसान एवं माल का विवरण">
+                        <div className="section-header">
+                            <h2 className="section-title">
                                 <User size={16} />
                                 <span>किसान एवं माल का विवरण</span>
                             </h2>
                         </div>
 
-                        <div className="ne-v1-grid-2">
-                            <div className={`ne-v1-field full-width ${getFieldStateClass("seller")}`}>
-                                <div className="ne-v1-label-row">
-                                    <label htmlFor="ne-v1-seller" className="ne-v1-label">
-                                        विक्रेता का नाम (किसान) <span className="ne-v1-required">*</span>
+                        <div className="grid-2">
+                            <div className={`field full-width ${getFieldStateClass("seller")}`}>
+                                <div className="label-row">
+                                    <label htmlFor="seller" className="label">
+                                        विक्रेता का नाम (किसान) <span className="required">*</span>
                                     </label>
-                                    <span className="ne-v1-field-hint">न्यूनतम 3 अक्षर</span>
+                                    <span className="field-hint">न्यूनतम 3 अक्षर</span>
                                 </div>
-                                <div className="ne-v1-input-wrap">
-                                    <span className="ne-v1-input-icon"><User size={17} /></span>
+                                <div className="input-wrap">
+                                    <span className="input-icon"><User size={17} /></span>
                                     <input
-                                        id="ne-v1-seller"
+                                        id="seller"
                                         name="seller"
                                         type="text"
                                         required
                                         disabled={isSubmitting}
-                                        className="ne-v1-input"
+                                        className="input"
                                         placeholder="विक्रेता का नाम"
                                         value={values.seller}
                                         aria-invalid={Boolean(touched.seller && errors.seller)}
-                                        aria-describedby={touched.seller && errors.seller ? "ne-v1-seller-error" : undefined}
+                                        aria-describedby={touched.seller && errors.seller ? "seller-error" : undefined}
                                         onChange={(e) => updateField("seller", e.target.value)}
                                         onBlur={() => handleBlur("seller")}
                                     />
                                 </div>
                                 {touched.seller && errors.seller && (
-                                    <p id="ne-v1-seller-error" className="ne-v1-error-msg" role="alert">
+                                    <p id="seller-error" className="error-msg" role="alert">
                                         <AlertCircle size={14} /> {errors.seller}
                                     </p>
                                 )}
                             </div>
 
-                            <div className={`ne-v1-field ${getFieldStateClass("weight")}`}>
-                                <div className="ne-v1-label-row">
-                                    <label htmlFor="ne-v1-weight" className="ne-v1-label">
-                                        वजन <span className="ne-v1-required">*</span>
+                            <div className={`field ${getFieldStateClass("weight")}`}>
+                                <div className="label-row">
+                                    <label htmlFor="weight" className="label">
+                                        वजन <span className="required">*</span>
                                     </label>
                                 </div>
-                                <div className="ne-v1-input-wrap">
-                                    <span className="ne-v1-input-icon"><Scale size={17} /></span>
+                                <div className="input-wrap">
+                                    <span className="input-icon"><Scale size={17} /></span>
                                     <input
-                                        id="ne-v1-weight"
+                                        id="weight"
                                         name="weight"
                                         type="number"
                                         inputMode="numeric"
@@ -346,33 +348,33 @@ export const NewEntry: React.FC = () => {
                                         step="1"
                                         required
                                         disabled={isSubmitting}
-                                        className="ne-v1-input with-suffix"
+                                        className="input with-suffix"
                                         placeholder="वजन दर्ज करें"
                                         value={values.weight}
                                         aria-invalid={Boolean(touched.weight && errors.weight)}
-                                        aria-describedby={touched.weight && errors.weight ? "ne-v1-weight-error" : undefined}
+                                        aria-describedby={touched.weight && errors.weight ? "weight-error" : undefined}
                                         onChange={(e) => updateField("weight", e.target.value)}
                                         onBlur={() => handleBlur("weight")}
                                     />
-                                    <span className="ne-v1-unit-badge">क्विंटल</span>
+                                    <span className="unit-badge">क्विंटल</span>
                                 </div>
                                 {touched.weight && errors.weight && (
-                                    <p id="ne-v1-weight-error" className="ne-v1-error-msg" role="alert">
+                                    <p id="weight-error" className="error-msg" role="alert">
                                         <AlertCircle size={14} /> {errors.weight}
                                     </p>
                                 )}
                             </div>
 
-                            <div className={`ne-v1-field ${getFieldStateClass("bags")}`}>
-                                <div className="ne-v1-label-row">
-                                    <label htmlFor="ne-v1-bags" className="ne-v1-label">
-                                        पैकेट की संख्या <span className="ne-v1-required">*</span>
+                            <div className={`field ${getFieldStateClass("bags")}`}>
+                                <div className="label-row">
+                                    <label htmlFor="bags" className="label">
+                                        पैकेट की संख्या <span className="required">*</span>
                                     </label>
                                 </div>
-                                <div className="ne-v1-input-wrap">
-                                    <span className="ne-v1-input-icon"><Package size={17} /></span>
+                                <div className="input-wrap">
+                                    <span className="input-icon"><Package size={17} /></span>
                                     <input
-                                        id="ne-v1-bags"
+                                        id="bags"
                                         name="bags"
                                         type="number"
                                         inputMode="numeric"
@@ -380,18 +382,18 @@ export const NewEntry: React.FC = () => {
                                         step="1"
                                         required
                                         disabled={isSubmitting}
-                                        className="ne-v1-input with-suffix"
+                                        className="input with-suffix"
                                         placeholder="पैकेट की संख्या"
                                         value={values.bags}
                                         aria-invalid={Boolean(touched.bags && errors.bags)}
-                                        aria-describedby={touched.bags && errors.bags ? "ne-v1-bags-error" : undefined}
+                                        aria-describedby={touched.bags && errors.bags ? "bags-error" : undefined}
                                         onChange={(e) => updateField("bags", e.target.value)}
                                         onBlur={() => handleBlur("bags")}
                                     />
-                                    <span className="ne-v1-unit-badge">बोरी / कट्टे</span>
+                                    <span className="unit-badge">बोरी / कट्टे</span>
                                 </div>
                                 {touched.bags && errors.bags && (
-                                    <p id="ne-v1-bags-error" className="ne-v1-error-msg" role="alert">
+                                    <p id="bags-error" className="error-msg" role="alert">
                                         <AlertCircle size={14} /> {errors.bags}
                                     </p>
                                 )}
@@ -400,54 +402,55 @@ export const NewEntry: React.FC = () => {
                     </section>
 
                     {/* Section 2: Vehicle & Party Details */}
-                    <section className="ne-v1-section" aria-label="वाहन एवं आढ़तिया फर्म विवरण">
-                        <div className="ne-v1-section-header">
-                            <h2 className="ne-v1-section-title">
+                    <section className="section" aria-label="वाहन एवं आढ़तिया फर्म विवरण">
+                        <div className="section-header">
+                            <h2 className="section-title">
                                 <Truck size={16} />
                                 <span>वाहन एवं आढ़तिया फर्म विवरण</span>
                             </h2>
                         </div>
 
-                        <div className="ne-v1-grid-2">
-                            <div className={`ne-v1-field full-width ${getFieldStateClass("vehicleNumber")}`}>
-                                <div className="ne-v1-label-row">
-                                    <label htmlFor="ne-v1-vehicleNumber" className="ne-v1-label">
-                                        गाड़ी नंबर <span className="ne-v1-required">*</span>
+                        <div className="grid-2">
+                            <div className={`field full-width ${getFieldStateClass("vehicleNumber")}`}>
+                                <div className="label-row">
+                                    <label htmlFor="vehicleNumber" className="label">
+                                        गाड़ी नंबर <span className="required">*</span>
                                     </label>
-                                    <span className="ne-v1-field-hint">बिना स्पेस के (न्यूनतम 6 अक्षर)</span>
+                                    <span className="field-hint">बिना स्पेस के (न्यूनतम 6 अक्षर)</span>
                                 </div>
-                                <div className="ne-v1-input-wrap">
-                                    <span className="ne-v1-input-icon"><Hash size={17} /></span>
+                                <div className="input-wrap">
+                                    <span className="input-icon"><Hash size={17} /></span>
                                     <input
-                                        id="ne-v1-vehicleNumber"
+                                        id="vehicleNumber"
                                         name="vehicleNumber"
                                         type="text"
                                         required
                                         disabled={isSubmitting}
-                                        className="ne-v1-input uppercase"
+                                        className="input uppercase"
                                         placeholder="गाड़ी नंबर"
                                         value={values.vehicleNumber}
                                         aria-invalid={Boolean(touched.vehicleNumber && errors.vehicleNumber)}
-                                        aria-describedby={touched.vehicleNumber && errors.vehicleNumber ? "ne-v1-vehicleNumber-error" : undefined}
+                                        aria-describedby={touched.vehicleNumber && errors.vehicleNumber ? "vehicleNumber-error" : undefined}
                                         onChange={(e) => updateField("vehicleNumber", e.target.value)}
                                         onBlur={() => handleBlur("vehicleNumber")}
                                     />
                                 </div>
                                 {touched.vehicleNumber && errors.vehicleNumber && (
-                                    <p id="ne-v1-vehicleNumber-error" className="ne-v1-error-msg" role="alert">
+                                    <p id="vehicleNumber-error" className="error-msg" role="alert">
                                         <AlertCircle size={14} /> {errors.vehicleNumber}
                                     </p>
                                 )}
                             </div>
 
-                            <div className={`ne-v1-field full-width ${getFieldStateClass("vehicleType")}`}>
-                                <div className="ne-v1-label-row">
-                                    <label className="ne-v1-label">
-                                        वाहन का प्रकार <span className="ne-v1-required">*</span>
+                            <div className={`field full-width ${getFieldStateClass("vehicleType")}`}>
+                                <div className="label-row">
+                                    <label className="label">
+                                        वाहन का प्रकार <span className="required">*</span>
                                     </label>
                                 </div>
-                                <div className="ne-v1-select-wrap">
+                                <div className="select-wrap">
                                     <Dropdown
+                                        key={`vehicle-type-${dropdownResetKey}`}
                                         selection
                                         clearable
                                         disabled={isSubmitting}
@@ -457,24 +460,25 @@ export const NewEntry: React.FC = () => {
                                         text={VehicleTypeOptions.find((option) => option.value === values.vehicleType)?.text}
                                         onChange={(_event, data) => updateField("vehicleType", data.value?.toString() ?? "", true)}
                                     />
-                                    <span className="ne-v1-input-icon"><Truck size={17} /></span>
+                                    <span className="input-icon"><Truck size={17} /></span>
                                 </div>
                                 {touched.vehicleType && errors.vehicleType && (
-                                    <p className="ne-v1-error-msg" role="alert">
+                                    <p className="error-msg" role="alert">
                                         <AlertCircle size={14} /> {errors.vehicleType}
                                     </p>
                                 )}
                             </div>
 
-                            <div className={`ne-v1-field full-width ${getFieldStateClass("party")}`}>
-                                <div className="ne-v1-label-row">
-                                    <label className="ne-v1-label">
-                                        आढ़तिया फर्म का नाम <span className="ne-v1-required">*</span>
+                            <div className={`field full-width ${getFieldStateClass("party")}`}>
+                                <div className="label-row">
+                                    <label className="label">
+                                        आढ़तिया फर्म का नाम <span className="required">*</span>
                                     </label>
-                                    <span className="ne-v1-field-hint">फर्म या मंडी खोजें</span>
+                                    <span className="field-hint">फर्म या मंडी खोजें</span>
                                 </div>
-                                <div className="ne-v1-select-wrap">
+                                <div className="select-wrap">
                                     <Dropdown
+                                        key={`party-${dropdownResetKey}`}
                                         selection
                                         search
                                         clearable
@@ -487,10 +491,10 @@ export const NewEntry: React.FC = () => {
                                         text={mandiOptions.find((option) => option.value === values.party)?.text}
                                         onChange={handlePartyChange}
                                     />
-                                    <span className="ne-v1-input-icon"><Building2 size={17} /></span>
+                                    <span className="input-icon"><Building2 size={17} /></span>
                                 </div>
                                 {touched.party && errors.party && (
-                                    <p className="ne-v1-error-msg" role="alert">
+                                    <p className="error-msg" role="alert">
                                         <AlertCircle size={14} /> {errors.party}
                                     </p>
                                 )}
@@ -499,15 +503,15 @@ export const NewEntry: React.FC = () => {
                     </section>
 
                     {/* Section 3: Vehicle & Plate Photos */}
-                    <section className="ne-v1-section" aria-label="वाहन और नंबर प्लेट की फोटो">
-                        <div className="ne-v1-section-header">
-                            <h2 className="ne-v1-section-title">
+                    <section className="section" aria-label="वाहन और नंबर प्लेट की फोटो">
+                        <div className="section-header">
+                            <h2 className="section-title">
                                 <Camera size={16} />
                                 <span>वाहन एवं नंबर प्लेट की फोटो</span>
                             </h2>
                         </div>
 
-                        <div className="ne-v1-photos-grid">
+                        <div className="photos-grid">
                             {photos.map(({ field, title, hint }, index) => {
                                 const file = images[field];
                                 const preview = imagePreviews[field];
@@ -516,23 +520,23 @@ export const NewEntry: React.FC = () => {
                                 return (
                                     <div
                                         key={field}
-                                        className={`ne-v1-photo-card${file ? " has-image" : ""}${fieldImgError ? " has-error" : ""}`}
+                                        className={`photo-card${file ? " has-image" : ""}${fieldImgError ? " has-error" : ""}`}
                                         aria-busy={isSubmitting}
                                     >
-                                        <div className="ne-v1-photo-header">
-                                            <div className="ne-v1-photo-title">
-                                                <span className="ne-v1-photo-step">{index + 1}</span>
+                                        <div className="photo-header">
+                                            <div className="photo-title">
+                                                <span className="photo-step">{index + 1}</span>
                                                 <h3>{title}</h3>
                                             </div>
-                                            {file && <span className="ne-v1-photo-size">{formatFileSize(file.size)}</span>}
+                                            {file && <span className="photo-size">{formatFileSize(file.size)}</span>}
                                         </div>
 
-                                        <div className={`ne-v1-photo-dropzone${file ? " has-image" : ""}`}>
+                                        <div className={`photo-dropzone${file ? " has-image" : ""}`}>
                                             <input
                                                 type="file"
                                                 accept=".jpg,.jpeg,.png,.heic,.heif"
                                                 aria-label={title}
-                                                aria-describedby={fieldImgError ? `${field}-v1-error` : undefined}
+                                                aria-describedby={fieldImgError ? `${field}-error` : undefined}
                                                 disabled={isSubmitting}
                                                 onChange={(event) => selectImage(field, event)}
                                             />
@@ -541,27 +545,27 @@ export const NewEntry: React.FC = () => {
                                             ) : (
                                                 <>
                                                     <ImagePlus size={26} aria-hidden="true" />
-                                                    <span className="ne-v1-photo-cta">फोटो चुनें या अपलोड करें</span>
-                                                    <span className="ne-v1-photo-hint">{hint}</span>
+                                                    <span className="photo-cta">फोटो चुनें या अपलोड करें</span>
+                                                    <span className="photo-hint">{hint}</span>
                                                 </>
                                             )}
 
                                             {file && (
-                                                <div className="ne-v1-photo-actions">
+                                                <div className="photo-actions">
                                                     <button
                                                         type="button"
-                                                        className="ne-v1-photo-btn edit"
+                                                        className="photo-btn edit"
                                                         aria-label={`${title} बदलें`}
                                                         disabled={isSubmitting}
                                                         onClick={(event) => {
-                                                            event.currentTarget.closest(".ne-v1-photo-dropzone")?.querySelector("input")?.click();
+                                                            event.currentTarget.closest(".photo-dropzone")?.querySelector("input")?.click();
                                                         }}
                                                     >
                                                         <Pencil size={14} aria-hidden="true" />
                                                     </button>
                                                     <button
                                                         type="button"
-                                                        className="ne-v1-photo-btn remove"
+                                                        className="photo-btn remove"
                                                         aria-label={`${title} हटाएं`}
                                                         disabled={isSubmitting}
                                                         onClick={() => clearImage(field)}
@@ -573,7 +577,7 @@ export const NewEntry: React.FC = () => {
                                         </div>
 
                                         {fieldImgError && (
-                                            <p id={`${field}-v1-error`} className="ne-v1-error-msg" style={{ marginTop: "0.5rem" }} role="alert">
+                                            <p id={`${field}-error`} className="error-msg" style={{ marginTop: "0.5rem" }} role="alert">
                                                 <AlertCircle size={14} /> {fieldImgError}
                                             </p>
                                         )}
@@ -583,10 +587,10 @@ export const NewEntry: React.FC = () => {
                         </div>
                     </section>
 
-                    <div className="ne-v1-actions">
+                    <div className="actions">
                         <button
                             type="button"
-                            className="ne-v1-btn-reset"
+                            className="btn-reset"
                             disabled={isSubmitting}
                             onClick={resetForm}
                         >
@@ -595,12 +599,12 @@ export const NewEntry: React.FC = () => {
                         </button>
                         <button
                             type="submit"
-                            className="ne-v1-btn-submit"
+                            className="btn-submit"
                             disabled={isSubmitting}
                         >
                             {isSubmitting ? (
                                 <>
-                                    <Loader2 size={18} className="ne-v1-spin" />
+                                    <Loader2 size={18} className="spin" />
                                     <span>गेटपास जारी हो रहा है...</span>
                                 </>
                             ) : (
