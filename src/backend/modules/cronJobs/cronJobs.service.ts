@@ -4,9 +4,10 @@ import path from 'node:path';
 import { CronJobs } from '../../core/constants.js';
 import { LogSource } from '../../core/logging/log-sources.js';
 import type { Logger, ScopedLogger } from '../../core/logging/logger.js';
+import { staticDir } from '../../paths.js';
 
 export class CronJobsService {
-  private readonly storagePath = path.resolve(CronJobs.StaticPath);
+  private readonly storagePath = staticDir;
   private readonly logger: ScopedLogger;
   private task: ScheduledTask | null = null;
 

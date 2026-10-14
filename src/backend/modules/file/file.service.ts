@@ -8,9 +8,10 @@ import type { Logger } from '../../core/logging/logger.js';
 import { GatepassRenderer } from './file.render.gatepass.js';
 import { NinerRenderer } from './file.render.niner.js';
 import type { GatepassPayload, NinerPayload, FileUpload } from './file.types.js';
+import { staticDir } from '../../paths.js';
 
 export class FileService {
-  private readonly storagePath = path.resolve('src/backend/static');
+  private readonly storagePath = staticDir;
   private readonly gatepassRenderer: GatepassRenderer;
   private readonly ninerRenderer: NinerRenderer;
 

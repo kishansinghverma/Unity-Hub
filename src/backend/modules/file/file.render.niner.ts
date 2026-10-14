@@ -1,22 +1,17 @@
-import { existsSync } from 'node:fs';
 import path from 'node:path';
 import PDFDocument from 'pdfkit';
 import { LogSource } from '../../core/logging/log-sources.js';
 import type { Logger, ScopedLogger } from '../../core/logging/logger.js';
 import type { Cell, TextOptions } from '../emandi/emandi.types.js';
 import type { NinerPayload } from './file.types.js';
-
-const assetRoot = [
-  path.resolve('dist/backend/assets'),
-  path.resolve('src/backend/assets')
-].find(existsSync) ?? path.resolve('src/backend/assets');
+import { assetsDir } from '../../paths.js';
 
 export class NinerRenderer {
   private readonly margin = 36;
   private readonly padding = 4;
-  private readonly logoPath = path.join(assetRoot, 'logo_emandi.png');
-  private readonly regularFontPath = path.join(assetRoot, 'anek-deva-regular.ttf');
-  private readonly boldFontPath = path.join(assetRoot, 'anek-deva-bold.ttf');
+  private readonly logoPath = path.join(assetsDir, 'logo_emandi.png');
+  private readonly regularFontPath = path.join(assetsDir, 'anek-deva-regular.ttf');
+  private readonly boldFontPath = path.join(assetsDir, 'anek-deva-bold.ttf');
   private readonly logger: ScopedLogger;
 
   constructor({ logger }: { logger: Logger }) {

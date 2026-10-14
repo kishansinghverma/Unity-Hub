@@ -45,8 +45,7 @@ export const OakterRemote = {
 } as const;
 
 export const CronJobs = {
-  CleanupSchedule: '0 1 * * *',
-  StaticPath: 'src/backend/static'
+  CleanupSchedule: '0 1 * * *'
 } as const;
 
 export const MongoDatabases = {
