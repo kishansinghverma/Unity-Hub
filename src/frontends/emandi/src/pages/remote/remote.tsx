@@ -27,8 +27,8 @@ import {
 } from "lucide-react";
 import { Button, Container, Header, HeaderSubheader, Segment } from "semantic-ui-react";
 import { toast } from "react-toastify";
-import { PostParams, Url } from "../common/constants";
-import { handleError, handleJsonResponse } from "../operations/utils";
+import { PostParams, Url } from "../../common/constants";
+import { handleError, handleJsonResponse } from "../../operations/utils";
 import "./remote.css";
 
 type RemoteCommand = {

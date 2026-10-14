@@ -18,10 +18,10 @@ import {
 } from "lucide-react";
 import { Dropdown, DropdownProps } from "semantic-ui-react";
 import { toast } from "react-toastify";
-import { EntryImages, Party, Record as WithIdRecord, SelectOption } from "../common/types";
-import { Url, VehicleTypeOptions } from "../common/constants";
-import { createNewEntry } from "../operations/fetch";
-import { handleError, handleJsonResponse, handleResponse, MandiOptionsMapper } from "../operations/utils";
+import { EntryImages, Party, Record as WithIdRecord, SelectOption } from "../../common/types";
+import { Url, VehicleTypeOptions } from "../../common/constants";
+import { createNewEntry } from "../../operations/fetch";
+import { handleError, handleJsonResponse, handleResponse, MandiOptionsMapper } from "../../operations/utils";
 import "./newentry.css";
 
 const maxImageSizeBytes = 20 * 1024 * 1024;

@@ -21,9 +21,6 @@ body {
   min-height: 100vh;
 }
 
-.d-flex {
-  display: flex;
-}
 
 .content-container {
   display: flex;

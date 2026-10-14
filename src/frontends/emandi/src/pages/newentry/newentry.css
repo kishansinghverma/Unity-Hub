@@ -272,21 +272,6 @@
     pointer-events: none;
 }
 
-.status-icon {
-    position: absolute;
-    right: 0.85rem;
-    display: flex;
-    align-items: center;
-    pointer-events: none;
-}
-
-.status-icon.valid {
-    color: #10b981;
-}
-
-.status-icon.invalid {
-    color: #ef4444;
-}
 
 /* Searchable Party Combobox / Semantic Dropdown Styling */
 .select-wrap .ui.selection.dropdown {
