@@ -302,7 +302,7 @@ export const NewEntry: React.FC = () => {
     return (
         <div className="wrapper">
             <div className="card">
-                <header className="header">
+                <header className="newentry-header">
                     <div className="header-main">
                         <div className="brand-icon" aria-hidden="true">
                             <FileCheck2 size={26} strokeWidth={2} />
