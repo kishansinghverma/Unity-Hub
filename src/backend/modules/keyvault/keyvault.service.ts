@@ -39,13 +39,18 @@ export class KeyVaultService {
     const encodedIv = parts[0] ?? '';
     const encodedAuthTag = parts[1] ?? '';
     const encodedCiphertext = parts[2] ?? '';
-    const decipher = createDecipheriv(this.algorithm, this.encryptionKey, Buffer.from(encodedIv, 'base64'));
-    decipher.setAuthTag(Buffer.from(encodedAuthTag, 'base64'));
 
-    return Buffer.concat([
-      decipher.update(Buffer.from(encodedCiphertext, 'base64')),
-      decipher.final()
-    ]).toString('utf8');
+    try {
+      const decipher = createDecipheriv(this.algorithm, this.encryptionKey, Buffer.from(encodedIv, 'base64'));
+      decipher.setAuthTag(Buffer.from(encodedAuthTag, 'base64'));
+
+      return Buffer.concat([
+        decipher.update(Buffer.from(encodedCiphertext, 'base64')),
+        decipher.final()
+      ]).toString('utf8');
+    } catch {
+      throw new ServerError('Unable to decrypt secret with current encryption key');
+    }
   };
 
   getSecret = async (key: string): Promise<KeyVaultEntry | null> => {
@@ -54,7 +59,7 @@ export class KeyVaultService {
   };
 
   setSecret = async (key: string, secret: string): Promise<void> => {
-    await this.entries.insertOne({ key, secret: this.encrypt(secret) });
+    await this.entries.updateOne({ key }, { $set: { secret: this.encrypt(secret) } }, { upsert: true });
   };
 
   updateSecret = async (key: string, secret: string): Promise<KeyVaultUpdateResult> => {

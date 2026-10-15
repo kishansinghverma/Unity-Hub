@@ -26,9 +26,7 @@ export class EmandiService {
 
   initialize = async (credentials: EmandiCredentials): Promise<void> => {
     await this.clearSession();
-    const existing = await this.keyVaultService.getSecret(Emandi.CredentialsKey);
-    if (existing) await this.keyVaultService.updateSecret(Emandi.CredentialsKey, JSON.stringify(credentials));
-    else await this.keyVaultService.setSecret(Emandi.CredentialsKey, JSON.stringify(credentials));
+    await this.keyVaultService.setSecret(Emandi.CredentialsKey, JSON.stringify(credentials));
   };
 
   getSessionStatus = async (): Promise<EmandiSessionInfo> => {
