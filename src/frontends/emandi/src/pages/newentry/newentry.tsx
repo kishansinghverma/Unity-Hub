@@ -124,7 +124,7 @@ export const NewEntry: React.FC = () => {
         { field: "numberPlateImage" as const, title: "नंबर प्लेट की फोटो", hint: "नंबर प्लेट साफ दिखाई दे" }
     ];
 
-    const isSupportedImage = (file: File) => /\.(jpe?g|png|heic|heif)$/i.test(file.name);
+    const isSupportedImage = (file: File) => file.type.startsWith("image/") || /\.(jpe?g|png|heic|heif)$/i.test(file.name);
 
     const updateField = (name: FieldName, rawValue: string, markTouched = false) => {
         const nextValue = name === "vehicleNumber" ? rawValue.toUpperCase() : rawValue;
@@ -559,7 +559,7 @@ export const NewEntry: React.FC = () => {
                                         <div className={`photo-dropzone${file ? " has-image" : ""}`}>
                                             <input
                                                 type="file"
-                                                accept=".jpg,.jpeg,.png,.heic,.heif"
+                                                accept="image/*,.heic,.heif"
                                                 aria-label={title}
                                                 aria-describedby={fieldImgError ? `${field}-error` : undefined}
                                                 disabled={isSubmitting}
