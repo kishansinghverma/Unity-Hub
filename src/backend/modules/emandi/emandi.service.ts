@@ -18,7 +18,7 @@ export class EmandiService {
   private authenticationPromise: Promise<void> | null = null;
   private readonly logger: ScopedLogger;
 
-  constructor({ keyVaultService, imagingService, logger }: { keyVaultService: KeyVaultService; imagingService: ImagingService, logger: Logger  }) {
+  constructor({ keyVaultService, imagingService, logger }: { keyVaultService: KeyVaultService; imagingService: ImagingService, logger: Logger }) {
     this.keyVaultService = keyVaultService;
     this.imagingService = imagingService;
     this.logger = logger.for(LogSource.Emandi);
@@ -49,6 +49,7 @@ export class EmandiService {
 
     let lastMessage = 'EMandi authentication failed';
     for (let attempt = 1; attempt <= Emandi.MaxLoginAttempts; attempt++) {
+      await this.clearSession();
       const tokens = await this.fetchLoginTokens();
       const captchaResponse = await this.http.get<ArrayBuffer>(this.absolute(tokens.captchaImageUrl), { responseType: 'arraybuffer' });
       const captcha = await this.imagingService.extractText(`data:image/png;base64,${Buffer.from(captchaResponse.data).toString('base64')}`);
@@ -60,6 +61,14 @@ export class EmandiService {
 
       const login = await this.submitLogin(credentials, tokens, captcha);
       if (login.succeeded) {
+        const cookies = await this.cookieJar.getCookies(Emandi.BaseUrl);
+        const hasAuthCookie = cookies.some((c) => c.key === '.AspNetCore.Identity.Application');
+
+        if (!hasAuthCookie) {
+          lastMessage = 'Authentication succeeded but identity cookie was missing';
+          continue;
+        }
+
         this.session = { username: credentials.username, role: login.role ?? 'merchant', authenticatedAt: new Date().toISOString(), expiresAt: new Date(Date.now() + Emandi.SessionTtl).toISOString() };
         await this.warmSession();
         return;
@@ -92,12 +101,18 @@ export class EmandiService {
     body.set('DNTCaptchaToken', tokens.captchaToken);
     body.set('__RequestVerificationToken', tokens.requestToken);
     body.set('X-Requested-With', 'XMLHttpRequest');
-    const response = await this.http.post<LoginResponse>(this.absolute(Emandi.Routes.Login), body, { headers: this.headers(Emandi.Routes.Login) });
+    const response = await this.http.post<LoginResponse>(this.absolute(Emandi.Routes.Login), body, { headers: this.headers(Emandi.Routes.LoginPage) });
     return response.data;
   };
 
   private warmSession = async (): Promise<void> => {
-    const response = await this.http.get(this.absolute(Emandi.Routes.TradersIndex), { headers: this.headers(Emandi.Routes.Login) });
+    const response = await this.http.get(this.absolute(Emandi.Routes.TradersIndex), {
+      headers: {
+        'User-Agent': Emandi.UserAgent,
+        Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        Referer: this.absolute(Emandi.Routes.LoginPage)
+      }
+    });
     if (response.status >= 400) throw new UpstreamApiError('EMandi session initialization failed', response.status);
   };
 
@@ -106,7 +121,10 @@ export class EmandiService {
     const send = () => this.http.post(this.absolute(url), body.toString(), { headers: { ...this.headers(Emandi.Routes.GatepassList), 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, validateStatus: () => true });
     let response = await send();
 
-    if (response.status === 401 || response.status === 403) {
+    const isSessionExpired = response.status === 401 || response.status === 403 || (typeof response.data === 'string' && response.data.includes('__RequestVerificationToken'));
+
+    if (isSessionExpired) {
+      this.logger.warn('EMandi session expired or unauthenticated; re-authenticating');
       await this.clearSession();
       await this.ensureSession();
       response = await send();
@@ -118,13 +136,20 @@ export class EmandiService {
 
   private ensureSession = async (): Promise<void> => {
     if (this.isSessionActive()) {
-      this.logger.info("Session already active, Using the same session.")
+      this.logger.info('Session already active, Using the same session.');
       return;
     }
 
-    this.logger.warn("No active session found, Trying to create a new seesion.")
+    this.logger.warn('No active session found, Trying to create a new session.');
     this.authenticationPromise ??= this.authenticate().finally(() => { this.authenticationPromise = null; });
     await this.authenticationPromise;
+  };
+
+  private parseResponse = <Record>(data: unknown): EmandiListResponse<Record> => {
+    if (typeof data !== 'object' || data === null || !('data' in data))
+      throw new UpstreamApiError('Unable to parse upstream response', 502);
+
+    return data as EmandiListResponse<Record>;
   };
 
   private isSessionActive = (): boolean => !!this.session && Date.now() < new Date(this.session.expiresAt).getTime();
@@ -132,5 +157,4 @@ export class EmandiService {
   private absolute = (url: string): string => new URL(url, Emandi.BaseUrl).toString();
   private headers = (referer: string): Record<string, string> => ({ 'User-Agent': Emandi.UserAgent, Accept: '*/*', Origin: Emandi.BaseUrl, Referer: this.absolute(referer), 'X-Requested-With': 'XMLHttpRequest' });
   private extract = (html: string, pattern: RegExp): string | null => html.match(pattern)?.[1] ?? null;
-  private parseResponse = <Record>(data: unknown): EmandiListResponse<Record> => typeof data === 'object' && data !== null ? data as EmandiListResponse<Record> : { data: [] };
 }

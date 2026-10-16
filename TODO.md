@@ -2,7 +2,7 @@
 
 - Replace generated PDF random filenames with names derived from the Gatepass/Niner ID.
 - Wire MQTT printing for E-Mandi document actions.
-- Validate the warmed E-Mandi session response more rigorously.
+- [x] Handle expired E-Mandi session redirection & validate identity cookie: detect silent HTTP 200 HTML redirects on expired sessions and automatically re-authenticate.
 - Detect expired E-Mandi credentials more authoritatively.
 - Implement `POST /api/whatsapp/webhook`.
 - Implement the WhatsApp inbound-message workflow.
