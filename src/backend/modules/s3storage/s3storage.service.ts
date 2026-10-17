@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { NotFoundError, UpstreamApiError } from '../../core/errors/app-error.js';
 import { Configuration } from '../../core/utils/configuration.js';
-import type { StorageFile } from './s3storage.types.js';
+import type { StorageFile, StorageListItem } from './s3storage.types.js';
 
 export class S3StorageService {
   private readonly url = Configuration.GetSetting('SUPABASE_URL');
@@ -30,5 +30,19 @@ export class S3StorageService {
     if (error) throw new UpstreamApiError('File retrieval failed', 502, error);
     if (!data) throw new NotFoundError('No file content');
     return Buffer.from(await data.arrayBuffer());
+  };
+
+  list = async (path: string, options?: { limit?: number; offset?: number }): Promise<StorageListItem[]> => {
+    const { data, error } = await this.client.storage.from(this.bucket).list(path, options);
+
+    if (error) throw new UpstreamApiError('Storage file listing failed', 502, error);
+    return data ?? [];
+  };
+
+  delete = async (paths: string[]): Promise<void> => {
+    if (paths.length === 0) return;
+    const { error } = await this.client.storage.from(this.bucket).remove(paths);
+
+    if (error) throw new UpstreamApiError('Storage file deletion failed', 502, error);
   };
 }

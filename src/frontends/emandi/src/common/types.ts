@@ -41,6 +41,11 @@ export type EntryImages = {
     numberPlateImage?: File;
 };
 
+export type Coordinates = {
+    latitude: number;
+    longitude: number;
+};
+
 export type QueuedEntry = EntryImages & {
     date: string;
     seller: string;
@@ -48,7 +53,9 @@ export type QueuedEntry = EntryImages & {
     vehicleNumber: string;
     vehicleType: string;
     bags: string;
-    party: Party
+    party: Party;
+    latitude?: number;
+    longitude?: number;
 }
 
 export type ProcessedEntry = {

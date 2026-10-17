@@ -38,6 +38,8 @@ export type GatepassDocument = {
   gatepassId?: string;
   ninerId?: string;
   rate?: string | 0;
+  latitude?: number | undefined;
+  longitude?: number | undefined;
 };
 
 export type GatepassPayload = Omit<GatepassDocument, '_id' | 'createdOn' | 'vehicleImage' | 'numberPlateImage'> & {

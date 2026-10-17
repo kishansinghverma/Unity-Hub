@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { Dropdown, DropdownProps } from "semantic-ui-react";
 import { toast } from "react-toastify";
-import { EntryImages, Party, Record as WithIdRecord, SelectOption } from "../../common/types";
+import { Coordinates, EntryImages, Party, Record as WithIdRecord, SelectOption } from "../../common/types";
 import { Url, VehicleTypeOptions } from "../../common/constants";
 import { createNewEntry } from "../../operations/fetch";
 import { handleError, handleJsonResponse, handleResponse, MandiOptionsMapper } from "../../operations/utils";
@@ -118,6 +118,7 @@ export const NewEntry: React.FC = () => {
     const [imagePreviews, setImagePreviews] = useState<Partial<Record<keyof EntryImages, string>>>({});
     const imagePreviewsRef = useRef<Partial<Record<keyof EntryImages, string>>>({});
     const [imageErrors, setImageErrors] = useState<Partial<Record<keyof EntryImages, string>>>({});
+    const [coordinates, setCoordinates] = useState<Coordinates | null>(null);
 
     const photos = [
         { field: "vehicleImage" as const, title: "वाहन की फोटो", hint: "सामने या साइड से स्पष्ट फोटो" },
@@ -242,7 +243,7 @@ export const NewEntry: React.FC = () => {
         }
 
         setIsSubmitting(true);
-        createNewEntry(normalizedValues, images)
+        createNewEntry(normalizedValues, images, coordinates)
             .then(handleResponse)
             .then(() => {
                 toast.success("नया गेटपास सफलतापूर्वक बनाया गया।");
@@ -270,22 +271,16 @@ export const NewEntry: React.FC = () => {
     }, []);
 
     useEffect(() => {
-        if (!("geolocation" in navigator)) {
-            console.warn("Geolocation is not supported by this browser.");
-            return;
-        }
+        if (!("geolocation" in navigator)) return;
 
         navigator.geolocation.getCurrentPosition(
             (position) => {
-                console.log("Captured coordinates:", {
+                setCoordinates({
                     latitude: position.coords.latitude,
-                    longitude: position.coords.longitude,
-                    accuracy: position.coords.accuracy
+                    longitude: position.coords.longitude
                 });
             },
-            (error) => {
-                console.warn("Failed to obtain location:", error.message);
-            },
+            () => { },
             {
                 enableHighAccuracy: true,
                 timeout: 10000,

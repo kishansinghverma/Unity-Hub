@@ -6,9 +6,9 @@ import {
     States,
     Url
 } from "../common/constants";
-import { EntryImages } from "../common/types";
+import { Coordinates, EntryImages } from "../common/types";
 
-export const createNewEntry = (formData: any, images: EntryImages = {}) => {
+export const createNewEntry = (formData: any, images: EntryImages = {}, coordinates?: Coordinates | null) => {
     const payload = new FormData();
     payload.append('date', new Date().toISOString());
     payload.append('seller', capitalize(formData.seller));
@@ -19,6 +19,10 @@ export const createNewEntry = (formData: any, images: EntryImages = {}) => {
     payload.append('vehicleType', parseInt(formData.vehicleType).toString());
     if (images.vehicleImage) payload.append('vehicleImage', images.vehicleImage);
     if (images.numberPlateImage) payload.append('plateImage', images.numberPlateImage);
+    if (coordinates?.latitude !== undefined && coordinates?.longitude !== undefined) {
+        payload.append('latitude', coordinates.latitude.toString());
+        payload.append('longitude', coordinates.longitude.toString());
+    }
 
     return fetch(`${Url.Dispatches}/push`, {
         method: PostParams.method,

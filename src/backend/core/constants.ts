@@ -45,7 +45,9 @@ export const OakterRemote = {
 } as const;
 
 export const CronJobs = {
-  CleanupSchedule: '0 1 * * *'
+  CleanupSchedule: '0 1 * * *',
+  StorageRetentionDays: 7,
+  StorageFolders: ['VehicleTagging/Vehicle', 'VehicleTagging/Plate']
 } as const;
 
 export const MongoDatabases = {

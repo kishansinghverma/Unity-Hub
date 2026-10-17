@@ -59,6 +59,8 @@ export const createGatepassSchema = z
     party: partyField,
     vehicleImage: storageImageSchema.optional(),
     plateImage: storageImageSchema.optional(),
+    latitude: numberField.pipe(z.number().min(-90).max(90)).optional(),
+    longitude: numberField.pipe(z.number().min(-180).max(180)).optional()
   })
   .strict();
 

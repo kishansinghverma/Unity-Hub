@@ -8,3 +8,9 @@ export type StorageFile = {
   id: string;
   fullPath: string;
 };
+
+export type StorageListItem = {
+  name: string;
+  id: string | null;
+  created_at: string | null;
+};
