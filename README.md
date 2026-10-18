@@ -6,7 +6,7 @@ Unity Hub contains the NodeExpress Fastify backend and the existing E-Mandi Reac
 
 - `Architecture.md` for detailed backend architecture, route map, and runtime behavior.
 - `AGENTS.md` for coding conventions and repository working rules.
-- `route-migration.md` for frontend API migration from legacy UnityHub endpoints.
+- `TODO.md` for pending tasks and unmigrated legacy endpoints.
 
 ## Development
 
@@ -49,5 +49,4 @@ src/
 - `/api/emandi`
 - `/api/vehicle-tagging`
 - `/api/oakter-remote`
-
-The frontend still calls legacy route names. See `route-migration.md` before updating those consumers.
+- `/api/expenses`

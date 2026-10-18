@@ -45,10 +45,8 @@
 ├── postman/
 ├── AGENTS.md
 ├── Architecture.md
-├── HandOff.md
 ├── README.md
 ├── TODO.md
-├── route-migration.md
 ├── package.json
 ├── tsconfig.json
 └── tsup.config.ts
@@ -167,4 +165,4 @@ Current backend intentionally excludes UnityHub legacy modules not yet ported:
 - MQTT route surface
 - WhatsApp webhook/inbound flow
 
-Track these in `TODO.md` and `route-migration.md`.
+Track these in `TODO.md`.
