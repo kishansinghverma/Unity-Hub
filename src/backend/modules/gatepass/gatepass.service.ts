@@ -85,13 +85,16 @@ export class GatepassService {
     source: Collection<GatepassDocument>,
     destination: Collection<GatepassDocument>,
     filter: Filter<GatepassDocument>,
-    patch: GatepassPatch = {},
+    patch: GatepassPatch = {}
   ): Promise<GatepassDocument | null> =>
     this.mongoService.withTransaction(async (session) => {
       const record = await source.findOneAndDelete(filter, { sort: { createdOn: 1, _id: 1 }, session });
       if (!record) return null;
 
       const moved = { ...record };
+      delete moved.rawVehicleImage;
+      delete moved.rawNumberPlateImage;
+
       if (patch.gatepassId !== undefined) moved.gatepassId = patch.gatepassId;
       if (patch.ninerId !== undefined) moved.ninerId = patch.ninerId;
       if (patch.rate !== undefined) moved.rate = patch.rate;

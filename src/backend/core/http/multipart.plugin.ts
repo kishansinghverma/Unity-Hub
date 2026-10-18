@@ -17,7 +17,7 @@ export const multipartPlugin = fp<{ config: Env }>(
           value: { buffer: await part.toBuffer(), filename: part.filename },
         });
       },
-      limits: { fileSize: config.MAX_FILE_SIZE, files: 2, fields: 7, parts: 9, fieldSize: 16384 },
+      limits: { fileSize: config.MAX_FILE_SIZE },
     });
     await app.register(formbody);
   },

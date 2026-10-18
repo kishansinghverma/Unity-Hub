@@ -34,6 +34,8 @@ export type GatepassDocument = {
   party: Party;
   vehicleImage?: string;
   numberPlateImage?: string;
+  rawVehicleImage?: string;
+  rawNumberPlateImage?: string;
   createdOn: number;
   gatepassId?: string;
   ninerId?: string;
@@ -42,9 +44,6 @@ export type GatepassDocument = {
   longitude?: number | undefined;
 };
 
-export type GatepassPayload = Omit<GatepassDocument, '_id' | 'createdOn' | 'vehicleImage' | 'numberPlateImage'> & {
-  rawVehicleImage?: string;
-  rawNumberPlateImage?: string;
-};
+export type GatepassPayload = Omit<GatepassDocument, '_id' | 'createdOn' | 'vehicleImage' | 'numberPlateImage'>;
 
 export type PartyDocument = Party & { _id: ObjectId };
