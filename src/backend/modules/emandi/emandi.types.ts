@@ -1,6 +1,6 @@
 import type { GatepassPayload, GatepassResponse, NinerPayload, NinerResponse } from '../file/file.types.js';
 
-export type Cell = { text?: string; parts?: string[]; nested?: string[][]; span?: number; bold?: boolean; align?: 'left' | 'center' | 'right'; fill?: string; size?: number };
+export type Cell = { text?: string; parts?: string[]; nested?: string[][]; span?: number; bold?: boolean; align?: 'left' | 'center' | 'right'; valign?: 'top' | 'center' | 'bottom'; fill?: string; size?: number };
 export type TextOptions = { width: number; align: 'left' | 'center' | 'right' };
 
 export type EmandiCredentials = { username: string; password: string };

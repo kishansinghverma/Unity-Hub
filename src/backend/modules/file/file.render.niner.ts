@@ -8,10 +8,11 @@ import { assetsDir } from '../../paths.js';
 
 export class NinerRenderer {
   private readonly margin = 36;
-  private readonly padding = 4;
+  private readonly paddingX = 4;
+  private readonly paddingY = 5;
   private readonly logoPath = path.join(assetsDir, 'logo_emandi.png');
-  private readonly regularFontPath = path.join(assetsDir, 'anek-deva-regular.ttf');
-  private readonly boldFontPath = path.join(assetsDir, 'anek-deva-bold.ttf');
+  private readonly regularFontPath = path.join(assetsDir, 'kripa-regular.ttf');
+  private readonly boldFontPath = path.join(assetsDir, 'kripa-semibold.ttf');
   private readonly logger: ScopedLogger;
 
   constructor({ logger }: { logger: Logger }) {
@@ -46,12 +47,12 @@ export class NinerRenderer {
       this.center(payload.crop_amount), { parts: [this.fees(payload), `कुल व्यापारिक परिव्यय: ${payload.total_tax}`] }, this.center(payload.total_amount), this.center(payload.six_r_id)
     ], left, y, itemColumns);
     y += 14;
-    document.font('AnekDevanagariRegular').fontSize(8.5).fillColor('#000');
+    document.font('KripaRegular').fontSize(9.5).fillColor('#000');
     const footerLabel = 'व्यापारी का पूरा नाम:  ';
     const footerLabelWidth = document.widthOfString(footerLabel);
     this.drawText(document, footerLabel, left, y, { width: width / 2, align: 'left' }, false);
     this.drawText(document, payload.trader_name, left + footerLabelWidth, y, { width: width / 2 - footerLabelWidth, align: 'left' }, true);
-    document.font('AnekDevanagariRegular').text('व्यापारी का हस्ताक्षर', left + width / 2, y, { width: width / 2, align: 'right' });
+    document.font('KripaRegular').text('व्यापारी का हस्ताक्षर', left + width / 2, y, { width: width / 2, align: 'right' });
     this.drawContentBorder(document, y + 18);
   };
 
@@ -61,18 +62,18 @@ export class NinerRenderer {
     document.image(this.logoPath, left, left, { fit: [imageSize, imageSize] });
     document.image(this.decodeDataUrl(payload.qr), left + width - imageSize, left, { fit: [imageSize, imageSize] });
     const heading = 'कृषि उत्पादन मंडी समिति ';
-    document.font('AnekDevanagariRegular').fontSize(9);
+    document.font('KripaRegular').fontSize(11);
     const headingWidth = document.widthOfString(heading);
-    document.font('AnekDevanagariBold').fontSize(9);
+    document.font('KripaBold').fontSize(11);
     const mandiWidth = document.widthOfString(payload.mandi_name);
     const headingX = textX + (textWidth - headingWidth - mandiWidth) / 2;
-    document.font('AnekDevanagariRegular').fontSize(9).text(heading, headingX, left, { lineBreak: false });
-    document.font('AnekDevanagariBold').fontSize(9).text(payload.mandi_name, headingX + headingWidth, left, { lineBreak: false });
-    document.font('AnekDevanagariRegular').fontSize(9).text('(प्रपत्र-9)', textX, left + 16, { width: textWidth, align: 'center' });
-    document.font('AnekDevanagariRegular').fontSize(9).text('[ नियम 76(12) देखिये ]', textX, left + 31, { width: textWidth, align: 'center' });
-    document.font('AnekDevanagariRegular').fontSize(9).text('आढ़तिया / थोक व्यापारी का बिल', textX, left + 46, { width: textWidth, align: 'center' });
-    document.font('AnekDevanagariRegular').fontSize(9).text('(केवल विक्रय के प्रथम सौदे के लिए)', textX, left + 62, { width: textWidth, align: 'center' });
-    document.font('AnekDevanagariBold').fontSize(9).text('मण्डी समिति(जहाँ विक्रय सौदा हुआ है) प्रति', textX, left + 78, { width: textWidth, align: 'center' });
+    document.font('KripaRegular').fontSize(11).text(heading, headingX, left, { lineBreak: false });
+    document.font('KripaBold').fontSize(11).text(payload.mandi_name, headingX + headingWidth, left, { lineBreak: false });
+    document.font('KripaRegular').fontSize(11).text('(प्रपत्र-9)', textX, left + 16, { width: textWidth, align: 'center' });
+    document.font('KripaRegular').fontSize(11).text('[ नियम 76(12) देखिये ]', textX, left + 31, { width: textWidth, align: 'center' });
+    document.font('KripaRegular').fontSize(11).text('आढ़तिया / थोक व्यापारी का बिल', textX, left + 46, { width: textWidth, align: 'center' });
+    document.font('KripaRegular').fontSize(11).text('(केवल विक्रय के प्रथम सौदे के लिए)', textX, left + 62, { width: textWidth, align: 'center' });
+    document.font('KripaBold').fontSize(11).text('मण्डी समिति(जहाँ विक्रय सौदा हुआ है) प्रति', textX, left + 78, { width: textWidth, align: 'center' });
     return Math.max(left + imageSize, left + 90) + 10;
   };
 
@@ -94,36 +95,43 @@ export class NinerRenderer {
 
   private drawCell = (document: PDFKit.PDFDocument, cell: Cell, x: number, y: number, width: number, height: number): void => {
     if (cell.fill) document.save().rect(x, y, width, height).fill(cell.fill).restore();
-    document.rect(x, y, width, height).lineWidth(0.6).strokeColor('#ccc').stroke();
-    document.fillColor('#000').font(cell.bold ? 'AnekDevanagariBold' : 'AnekDevanagariRegular').fontSize(cell.size || 8.5);
-    const options = { width: width - 2 * this.padding, align: cell.align || 'left' as const };
-    if (!cell.parts) return void this.drawText(document, cell.text || '', x + this.padding, y + this.padding, options, cell.bold || false);
+    document.rect(x, y, width, height).lineWidth(0.6).strokeColor('#6F6D6D').stroke();
+    document.fillColor('#000').font(cell.bold ? 'KripaBold' : 'KripaRegular').fontSize(cell.size || 9.5);
+    const options = { width: width - 2 * this.paddingX, align: cell.align || 'left' as const };
+    if (!cell.parts) {
+      const text = cell.text || '';
+      const textHeight = document.heightOfString(text, options);
+      const textY = cell.valign === 'center'
+        ? y + Math.max(this.paddingY, (height - textHeight) / 2)
+        : y + this.paddingY;
+      return void this.drawText(document, text, x + this.paddingX, textY, options, cell.bold || false);
+    }
     const parts = cell.parts;
-    let textY = y + this.padding;
+    let textY = y + this.paddingY;
     parts.forEach((part, index) => {
       if (index) {
         textY += 2;
-        document.moveTo(x + this.padding, textY).lineTo(x + width - this.padding, textY).lineWidth(0.5).stroke();
+        document.moveTo(x + this.paddingX, textY).lineTo(x + width - this.paddingX, textY).lineWidth(0.5).stroke();
         textY += 4;
       }
-      this.drawText(document, part, x + this.padding, textY, options, cell.bold || index === parts.length - 1);
+      this.drawText(document, part, x + this.paddingX, textY, options, cell.bold || index === parts.length - 1);
       textY += document.heightOfString(part, options);
     });
   };
 
   private drawText = (document: PDFKit.PDFDocument, text: string, x: number, y: number, options: TextOptions, bold: boolean): void => {
-    document.font(bold ? 'AnekDevanagariBold' : 'AnekDevanagariRegular').text(text, x, y, options);
+    document.font(bold ? 'KripaBold' : 'KripaRegular').text(text, x, y, options);
   };
 
   private cellHeight = (document: PDFKit.PDFDocument, cell: Cell, width: number): number => {
-    document.font(cell.bold ? 'AnekDevanagariBold' : 'AnekDevanagariRegular').fontSize(cell.size || 8.5);
-    const options = { width: width - 2 * this.padding, align: cell.align || 'left' as const };
-    return (cell.parts || [cell.text || '']).reduce((height, part) => height + document.heightOfString(part, options), 2 * this.padding + (cell.parts ? 6 * (cell.parts.length - 1) : 0));
+    document.font(cell.bold ? 'KripaBold' : 'KripaRegular').fontSize(cell.size || 9.5);
+    const options = { width: width - 2 * this.paddingX, align: cell.align || 'left' as const };
+    return (cell.parts || [cell.text || '']).reduce((height, part) => height + document.heightOfString(part, options), 2 * this.paddingY + (cell.parts ? 6 * (cell.parts.length - 1) : 0));
   };
 
   private label = (text: string): Cell => ({ text, align: 'left' });
   private value = (text: string | undefined): Cell => ({ text: text || '', bold: true, align: 'left' });
-  private header = (first: string, second?: string): Cell => ({ text: second ? `${first}\n${second}` : first, bold: true, align: 'center', fill: '#fafafa', size: 8.5 });
+  private header = (first: string, second?: string): Cell => ({ text: second ? `${first}\n${second}` : first, bold: true, align: 'center', valign: 'center', fill: '#fafafa', size: 9.5 });
   private center = (text: string | undefined): Cell => ({ text: text || '', bold: true, align: 'center' });
   private scale = (values: number[], width: number): number[] => { const factor = width / values.reduce((sum, value) => sum + value, 0); return values.map((value) => value * factor); };
   private fees = (payload: NinerPayload): string => [['मंडी शुल्क 1 %', payload.mandi_fee || 'NA'], ['विकास सेस 0.5 %', payload.dev_fee || 'NA'], ['तौलाई 0', payload.weighing_fee || '0'], ['दलाली 0 %', payload.commission_fee || '0'], ['पल्लेदारी 0', payload.porter_fee || '0'], ['टैक्स 0 %', payload.tax || '0'], ['आढ़त 0 %', payload.agent_fee || '0'], ['अन्य व्यय 0 %', payload.other_fee || '0']].map(([label, value]) => `${label}: ${value}`).join('\n');
@@ -133,8 +141,8 @@ export class NinerRenderer {
   private generatePdf = async (draw: (document: PDFKit.PDFDocument) => void): Promise<Buffer> => {
     this.logger.info('Rendering Niner Pdf...');
     const document = new PDFDocument({ size: 'A4', layout: 'landscape', margin: this.margin });
-    document.registerFont('AnekDevanagariRegular', this.regularFontPath);
-    document.registerFont('AnekDevanagariBold', this.boldFontPath);
+    document.registerFont('KripaRegular', this.regularFontPath);
+    document.registerFont('KripaBold', this.boldFontPath);
     const chunks: Buffer[] = [];
     document.on('data', (chunk: Buffer) => chunks.push(chunk));
     const completed = new Promise<Buffer>((resolve, reject) => { document.on('end', () => resolve(Buffer.concat(chunks))); document.on('error', reject); });
