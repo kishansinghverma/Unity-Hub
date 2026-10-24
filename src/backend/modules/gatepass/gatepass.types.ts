@@ -10,6 +10,7 @@ export type CreateGatepassResponse = { insertedId: ObjectId; notification?: stri
 
 export type GatepassIdParams = { id: string };
 export type FinalizeRequest = { Body: FinalizeGatepass };
+export type PopRequest = { Params: { id?: string } };
 export type PushRequest = { Body: CreateGatepass };
 export type RequeueRequest = { Params: GatepassIdParams };
 export type DeleteQueuedRequest = { Params: GatepassIdParams };

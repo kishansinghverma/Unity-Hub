@@ -48,6 +48,9 @@ export class GatepassService {
   moveQueuedToProcessed = async (patch: FinalizeGatepass = {}): Promise<GatepassDocument | null> =>
     this.move(this.queued, this.processed, {}, patch);
 
+  popById = async (id?: string): Promise<GatepassDocument | null> =>
+    this.move(this.queued, this.processed, id ? { _id: new ObjectId(id) } : {});
+
   moveProcessedToQueued = async (id: string): Promise<GatepassDocument | null> =>
     this.move(this.processed, this.queued, { _id: new ObjectId(id) });
 

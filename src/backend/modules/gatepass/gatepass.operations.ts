@@ -70,8 +70,8 @@ export class GatepassOperation {
     return content ? { content } : { statusCode: 204 };
   };
 
-  pop = async (): Promise<OperationResponse<GatepassDocument>> => {
-    const content = await this.gatepassService.moveQueuedToProcessed();
+  pop = async (id?: string): Promise<OperationResponse<GatepassDocument>> => {
+    const content = await this.gatepassService.popById(id);
     return content ? { content } : { statusCode: 404 };
   };
 

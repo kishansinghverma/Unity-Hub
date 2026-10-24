@@ -5,6 +5,7 @@ import type {
   DeletePartyRequest,
   DeleteQueuedRequest,
   FinalizeRequest,
+  PopRequest,
   PushRequest,
   RequeueRequest,
   UpdatePartyRequest,
@@ -19,7 +20,7 @@ export const gatepassRoutes: FastifyPluginAsync = async (app) => {
 
   app.get('/peek', async () => operations.peek());
 
-  app.get('/pop', async () => operations.pop());
+  app.get<PopRequest>('/pop/:id?', async (request) => operations.pop(request.params.id));
 
   app.post<PushRequest>('/push', async (request) => operations.push(request.body));
 

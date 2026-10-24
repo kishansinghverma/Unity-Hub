@@ -72,7 +72,7 @@ export const QueuedPage: React.FC = () => {
 
     const processRecord = (record: WithIdRecord<QueuedEntry>) => {
         setActionId(record._id);
-        fetch(`${Url.Dispatches}/pop`)
+        fetch(`${Url.Dispatches}/pop/${record._id}`)
             .then((response) => handleJsonResponse<WithIdRecord<QueuedEntry>>(response))
             .then((popped) => {
                 toast.success("गेटपास सफलतापूर्वक प्रोसेस किया गया।");

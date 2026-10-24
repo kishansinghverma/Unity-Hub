@@ -4,6 +4,8 @@ export const idSchema = z
   .object({ id: z.string().regex(/^[a-f\d]{24}$/i, 'Invalid MongoDB ObjectId') })
   .strict();
 
+const popParamsSchema = idSchema.extend({ id: idSchema.shape.id.or(z.literal('')).optional() });
+
 export const partySchema = z
   .object({
     name: z.string().trim().min(3),
@@ -66,6 +68,7 @@ export const createGatepassSchema = z
 
 export const gatepassValidationSchemas = {
   'POST /api/gatepasses/push': { body: createGatepassSchema },
+  'GET /api/gatepasses/pop/:id?': { params: popParamsSchema },
   'PATCH /api/gatepasses/finalize': { body: finalizeGatepassSchema },
   'GET /api/gatepasses/requeue/:id': { params: idSchema },
   'DELETE /api/gatepasses/:id': { params: idSchema },
