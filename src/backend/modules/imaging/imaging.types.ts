@@ -21,5 +21,5 @@ export type GenerateQrRequest = {
   text: string;
   version: 8 | 14;
   maskPattern: 2 | 6;
-  width: 1140 | 1620;
+  width: 114 | 162;
 };

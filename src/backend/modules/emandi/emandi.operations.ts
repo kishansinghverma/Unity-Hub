@@ -25,7 +25,7 @@ export class EmandiOperation {
         text: StringUtils.Format(Snippets.GatepassQrData, request.data.serial_number, request.data.trader_name, request.data.crop_name, request.data.crop_weight, request.data.vehicle_no, request.data.uniquecode, request.data.dateofissue, request.data.timeofissue),
         version: 14,
         maskPattern: 2,
-        width: 1620
+        width: 162
       })
     };
     const file = await this.fileOperation.generateGatepass(payload).then((response) => response.content!);
@@ -41,7 +41,7 @@ export class EmandiOperation {
         text: StringUtils.Format(Snippets.NinerQrData, request.data.serial_number, request.data.mandi_name_eng, request.data.crop_name_eng),
         version: 8,
         maskPattern: 6,
-        width: 1140
+        width: 114
       })
     };
     const file = await this.fileOperation.generateNiner(payload).then((response) => response.content!);
