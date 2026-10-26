@@ -20,11 +20,11 @@ export class FileService {
     this.ninerRenderer = new NinerRenderer({ logger });
   }
 
-  generateGatepass = async (payload: GatepassPayload): Promise<string> => this.saveGeneratedFile(
+  generateGatepass = async (payload: GatepassPayload): Promise<FileUpload> => this.saveGeneratedFile(
     await this.gatepassRenderer.generate(payload)
   );
 
-  generateNiner = async (payload: NinerPayload): Promise<string> => this.saveGeneratedFile(
+  generateNiner = async (payload: NinerPayload): Promise<FileUpload> => this.saveGeneratedFile(
     await this.ninerRenderer.generate(payload)
   );
 
@@ -47,11 +47,11 @@ export class FileService {
     }
   };
 
-  private saveGeneratedFile = async (content: Buffer): Promise<string> => {
+  private saveGeneratedFile = async (content: Buffer): Promise<FileUpload> => {
     await this.ensureStorage();
     const fileName = `${randomUUID()}.pdf`;
     await fs.writeFile(path.join(this.storagePath, fileName), content);
-    return fileName;
+    return { filename: fileName, buffer: content };
   };
 
   private ensureStorage = async (): Promise<void> => {

@@ -1,7 +1,7 @@
 import { Snippets } from '../../core/constants.js';
 import type { OperationResponse } from '../../core/http/action-response.js';
 import type { FileOperation } from '../file/file.operations.js';
-import type { GatepassPayload, NinerPayload } from '../file/file.types.js';
+import type { FileUpload, GatepassPayload, NinerPayload } from '../file/file.types.js';
 import type { ImagingOperation } from '../imaging/imaging.operations.js';
 import type { WhatsAppOperation } from '../whatsapp/whatsapp.operations.js';
 import type { ActionResult, DocumentResponse, EmandiActions, GatepassRequest, NinerRequest } from './emandi.types.js';
@@ -28,9 +28,9 @@ export class EmandiOperation {
         width: 1620
       })
     };
-    const fileName = await this.fileOperation.generateGatepass(payload).then((response) => response.content!.fileName);
+    const file = await this.fileOperation.generateGatepass(payload).then((response) => response.content!);
     const caption = payload.kreta_mandi ? `*Gatepass:* ${payload.kreta_mandi}` : "*Gatepass*";
-    const content = await this.executeActions(fileName, request.actions, caption);
+    const content = await this.executeActions(file, request.actions, caption);
     return this.hasActionFailure(content) ? { statusCode: 207, content } : { content };
   };
 
@@ -44,24 +44,24 @@ export class EmandiOperation {
         width: 1140
       })
     };
-    const fileName = await this.fileOperation.generateNiner(payload).then((response) => response.content!.fileName);
+    const file = await this.fileOperation.generateNiner(payload).then((response) => response.content!);
     const caption = payload.kreta_details ? `*Niner:* ${payload.kreta_details}` : "*Niner*";
-    const content = await this.executeActions(fileName, request.actions, caption);
+    const content = await this.executeActions(file, request.actions, caption);
     return this.hasActionFailure(content) ? { statusCode: 207, content } : { content };
   };
 
-  private executeActions = async (fileName: string, actions: EmandiActions, caption: string): Promise<DocumentResponse> => {
+  private executeActions = async (file: FileUpload, actions: EmandiActions, caption: string): Promise<DocumentResponse> => {
+    const { filename: fileName } = file;
     const download: ActionResult = actions.download ? { status: 'success', url: `/api/files/${fileName}` } : { status: 'not_requested' };
-    const share: ActionResult = actions.share ? await this.shareFile(fileName, caption) : { status: 'not_requested' };
+    const share: ActionResult = actions.share ? await this.shareFile(file, caption) : { status: 'not_requested' };
     const print: ActionResult = actions.print ? { status: 'success' } : { status: 'not_requested' };
     // TODO: Wire MQTT printing when the print workflow is implemented.
     return { fileName, actions: { download, share, print } };
   };
 
-  private shareFile = async (fileName: string, caption?: string): Promise<ActionResult> => {
+  private shareFile = async (file: FileUpload, caption?: string): Promise<ActionResult> => {
     try {
-      const buffer = await this.fileOperation.readFile(fileName);
-      await this.whatsappOperation.sendFileToEmandiGroup({ file: { buffer, filename: fileName }, caption });
+      await this.whatsappOperation.sendFileToEmandiGroup({ file, caption });
       return { status: 'success' };
     }
     catch (error) {

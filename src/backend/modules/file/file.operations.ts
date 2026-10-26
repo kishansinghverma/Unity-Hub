@@ -9,12 +9,12 @@ export class FileOperation {
     this.fileService = fileService;
   }
 
-  generateGatepass = async (payload: GatepassPayload): Promise<OperationResponse<{ fileName: string }>> => ({
-    content: { fileName: await this.fileService.generateGatepass(payload) }
+  generateGatepass = async (payload: GatepassPayload): Promise<OperationResponse<FileUpload>> => ({
+    content: await this.fileService.generateGatepass(payload)
   });
 
-  generateNiner = async (payload: NinerPayload): Promise<OperationResponse<{ fileName: string }>> => ({
-    content: { fileName: await this.fileService.generateNiner(payload) }
+  generateNiner = async (payload: NinerPayload): Promise<OperationResponse<FileUpload>> => ({
+    content: await this.fileService.generateNiner(payload)
   });
 
   saveIncomingFile = async (file: FileUpload): Promise<OperationResponse<{ fileName: string }>> => ({

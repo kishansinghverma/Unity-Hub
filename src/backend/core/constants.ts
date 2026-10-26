@@ -62,7 +62,7 @@ export const WhatsApp = {
 } as const;
 
 export const Snippets = {
-  GatepassRequested: 'Gatepass requested for {0}, {1}, {2}. Proceed here: https://emandi.up.gov.in/Traders/Dashboard',
+  GatepassRequested: 'Gatepass requested for *{0}, {1}, {2}*. Proceed here: https://emandi.up.gov.in/Traders/Dashboard',
   GatepassQrData: 'Gatepass no:{0},Issue from:{1},Crop:{2},Weight:{3},Vehicle no:{4},applicationnumber:{5}date & time of issue :{6} {7}InstrumentType:Gatepass,http://emandi.up.gov.in/',
   NinerQrData: 'SerialNo:{0},Mandi:{1},Crop:{2}InstrumentType:9R,http://emandi.up.gov.in/'
 } as const;
