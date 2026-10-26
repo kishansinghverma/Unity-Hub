@@ -1,0 +1,5 @@
+$kind: http-request
+name: 'List Devices'
+method: GET
+url: '{{base_url}}/api/oakter-remote/devices'
+order: 2000

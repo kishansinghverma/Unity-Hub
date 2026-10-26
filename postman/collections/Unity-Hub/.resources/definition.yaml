@@ -1,0 +1,28 @@
+$kind: collection
+name: 'Unity-Hub'
+description: 'Unity-Hub backend API requests organized by module.'
+variables:
+  - key: base_url
+    value: 'http://localhost:3000'
+  - key: gatepass_id
+    value: '000000000000000000000000'
+  - key: party_id
+    value: '000000000000000000000000'
+  - key: message
+    value: ''
+  - key: file_url
+    value: ''
+  - key: whatsapp_file_name
+    value: 'sample.pdf'
+  - key: download_file_name
+    value: 'replace-with-returned-file-name.pdf'
+  - key: upload_file
+    value: './replace-with-a-pdf.pdf'
+  - key: captcha_base64
+    value: ''
+  - key: command_id
+    value: 'REPLACE_BEFORE_RUNNING'
+  - key: remote_id
+    value: 'REPLACE_BEFORE_RUNNING'
+  - key: s3_path
+    value: 'VehicleTagging/Vehicle/replace-me.jpg'

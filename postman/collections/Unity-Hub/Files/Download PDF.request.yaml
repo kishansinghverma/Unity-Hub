@@ -1,0 +1,5 @@
+$kind: http-request
+name: 'Download PDF'
+method: GET
+url: '{{base_url}}/api/files/{{download_file_name}}'
+order: 2000

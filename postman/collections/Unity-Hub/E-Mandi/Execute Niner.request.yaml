@@ -1,0 +1,52 @@
+$kind: http-request
+name: 'Execute Niner'
+method: POST
+url: '{{base_url}}/api/emandi/niners'
+order: 2000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "data": {
+        "book_number": "BK-001",
+        "serial_number": "SN-001",
+        "dateofissue": "2024-01-15",
+        "mandi_name": "Lucknow Mandi",
+        "trade_mandi": "Kanpur Mandi",
+        "trader_license_number": "LIC-001",
+        "vikreta_details": "Ramesh Kumar, Village Rampur",
+        "trader_name": "Ramesh Kumar",
+        "buyer_state": "Uttar Pradesh",
+        "buyer_license_no": "BLIC-001",
+        "mandi_name_eng": null,
+        "kreta_details": "Suresh Sharma, Kanpur",
+        "vehicleName": "Truck",
+        "vehicle_no": "UP32AB1234",
+        "crop_code": "CR-001",
+        "crop_type": "Grain",
+        "crop_name_eng": null,
+        "crop_weight": "1000",
+        "crop_rate": "2500",
+        "crop_amount": "2500000",
+        "mandi_fee": null,
+        "dev_fee": null,
+        "weighing_fee": null,
+        "commission_fee": null,
+        "porter_fee": null,
+        "tax": null,
+        "agent_fee": null,
+        "other_fee": null,
+        "total_tax": "0",
+        "total_amount": "2500000",
+        "six_r_id": "6R-001"
+      },
+      "actions": {
+        "print": false,
+        "download": true,
+        "share": false
+      },
+      "qr": "https://example.com/qr/NR-2024-001"
+    }

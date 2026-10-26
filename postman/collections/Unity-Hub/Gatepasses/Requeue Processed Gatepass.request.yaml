@@ -1,0 +1,5 @@
+$kind: http-request
+name: 'Requeue Processed Gatepass'
+method: GET
+url: '{{base_url}}/api/gatepasses/requeue/{{gatepass_id}}'
+order: 8000

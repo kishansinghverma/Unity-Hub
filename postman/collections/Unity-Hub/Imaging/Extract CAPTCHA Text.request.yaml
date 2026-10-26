@@ -1,0 +1,14 @@
+$kind: http-request
+name: 'Extract CAPTCHA Text'
+method: POST
+url: '{{base_url}}/api/imaging/captcha'
+order: 1000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "base64string": "{{captcha_base64}}"
+    }

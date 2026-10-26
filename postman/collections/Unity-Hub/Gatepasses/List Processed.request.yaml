@@ -1,0 +1,5 @@
+$kind: http-request
+name: 'List Processed'
+method: GET
+url: '{{base_url}}/api/gatepasses/processed'
+order: 2000

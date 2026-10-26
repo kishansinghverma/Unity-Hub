@@ -1,0 +1,5 @@
+$kind: http-request
+name: 'List Parties'
+method: GET
+url: '{{base_url}}/api/gatepasses/parties'
+order: 10000

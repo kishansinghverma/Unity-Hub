@@ -1,0 +1,29 @@
+$kind: http-request
+name: 'Push Gatepass (creates queue item and sends notification)'
+method: POST
+url: '{{base_url}}/api/gatepasses/push'
+order: 6000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "date": "2026-10-26T12:00:00+05:30",
+      "seller": "Ramesh Kumar",
+      "weight": 180,
+      "bags": 360,
+      "vehicleNumber": "UP32AB1234",
+      "vehicleType": 1,
+      "party": {
+        "name": "Suresh Traders",
+        "mandi": "Lucknow Mandi",
+        "state": "Uttar Pradesh",
+        "stateCode": 9,
+        "distance": 120,
+        "licenceNumber": "LIC-001"
+      },
+      "latitude": 26.8467,
+      "longitude": 80.9462
+    }

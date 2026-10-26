@@ -1,0 +1,5 @@
+$kind: http-request
+name: 'Sync Devices'
+method: GET
+url: '{{base_url}}/api/oakter-remote/sync'
+order: 3000

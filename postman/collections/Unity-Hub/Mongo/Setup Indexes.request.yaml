@@ -1,0 +1,5 @@
+$kind: http-request
+name: 'Setup Indexes'
+method: GET
+url: '{{base_url}}/api/mongo/setup'
+order: 1000

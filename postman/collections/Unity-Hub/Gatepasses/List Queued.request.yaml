@@ -1,0 +1,5 @@
+$kind: http-request
+name: 'List Queued'
+method: GET
+url: '{{base_url}}/api/gatepasses/queued'
+order: 1000

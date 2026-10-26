@@ -1,0 +1,14 @@
+$kind: http-request
+name: 'Send Text to Unity Hub'
+method: POST
+url: '{{base_url}}/api/whatsapp/sendtext/unityhub'
+order: 2000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "message": "{{message}}"
+    }

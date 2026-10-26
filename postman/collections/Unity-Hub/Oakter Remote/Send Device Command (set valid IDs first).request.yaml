@@ -1,0 +1,15 @@
+$kind: http-request
+name: 'Send Device Command (set valid IDs first)'
+method: POST
+url: '{{base_url}}/api/oakter-remote/commands'
+order: 4000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "commandId": "{{command_id}}",
+      "remoteId": "{{remote_id}}"
+    }

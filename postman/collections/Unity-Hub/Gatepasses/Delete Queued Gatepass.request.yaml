@@ -1,0 +1,5 @@
+$kind: http-request
+name: 'Delete Queued Gatepass'
+method: DELETE
+url: '{{base_url}}/api/gatepasses/{{gatepass_id}}'
+order: 9000

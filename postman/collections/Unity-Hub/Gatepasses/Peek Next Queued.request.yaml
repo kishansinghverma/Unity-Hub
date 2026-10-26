@@ -1,0 +1,5 @@
+$kind: http-request
+name: 'Peek Next Queued'
+method: GET
+url: '{{base_url}}/api/gatepasses/peek'
+order: 3000

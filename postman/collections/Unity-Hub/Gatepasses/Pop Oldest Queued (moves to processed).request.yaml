@@ -1,0 +1,5 @@
+$kind: http-request
+name: 'Pop Oldest Queued (moves to processed)'
+method: GET
+url: '{{base_url}}/api/gatepasses/pop'
+order: 4000

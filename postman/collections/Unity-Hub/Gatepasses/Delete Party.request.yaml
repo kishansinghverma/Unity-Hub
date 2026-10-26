@@ -1,0 +1,5 @@
+$kind: http-request
+name: 'Delete Party'
+method: DELETE
+url: '{{base_url}}/api/gatepasses/parties/{{party_id}}'
+order: 13000

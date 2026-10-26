@@ -1,0 +1,8 @@
+$kind: http-request
+name: 'Download S3 File'
+method: GET
+url: '{{base_url}}/api/s3/get?path={{s3_path}}'
+order: 1000
+queryParams:
+  - key: path
+    value: '{{s3_path}}'

@@ -1,0 +1,47 @@
+$kind: http-request
+name: 'Execute Gatepass'
+method: POST
+url: '{{base_url}}/api/emandi/gatepasses'
+order: 1000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "data": {
+        "uniquecode": "GP-2024-001",
+        "book_number": "BK-001",
+        "serial_number": "SN-001",
+        "dateofissue": "2024-01-15",
+        "timeofissue": "10:30:00",
+        "nine_r_id": "9R-001",
+        "dist_todestination": "50",
+        "home_center": "Lucknow Mandi",
+        "center_code": null,
+        "crop_name_hi": "गेहूं",
+        "crop_name": "Wheat",
+        "crop_weight": "1000",
+        "trader_name": "Ramesh Kumar",
+        "vehicle": "Truck",
+        "vehicle_no": "UP32AB1234",
+        "kreta_mandi": "Kanpur Mandi",
+        "kreta_mandiName": null,
+        "crop_type": "Grain",
+        "bundle_no": "BN-001",
+        "qty_parameter": null,
+        "latitude": "26.8467",
+        "longitude": "80.9462",
+        "taggingDate": "2024-01-15",
+        "dateofdestination": "2024-01-16",
+        "estimated_travel_time": "5",
+        "avg_speed": "40"
+      },
+      "actions": {
+        "print": false,
+        "download": true,
+        "share": false
+      },
+      "qr": "https://example.com/qr/GP-2024-001"
+    }

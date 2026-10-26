@@ -1,0 +1,19 @@
+$kind: http-request
+name: 'Update Party'
+method: PATCH
+url: '{{base_url}}/api/gatepasses/parties/{{party_id}}'
+order: 12000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "name": "Suresh Traders",
+      "mandi": "Lucknow Mandi",
+      "state": "Uttar Pradesh",
+      "stateCode": 9,
+      "distance": 120,
+      "licenceNumber": "LIC-001"
+    }

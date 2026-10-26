@@ -1,0 +1,17 @@
+$kind: http-request
+name: 'Add Location'
+method: POST
+url: '{{base_url}}/api/expenses/location'
+order: 1000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "dateTime": "2026-10-26T12:00:00+05:30",
+      "location": "Lucknow Mandi",
+      "coordinate": "26.8467,80.9462",
+      "processed": false
+    }

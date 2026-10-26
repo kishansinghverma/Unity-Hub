@@ -1,0 +1,11 @@
+$kind: http-request
+name: 'Upload PDF'
+method: POST
+url: '{{base_url}}/api/files/'
+order: 1000
+body:
+  type: formdata
+  content:
+    - key: file
+      type: file
+      src: '{{upload_file}}'
