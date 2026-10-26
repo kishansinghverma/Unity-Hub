@@ -1,4 +1,5 @@
 import path from 'node:path';
+import { readFileSync } from 'node:fs';
 import PDFDocument from 'pdfkit';
 import { LogSource } from '../../core/logging/log-sources.js';
 import type { Logger, ScopedLogger } from '../../core/logging/logger.js';
@@ -9,8 +10,8 @@ import { assetsDir } from '../../paths.js';
 export class GatepassRenderer {
   private readonly margin = 36;
   private readonly logoPath = path.join(assetsDir, 'logo_emandi.png');
-  private readonly regularFontPath = path.join(assetsDir, 'kripa-regular.ttf');
-  private readonly boldFontPath = path.join(assetsDir, 'kripa-semibold.ttf');
+  private readonly regularFont: Buffer = readFileSync(path.join(assetsDir, 'kripa-regular.ttf'));
+  private readonly boldFont: Buffer = readFileSync(path.join(assetsDir, 'kripa-semibold.ttf'));
   private readonly paddingY = 5;
   private readonly logger: ScopedLogger;
 
@@ -43,7 +44,7 @@ export class GatepassRenderer {
     const textWidth = width - 2 * (imageSize + 10);
     document.rect(6, 6, document.page.width - 12, document.page.height - 12).lineWidth(0.6).strokeColor('#000').stroke();
     document.image(this.logoPath, this.margin, this.margin, { fit: [imageSize, imageSize] });
-    document.image(this.decodeDataUrl(payload.qr), document.page.width - this.margin - imageSize, this.margin, { fit: [imageSize, imageSize] });
+    document.image(this.qrDataUrl(payload.qr), document.page.width - this.margin - imageSize, this.margin, { fit: [imageSize, imageSize] });
     const heading = 'कृषि उत्पादन मंडी समिति ';
     const headingWidth = document.font('KripaRegular').fontSize(11).widthOfString(heading);
     const mandi = 'सादाबाद';
@@ -100,7 +101,7 @@ export class GatepassRenderer {
     const text = cell.text || '';
     const textWidth = width - 4;
     document.font(cell.bold ? 'KripaBold' : 'KripaRegular').fontSize(cell.size || 9.5);
-    const textHeight = document.heightOfString(text, { width: textWidth });
+    const textHeight = cell.valign === 'center' ? document.heightOfString(text, { width: textWidth }) : 0;
     const textY = cell.valign === 'center'
       ? y + Math.max(this.paddingY, (height - textHeight) / 2)
       : y + this.paddingY;
@@ -135,14 +136,14 @@ export class GatepassRenderer {
   private header = (text: string, span?: number): Cell => ({ text, ...(span ? { span } : {}), bold: true, align: 'left', valign: 'center', fill: '#fafafa', size: 9.5 });
   private center = (text: string | undefined): Cell => ({ text: text || '', bold: true, align: 'left' });
   private scale = (values: number[], width: number): number[] => { const factor = width / values.reduce((sum, value) => sum + value, 0); return values.map((value) => value * factor); };
-  private decodeDataUrl = (value: string): Buffer => Buffer.from(value.split(',')[1] || value, 'base64');
+  private qrDataUrl = (value: string): string => `data:image/png;base64,${(value.split(',')[1] || value).replace(/\s/g, '')}`;
   private formatDate = (value: string): string => { const match = value.match(/^(\d{4})-(\d{2})-(\d{2})/); return match ? `${match[3]}/${match[2]}/${match[1]}` : value; };
 
   private generatePdf = async (draw: (document: PDFKit.PDFDocument) => void): Promise<Buffer> => {
     this.logger.info('Rendering Gatepass Pdf...');
     const document = new PDFDocument({ size: 'A4', layout: 'landscape', margin: this.margin });
-    document.registerFont('KripaRegular', this.regularFontPath);
-    document.registerFont('KripaBold', this.boldFontPath);
+    document.registerFont('KripaRegular', this.regularFont);
+    document.registerFont('KripaBold', this.boldFont);
     const chunks: Buffer[] = [];
     document.on('data', (chunk: Buffer) => chunks.push(chunk));
     const completed = new Promise<Buffer>((resolve, reject) => { document.on('end', () => resolve(Buffer.concat(chunks))); document.on('error', reject); });

@@ -1,4 +1,5 @@
 import path from 'node:path';
+import { readFileSync } from 'node:fs';
 import PDFDocument from 'pdfkit';
 import { LogSource } from '../../core/logging/log-sources.js';
 import type { Logger, ScopedLogger } from '../../core/logging/logger.js';
@@ -11,8 +12,8 @@ export class NinerRenderer {
   private readonly paddingX = 4;
   private readonly paddingY = 5;
   private readonly logoPath = path.join(assetsDir, 'logo_emandi.png');
-  private readonly regularFontPath = path.join(assetsDir, 'kripa-regular.ttf');
-  private readonly boldFontPath = path.join(assetsDir, 'kripa-semibold.ttf');
+  private readonly regularFont: Buffer = readFileSync(path.join(assetsDir, 'kripa-regular.ttf'));
+  private readonly boldFont: Buffer = readFileSync(path.join(assetsDir, 'kripa-semibold.ttf'));
   private readonly logger: ScopedLogger;
 
   constructor({ logger }: { logger: Logger }) {
@@ -60,7 +61,7 @@ export class NinerRenderer {
     const textX = left + imageSize + 10;
     const textWidth = width - 2 * (imageSize + 10);
     document.image(this.logoPath, left, left, { fit: [imageSize, imageSize] });
-    document.image(this.decodeDataUrl(payload.qr), left + width - imageSize, left, { fit: [imageSize, imageSize] });
+    document.image(this.qrDataUrl(payload.qr), left + width - imageSize, left, { fit: [imageSize, imageSize] });
     const heading = 'कृषि उत्पादन मंडी समिति ';
     document.font('KripaRegular').fontSize(11);
     const headingWidth = document.widthOfString(heading);
@@ -100,7 +101,7 @@ export class NinerRenderer {
     const options = { width: width - 2 * this.paddingX, align: cell.align || 'left' as const };
     if (!cell.parts) {
       const text = cell.text || '';
-      const textHeight = document.heightOfString(text, options);
+      const textHeight = cell.valign === 'center' ? document.heightOfString(text, options) : 0;
       const textY = cell.valign === 'center'
         ? y + Math.max(this.paddingY, (height - textHeight) / 2)
         : y + this.paddingY;
@@ -135,14 +136,14 @@ export class NinerRenderer {
   private center = (text: string | undefined): Cell => ({ text: text || '', bold: true, align: 'center' });
   private scale = (values: number[], width: number): number[] => { const factor = width / values.reduce((sum, value) => sum + value, 0); return values.map((value) => value * factor); };
   private fees = (payload: NinerPayload): string => [['मंडी शुल्क 1 %', payload.mandi_fee || 'NA'], ['विकास सेस 0.5 %', payload.dev_fee || 'NA'], ['तौलाई 0', payload.weighing_fee || '0'], ['दलाली 0 %', payload.commission_fee || '0'], ['पल्लेदारी 0', payload.porter_fee || '0'], ['टैक्स 0 %', payload.tax || '0'], ['आढ़त 0 %', payload.agent_fee || '0'], ['अन्य व्यय 0 %', payload.other_fee || '0']].map(([label, value]) => `${label}: ${value}`).join('\n');
-  private decodeDataUrl = (value: string): Buffer => Buffer.from(value.split(',')[1] || value, 'base64');
+  private qrDataUrl = (value: string): string => `data:image/png;base64,${(value.split(',')[1] || value).replace(/\s/g, '')}`;
   private drawContentBorder = (document: PDFKit.PDFDocument, bottom: number): void => { document.rect(12, 12, document.page.width - 24, bottom - 12).lineWidth(0.6).strokeColor('#ff0000').stroke(); };
 
   private generatePdf = async (draw: (document: PDFKit.PDFDocument) => void): Promise<Buffer> => {
     this.logger.info('Rendering Niner Pdf...');
     const document = new PDFDocument({ size: 'A4', layout: 'landscape', margin: this.margin });
-    document.registerFont('KripaRegular', this.regularFontPath);
-    document.registerFont('KripaBold', this.boldFontPath);
+    document.registerFont('KripaRegular', this.regularFont);
+    document.registerFont('KripaBold', this.boldFont);
     const chunks: Buffer[] = [];
     document.on('data', (chunk: Buffer) => chunks.push(chunk));
     const completed = new Promise<Buffer>((resolve, reject) => { document.on('end', () => resolve(Buffer.concat(chunks))); document.on('error', reject); });
