@@ -1,5 +1,5 @@
 export type GatepassPayload = {
-  id: string;
+  uniquecode: string;
   book_number: string;
   serial_number: string;
   dateofissue: string;
@@ -7,7 +7,7 @@ export type GatepassPayload = {
   nine_r_id: string;
   dist_todestination: string;
   home_center: string;
-  center_code?: string;
+  center_code?: string | null;
   crop_name_hi: string;
   crop_name: string;
   crop_weight: string;
@@ -15,10 +15,10 @@ export type GatepassPayload = {
   vehicle: string;
   vehicle_no: string;
   kreta_mandi: string;
-  kreta_mandiName?: string;
+  kreta_mandiName?: string | null;
   crop_type: string;
   bundle_no: string;
-  qty_parameter?: string;
+  qty_parameter?: string | null;
   latitude: string;
   longitude: string;
   taggingDate: string;
@@ -42,23 +42,24 @@ export type NinerPayload = {
   kreta_details: string;
   vehicleName: string;
   vehicle_no: string;
-  crop_name_hi?: string;
   crop_code: string;
   crop_type: string;
   crop_weight: string;
   crop_rate: string;
   crop_amount: string;
-  mandi_fee?: string;
-  dev_fee?: string;
-  weighing_fee?: string;
-  commission_fee?: string;
-  porter_fee?: string;
-  tax?: string;
-  agent_fee?: string;
-  other_fee?: string;
+  mandi_fee?: string | null;
+  dev_fee?: string | null;
+  weighing_fee?: string | null;
+  commission_fee?: string | null;
+  porter_fee?: string | null;
+  tax?: string | null;
+  agent_fee?: string | null;
+  other_fee?: string | null;
   total_tax: string;
   total_amount: string;
   six_r_id: string;
+  crop_name_eng: string;
+  mandi_name_eng: string;
   qr: string;
 };
 

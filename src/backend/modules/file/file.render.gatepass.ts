@@ -57,8 +57,8 @@ export class GatepassRenderer {
   };
 
   private infoRows = (payload: GatepassPayload): Cell[][] => {
-    const values: Array<[string, string | undefined]> = [
-      ['पुस्तक संख्या', payload.book_number], ['गेटपास संख्या', payload.serial_number], ['आवेदन संख्या (यूनिक कोड)', payload.id],
+    const values: Array<[string, string | null | undefined]> = [
+      ['पुस्तक संख्या', payload.book_number], ['गेटपास संख्या', payload.serial_number], ['आवेदन संख्या (यूनिक कोड)', payload.uniquecode],
       ['जारी करने का दिनांक', payload.dateofissue], ['जारी करने का समय', payload.timeofissue], ['संलग्न प्रपत्र-9 की संख्या', payload.nine_r_id],
       ['दिनांक', this.formatDate(payload.dateofissue)], ['गंतव्य की दूरी (KM)', payload.dist_todestination], ['सीमांत गढ़ केंद्र का नाम', payload.home_center],
       ['कोड', payload.center_code], ['उत्पाद का नाम', `${payload.crop_name_hi} (${payload.crop_name})`], ['वजन (कुंतल में)', payload.crop_weight]
@@ -131,7 +131,7 @@ export class GatepassRenderer {
     return document.heightOfString(cell.text || '', { width: width - 4 }) + 2 * this.paddingY;
   };
   private label = (text: string): Cell => ({ text, align: 'left' });
-  private value = (text: string | undefined): Cell => ({ text: text || '', bold: true, align: 'left' });
+  private value = (text: string | null | undefined): Cell => ({ text: text || '', bold: true, align: 'left' });
   private header = (text: string, span?: number): Cell => ({ text, ...(span ? { span } : {}), bold: true, align: 'left', valign: 'center', fill: '#fafafa', size: 9.5 });
   private center = (text: string | undefined): Cell => ({ text: text || '', bold: true, align: 'left' });
   private scale = (values: number[], width: number): number[] => { const factor = width / values.reduce((sum, value) => sum + value, 0); return values.map((value) => value * factor); };

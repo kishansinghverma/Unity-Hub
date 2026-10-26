@@ -22,7 +22,7 @@ export class EmandiOperation {
     const payload: GatepassPayload = {
       ...request.data,
       qr: request.qr ?? await this.imagingOperation.generateQr({
-        text: StringUtils.Format(Snippets.GatepassQrData, request.data.serial_number, request.data.trader_name, request.data.crop_name, request.data.crop_weight, request.data.vehicle_no, request.data.id, request.data.dateofissue, request.data.timeofissue),
+        text: StringUtils.Format(Snippets.GatepassQrData, request.data.serial_number, request.data.trader_name, request.data.crop_name, request.data.crop_weight, request.data.vehicle_no, request.data.uniquecode, request.data.dateofissue, request.data.timeofissue),
         version: 14,
         maskPattern: 2,
         width: 1620
@@ -38,7 +38,7 @@ export class EmandiOperation {
     const payload: NinerPayload = {
       ...request.data,
       qr: request.qr ?? await this.imagingOperation.generateQr({
-        text: StringUtils.Format(Snippets.NinerQrData, request.data.serial_number, request.data.mandi_name, request.data.crop_name_hi || request.data.crop_code),
+        text: StringUtils.Format(Snippets.NinerQrData, request.data.serial_number, request.data.mandi_name_eng, request.data.crop_name_eng),
         version: 8,
         maskPattern: 6,
         width: 1140

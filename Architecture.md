@@ -34,7 +34,6 @@
 │   │   │   ├── mongo/
 │   │   │   ├── oakterRemote/
 │   │   │   ├── s3storage/
-│   │   │   ├── vehicleTagging/
 │   │   │   └── whatsapp/
 │   │   ├── shared/
 │   │   │   └── types/
@@ -111,11 +110,6 @@ POST   /api/whatsapp/sendtext/unityhub
 POST   /api/whatsapp/sendfile/emandi
 POST   /api/whatsapp/sendfile/unityhub
 
-GET    /api/vehicle-tagging/vehicles/types
-GET    /api/vehicle-tagging/vehicles?gatepassId=...
-GET    /api/vehicle-tagging/entries
-POST   /api/vehicle-tagging/entries
-
 GET    /api/oakter-remote/status
 GET    /api/oakter-remote/devices
 GET    /api/oakter-remote/sync
@@ -136,7 +130,7 @@ POST   /api/oakter-remote/commands
 - Frontend source remains at `src/frontends/emandi`.
 - The active frontend uses the migrated `/api/gatepasses` and `/api/oakter-remote` routes.
 - Successful frontend API responses unwrap the centralized `ActionResponse.content` envelope.
-- The frontend currently does not consume the E-Mandi document, vehicle-tagging, file, or WhatsApp file routes.
+- The frontend currently does not consume the E-Mandi document, file, or WhatsApp file routes.
 
 ## Runtime and Build
 

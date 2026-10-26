@@ -2,21 +2,6 @@ export const Ocr = {
   OcrApiUrl: 'https://api.ocr.space/parse/image'
 } as const;
 
-export const Emandi = {
-  BaseUrl: 'https://emandi.up.gov.in',
-  RequestTimeout: 30_000
-} as const;
-
-export const VehicleTagging = {
-  BaseRoute: '/api/VehicleTaggingAPI',
-  Routes: {
-    getVehicle: '/GetVehicleNumberByGatepass',
-    getTaggingData: '/GetVechicleTaggingData',
-    getVehicleTypes: '/GetVehicleMasterData',
-    insertTaggingData: '/InsertVehcileTaggingData'
-  }
-} as const;
-
 export const OakterRemote = {
   Routes: {
     sendCommand: '/api/ir/send',

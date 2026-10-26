@@ -14,8 +14,6 @@ import { FileOperation } from '../../modules/file/file.operations.js';
 import { FileService } from '../../modules/file/file.service.js';
 import { KeyVaultService } from '../../modules/keyvault/keyvault.service.js';
 import { EmandiOperation } from '../../modules/emandi/emandi.operations.js';
-import { VehicleTaggingOperation } from '../../modules/vehicleTagging/vehicleTagging.operations.js';
-import { VehicleTaggingService } from '../../modules/vehicleTagging/vehicleTagging.service.js';
 import type { Logger } from '../logging/logger.js';
 import { OakterRemoteOperation } from '../../modules/oakterRemote/oakterRemote.operations.js';
 import { OakterRemoteService } from '../../modules/oakterRemote/oakterRemote.service.js';
@@ -42,8 +40,6 @@ export interface AppCradle {
   fileOperation: FileOperation;
   keyVaultService: KeyVaultService;
   emandiOperation: EmandiOperation;
-  vehicleTaggingService: VehicleTaggingService;
-  vehicleTaggingOperation: VehicleTaggingOperation;
   oakterRemoteService: OakterRemoteService;
   oakterRemoteOperation: OakterRemoteOperation;
   cronJobsService: CronJobsService;
@@ -76,8 +72,6 @@ export function buildContainer(config: Env, logger: Logger) {
     fileOperation: asClass(FileOperation).singleton(),
     keyVaultService: asClass(KeyVaultService).singleton(),
     emandiOperation: asClass(EmandiOperation).singleton(),
-    vehicleTaggingService: asClass(VehicleTaggingService).singleton(),
-    vehicleTaggingOperation: asClass(VehicleTaggingOperation).singleton(),
     oakterRemoteService: asClass(OakterRemoteService).singleton(),
     oakterRemoteOperation: asClass(OakterRemoteOperation).singleton(),
     cronJobsService: asClass(CronJobsService).singleton(),

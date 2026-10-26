@@ -31,7 +31,6 @@ export const envSchema = z.object({
   SUPABASE_SECRET_KEY: z.string().min(1).optional(),
   SUPABASE_STORAGE_BUCKET: z.string().min(1).optional(),
   VAULT_ENCRYPTION_KEY: z.string().min(1).optional(),
-  VEHICLE_TAGGING_MOBILE_NUMBER: z.string().min(1).optional(),
   OAKTER_REMOTE_BASE_URL: z.string().url().optional(),
   OAKTER_RENEW_SESSION_URL: z.string().url().optional(),
   OAKTER_USERNAME: z.string().min(1).optional(),

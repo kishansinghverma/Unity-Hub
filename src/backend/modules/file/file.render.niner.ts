@@ -43,7 +43,7 @@ export class NinerRenderer {
       this.header('विक्रेता को भुगतान की गयी शुद्ध धनराशि', '₹'), this.header('व्यापारिक परिव्यय', '₹'), this.header('कुल धनराशि', '₹'), this.header('अभियुक्ति')
     ], left, y, itemColumns);
     y += this.drawRow(document, [
-      this.center(payload.crop_name_hi || payload.crop_code), this.center(payload.crop_type), this.center(payload.crop_weight), this.center(payload.crop_rate),
+      this.center(payload.crop_code), this.center(payload.crop_type), this.center(payload.crop_weight), this.center(payload.crop_rate),
       this.center(payload.crop_amount), { parts: [this.fees(payload), `कुल व्यापारिक परिव्यय: ${payload.total_tax}`] }, this.center(payload.total_amount), this.center(payload.six_r_id)
     ], left, y, itemColumns);
     y += 14;

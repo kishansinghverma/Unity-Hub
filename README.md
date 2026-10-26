@@ -47,6 +47,5 @@ src/
 - `/api/imaging`
 - `/api/files`
 - `/api/emandi`
-- `/api/vehicle-tagging`
 - `/api/oakter-remote`
 - `/api/expenses`

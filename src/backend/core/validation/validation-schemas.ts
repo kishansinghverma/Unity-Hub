@@ -3,7 +3,6 @@ import { gatepassValidationSchemas } from '../../modules/gatepass/gatepass.schem
 import { whatsappValidationSchemas } from '../../modules/whatsapp/whatsapp.schema.js';
 import { imagingValidationSchemas } from '../../modules/imaging/imaging.schema.js';
 import { emandiValidationSchemas } from '../../modules/emandi/emandi.schema.js';
-import { vehicleTaggingValidationSchemas } from '../../modules/vehicleTagging/vehicleTagging.schema.js';
 import { oakterRemoteValidationSchemas } from '../../modules/oakterRemote/oakterRemote.schema.js';
 import { s3StorageValidationSchemas } from '../../modules/s3storage/s3storage.schema.js';
 import { expenseValidationSchemas } from '../../modules/expense/expense.schema.js';
@@ -19,7 +18,6 @@ export const validationSchemas: Record<string, RouteValidation> = {
   ...whatsappValidationSchemas,
   ...imagingValidationSchemas,
   ...emandiValidationSchemas,
-  ...vehicleTaggingValidationSchemas,
   ...oakterRemoteValidationSchemas,
   ...s3StorageValidationSchemas,
   ...expenseValidationSchemas
