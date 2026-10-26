@@ -11,7 +11,7 @@ export class NinerRenderer {
   private readonly margin = 36;
   private readonly paddingX = 4;
   private readonly paddingY = 5;
-  private readonly logoPath = path.join(assetsDir, 'logo_emandi.png');
+  private readonly logo: string = `data:image/png;base64,${readFileSync(path.join(assetsDir, 'logo_emandi.png')).toString('base64')}`;
   private readonly regularFont: Buffer = readFileSync(path.join(assetsDir, 'kripa-regular.ttf'));
   private readonly boldFont: Buffer = readFileSync(path.join(assetsDir, 'kripa-semibold.ttf'));
   private readonly logger: ScopedLogger;
@@ -60,7 +60,7 @@ export class NinerRenderer {
   private drawHeader = (document: PDFKit.PDFDocument, payload: NinerPayload, left: number, width: number, imageSize: number): number => {
     const textX = left + imageSize + 10;
     const textWidth = width - 2 * (imageSize + 10);
-    document.image(this.logoPath, left, left, { fit: [imageSize, imageSize] });
+    document.image(this.logo, left, left, { fit: [imageSize, imageSize] });
     document.image(this.qrDataUrl(payload.qr), left + width - imageSize, left, { fit: [imageSize, imageSize] });
     const heading = 'कृषि उत्पादन मंडी समिति ';
     document.font('KripaRegular').fontSize(11);

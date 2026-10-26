@@ -9,7 +9,7 @@ import { assetsDir } from '../../paths.js';
 
 export class GatepassRenderer {
   private readonly margin = 36;
-  private readonly logoPath = path.join(assetsDir, 'logo_emandi.png');
+  private readonly logo: string = `data:image/png;base64,${readFileSync(path.join(assetsDir, 'logo_emandi.png')).toString('base64')}`;
   private readonly regularFont: Buffer = readFileSync(path.join(assetsDir, 'kripa-regular.ttf'));
   private readonly boldFont: Buffer = readFileSync(path.join(assetsDir, 'kripa-semibold.ttf'));
   private readonly paddingY = 5;
@@ -43,7 +43,7 @@ export class GatepassRenderer {
     const textX = this.margin + imageSize + 10;
     const textWidth = width - 2 * (imageSize + 10);
     document.rect(6, 6, document.page.width - 12, document.page.height - 12).lineWidth(0.6).strokeColor('#000').stroke();
-    document.image(this.logoPath, this.margin, this.margin, { fit: [imageSize, imageSize] });
+    document.image(this.logo, this.margin, this.margin, { fit: [imageSize, imageSize] });
     document.image(this.qrDataUrl(payload.qr), document.page.width - this.margin - imageSize, this.margin, { fit: [imageSize, imageSize] });
     const heading = 'कृषि उत्पादन मंडी समिति ';
     const headingWidth = document.font('KripaRegular').fontSize(11).widthOfString(heading);
