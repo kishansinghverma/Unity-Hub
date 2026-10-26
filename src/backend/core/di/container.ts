@@ -14,7 +14,6 @@ import { FileOperation } from '../../modules/file/file.operations.js';
 import { FileService } from '../../modules/file/file.service.js';
 import { KeyVaultService } from '../../modules/keyvault/keyvault.service.js';
 import { EmandiOperation } from '../../modules/emandi/emandi.operations.js';
-import { EmandiService } from '../../modules/emandi/emandi.service.js';
 import { VehicleTaggingOperation } from '../../modules/vehicleTagging/vehicleTagging.operations.js';
 import { VehicleTaggingService } from '../../modules/vehicleTagging/vehicleTagging.service.js';
 import type { Logger } from '../logging/logger.js';
@@ -42,7 +41,6 @@ export interface AppCradle {
   fileService: FileService;
   fileOperation: FileOperation;
   keyVaultService: KeyVaultService;
-  emandiService: EmandiService;
   emandiOperation: EmandiOperation;
   vehicleTaggingService: VehicleTaggingService;
   vehicleTaggingOperation: VehicleTaggingOperation;
@@ -77,7 +75,6 @@ export function buildContainer(config: Env, logger: Logger) {
     fileService: asClass(FileService).singleton(),
     fileOperation: asClass(FileOperation).singleton(),
     keyVaultService: asClass(KeyVaultService).singleton(),
-    emandiService: asClass(EmandiService).singleton(),
     emandiOperation: asClass(EmandiOperation).singleton(),
     vehicleTaggingService: asClass(VehicleTaggingService).singleton(),
     vehicleTaggingOperation: asClass(VehicleTaggingOperation).singleton(),

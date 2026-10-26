@@ -62,9 +62,6 @@ export type NinerPayload = {
   qr: string;
 };
 
-export type GatepassResponse = GatepassPayload & { created_at: string };
-export type NinerResponse = NinerPayload & { mandi_name_eng: string; crop_name_eng: string };
-
 export type FileUpload = {
   buffer: Buffer;
   filename: string;

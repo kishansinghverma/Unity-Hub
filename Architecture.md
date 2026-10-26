@@ -103,8 +103,6 @@ GET    /api/files/:fileName
 
 POST   /api/imaging/captcha
 
-POST   /api/emandi/init
-GET    /api/emandi/session
 POST   /api/emandi/gatepasses
 POST   /api/emandi/niners
 

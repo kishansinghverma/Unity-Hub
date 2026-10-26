@@ -4,18 +4,7 @@ export const Ocr = {
 
 export const Emandi = {
   BaseUrl: 'https://emandi.up.gov.in',
-  Routes: {
-    LoginPage: '/Account/index',
-    Login: '/Account',
-    GatepassList: '/Traders/SP_Get_Gatepass_List',
-    NinerList: '/Traders/SP_Get_9R_List',
-    TradersIndex: '/Traders/index'
-  },
-  CredentialsKey: 'EmandiCredentials',
-  SessionTtl: 30 * 60 * 1000,
-  RequestTimeout: 30_000,
-  MaxLoginAttempts: 3,
-  UserAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36'
+  RequestTimeout: 30_000
 } as const;
 
 export const VehicleTagging = {
